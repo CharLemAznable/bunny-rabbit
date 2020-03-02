@@ -29,7 +29,7 @@ public class CalculateConfiguration {
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
-                "deploy.port=12114\nplugin-test=TestCalculate\nplugin-notfound=NotFound");
+                "httpserver.port=12114\nplugin-test=TestCalculate\nplugin-notfound=NotFound");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:12114/bunny");
     }

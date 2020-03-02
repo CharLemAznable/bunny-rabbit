@@ -15,6 +15,9 @@ import io.vertx.ext.web.handler.ResponseContentTypeHandler;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 import static com.github.charlemaznable.bunny.rabbit.vertx.common.BunnyElf.failureMessage;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
@@ -34,7 +37,7 @@ public final class BunnyHttpServerVerticle extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) {
-        val bunnyRouter = buildBunnyRouter();
+        val bunnyRouter = buildBunnyRouter(config);
         val rootRouter = buildRootRouter(config, bunnyRouter);
 
         vertx.createHttpServer().requestHandler(rootRouter)
@@ -45,7 +48,7 @@ public final class BunnyHttpServerVerticle extends AbstractVerticle {
                 });
     }
 
-    private Router buildBunnyRouter() {
+    private Router buildBunnyRouter(BunnyHttpServerConfig config) {
         val bunnyRouter = Router.router(vertx);
         bunnyRouter.route(HttpMethod.POST, "/*")
                 .handler(BodyHandler.create(false))
@@ -57,7 +60,7 @@ public final class BunnyHttpServerVerticle extends AbstractVerticle {
         for (val handler : handlers) {
             val address = prependIfMissing(handler.address(), "/");
             bunnyRouter.route(address).handler(
-                    new BunnyHttpServerHandler<>(handler));
+                    new BunnyHttpServerHandler<>(handler, config.interceptors()));
         }
         return bunnyRouter;
     }
@@ -71,23 +74,43 @@ public final class BunnyHttpServerVerticle extends AbstractVerticle {
     static final class BunnyHttpServerHandler<T extends BunnyBaseRequest<U>, U extends BunnyBaseResponse>
             extends BunnyWrapHandler<T, U, RoutingContext> {
 
-        public BunnyHttpServerHandler(BunnyHandler<T, U> bunnyHandler) {
+        private final List<BunnyHttpServerInterceptor> interceptors;
+
+        public BunnyHttpServerHandler(BunnyHandler<T, U> bunnyHandler,
+                                      List<BunnyHttpServerInterceptor> interceptors) {
             super(bunnyHandler);
+            this.interceptors = newArrayList(interceptors);
         }
 
         @Override
         public String produceRequest(RoutingContext routingContext) {
+            interceptors.forEach(interceptor ->
+                    interceptor.preHandle(routingContext));
             return routingContext.getBodyAsString();
         }
 
         @Override
         public void consumeError(RoutingContext routingContext, Throwable throwable) {
             routingContext.fail(throwable);
+            iterateReverse(routingContext, null, throwable);
         }
 
         @Override
         public void consumeResponse(RoutingContext routingContext, String response) {
             routingContext.response().end(response);
+            iterateReverse(routingContext, response, null);
+        }
+
+        private void iterateReverse(RoutingContext routingContext,
+                                    @Nullable String response,
+                                    @Nullable Throwable throwable) {
+            if (interceptors.isEmpty()) return;
+
+            val iterator = interceptors.listIterator(interceptors.size() - 1);
+            while (iterator.hasPrevious()) {
+                val interceptor = iterator.previous();
+                interceptor.afterCompletion(routingContext, response, throwable);
+            }
         }
     }
 }

@@ -46,7 +46,7 @@ public class BunnyVertxTest {
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
-                "deploy.port=12120");
+                "httpserver.port=12120");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:12120/bunny");
 

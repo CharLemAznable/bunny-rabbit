@@ -9,8 +9,8 @@ public enum BunnyError {
 
     UNEXPECTED_EXCEPTION("UNEXPECTED_EXCEPTION", "Unexpected Exception");
 
-    private String respCode;
-    private String respDesc;
+    private final String respCode;
+    private final String respDesc;
 
     public BunnyException exception() {
         return new BunnyException(respCode, respDesc);

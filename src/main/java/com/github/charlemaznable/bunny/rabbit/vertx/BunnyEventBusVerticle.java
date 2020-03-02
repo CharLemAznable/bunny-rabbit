@@ -10,6 +10,9 @@ import io.vertx.core.eventbus.Message;
 import lombok.val;
 import lombok.var;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 import static com.github.charlemaznable.bunny.rabbit.vertx.common.BunnyElf.failureMessage;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
@@ -35,7 +38,7 @@ public final class BunnyEventBusVerticle extends AbstractVerticle {
         for (val handler : handlers) {
             val address = prependIfMissing(handler.address(), "/");
             eventBus.consumer(addressPrefix + address,
-                    new BunnyEventBusHandler<>(handler));
+                    new BunnyEventBusHandler<>(handler, config.interceptors()));
         }
     }
 
@@ -43,23 +46,43 @@ public final class BunnyEventBusVerticle extends AbstractVerticle {
             <T extends BunnyBaseRequest<U>, U extends BunnyBaseResponse>
             extends BunnyWrapHandler<T, U, Message<String>> {
 
-        public BunnyEventBusHandler(BunnyHandler<T, U> bunnyHandler) {
+        private final List<BunnyEventBusInterceptor> interceptors;
+
+        public BunnyEventBusHandler(BunnyHandler<T, U> bunnyHandler,
+                                    List<BunnyEventBusInterceptor> interceptors) {
             super(bunnyHandler);
+            this.interceptors = newArrayList(interceptors);
         }
 
         @Override
         public String produceRequest(Message<String> message) {
+            interceptors.forEach(interceptor ->
+                    interceptor.preHandle(message));
             return message.body();
         }
 
         @Override
         public void consumeError(Message<String> message, Throwable throwable) {
             message.reply(failureMessage(throwable));
+            iterateReverse(message, null, throwable);
         }
 
         @Override
         public void consumeResponse(Message<String> message, String response) {
             message.reply(response);
+            iterateReverse(message, response, null);
+        }
+
+        private void iterateReverse(Message<String> message,
+                                    @Nullable String response,
+                                    @Nullable Throwable throwable) {
+            if (interceptors.isEmpty()) return;
+
+            val iterator = interceptors.listIterator(interceptors.size() - 1);
+            while (iterator.hasPrevious()) {
+                val interceptor = iterator.previous();
+                interceptor.afterCompletion(message, response, throwable);
+            }
         }
     }
 }

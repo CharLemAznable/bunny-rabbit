@@ -30,7 +30,7 @@ public class PaymentRollbackConfiguration {
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
-                "deploy.port=12119");
+                "httpserver.port=12119");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:12119/bunny");
         MockDiamondServer.setConfigInfo("EqlConfig", "bunny",

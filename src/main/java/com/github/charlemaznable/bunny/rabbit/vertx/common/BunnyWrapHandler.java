@@ -18,7 +18,7 @@ public abstract class BunnyWrapHandler<T extends BunnyBaseRequest<U>, U extends 
         implements Handler<R> {
 
     private final BunnyHandler<T, U> bunnyHandler;
-    private NonsenseSignature nonsenseSignature = new NonsenseSignature();
+    private final NonsenseSignature nonsenseSignature = new NonsenseSignature();
 
     @Override
     public final void handle(R event) {

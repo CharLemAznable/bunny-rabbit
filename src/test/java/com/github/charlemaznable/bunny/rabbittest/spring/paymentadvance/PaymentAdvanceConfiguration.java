@@ -30,7 +30,7 @@ public class PaymentAdvanceConfiguration {
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
-                "deploy.port=12117");
+                "httpserver.port=12117");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:12117/bunny");
         MockDiamondServer.setConfigInfo("EqlConfig", "bunny",
