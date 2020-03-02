@@ -1,0 +1,26 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
+-- [queryChargingBalance]
+SELECT SA.SERVICE_BALANCE AS balance
+      ,SA.SERVICE_UNIT    AS unit
+  FROM SERVICE_ACCOUNT    SA
+ WHERE SA.SERVICE_CODE    = #chargingType#
+
+-- [updateBalanceByCharge]
+UPDATE SERVICE_ACCOUNT    SA
+   SET SA.SERVICE_BALANCE = SA.SERVICE_BALANCE + #chargeValue#
+ WHERE SA.SERVICE_CODE    = #chargingType#
+
+-- [queryPaymentSequence]
+SELECT SAS.SERVICE_USED     AS used
+      ,SAS.SERVICE_UNIT     AS unit
+  FROM SERVICE_ACCOUNT_SEQ  SAS
+ WHERE SAS.SERVICE_CODE     = #chargingType#
+   AND SAS.SEQ_ID           = #seqId#
+
+-- [commitPaymentSequence]
+UPDATE SERVICE_ACCOUNT_SEQ  SAS
+   SET SAS.STATE            = '1'
+ WHERE SAS.SERVICE_CODE     = #chargingType#
+   AND SAS.SEQ_ID           = #seqId#
+   AND SAS.STATE            = '0'
