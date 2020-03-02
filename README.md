@@ -1,5 +1,27 @@
 ### bunny-rabbit
 
+[![Build Status](https://travis-ci.org/CharLemAznable/bunny-rabbit.svg?branch=master)](https://travis-ci.org/CharLemAznable/bunny-rabbit)
+[![codecov](https://codecov.io/gh/CharLemAznable/bunny-rabbit/branch/master/graph/badge.svg)](https://codecov.io/gh/CharLemAznable/bunny-rabbit)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.charlemaznable/bunny-rabbit/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.charlemaznable/bunny-rabbit/)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+![GitHub code size](https://img.shields.io/github/languages/code-size/CharLemAznable/bunny-rabbit)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=alert_status)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=bugs)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=security_rating)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=sqale_index)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=code_smells)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=ncloc)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=coverage)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=CharLemAznable_bunny-rabbit&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=CharLemAznable_bunny-rabbit)
+
 计费/扣费模块.
 
 #### 概述
