@@ -1,5 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.spring;
 
+import com.github.charlemaznable.bunny.rabbit.config.vertx.BunnyEventBusConfig;
+import com.github.charlemaznable.bunny.rabbit.config.vertx.BunnyHttpServerConfig;
 import com.github.charlemaznable.bunny.rabbit.vertx.BunnyApplication;
 import com.github.charlemaznable.bunny.rabbit.vertx.common.BunnyHandler;
 import com.github.charlemaznable.core.spring.SpringContext;
@@ -11,17 +13,25 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
+
 import static com.github.charlemaznable.core.spring.SpringContext.getBeanNamesForType;
 
 @Component
 public final class BunnyStarter {
 
     private final Vertx vertx;
+    private final BunnyEventBusConfig eventBusConfig;
+    private final BunnyHttpServerConfig httpServerConfig;
     private volatile boolean deployed;
 
     @Autowired
-    public BunnyStarter(Vertx vertx) {
+    public BunnyStarter(Vertx vertx,
+                        @Nullable BunnyEventBusConfig eventBusConfig,
+                        @Nullable BunnyHttpServerConfig httpServerConfig) {
         this.vertx = vertx;
+        this.eventBusConfig = eventBusConfig;
+        this.httpServerConfig = httpServerConfig;
     }
 
     @EventListener
@@ -37,7 +47,8 @@ public final class BunnyStarter {
     }
 
     private void startBunny(ApplicationContext applicationContext) {
-        new BunnyApplication(getBeanNamesForType(BunnyHandler.class),
+        new BunnyApplication(eventBusConfig, httpServerConfig,
+                getBeanNamesForType(BunnyHandler.class),
                 SpringContext::getBean).deploy(vertx, arDeployment -> {
             if (arDeployment.failed()) return;
 

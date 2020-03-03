@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.github.charlemaznable.bunny.rabbit.vertx.common.BunnyElf.failureMessage;
+import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
@@ -24,9 +25,10 @@ public final class BunnyEventBusVerticle extends AbstractVerticle {
     private final Iterable<BunnyHandler<?, ?>> handlers;
     private final BunnyEventBusConfig config;
 
-    public BunnyEventBusVerticle(Iterable<BunnyHandler<?, ?>> handlers) {
+    public BunnyEventBusVerticle(Iterable<BunnyHandler<?, ?>> handlers,
+                                 @Nullable BunnyEventBusConfig config) {
         this.handlers = newArrayList(handlers);
-        this.config = getMiner(BunnyEventBusConfig.class);
+        this.config = nullThen(config, () -> getMiner(BunnyEventBusConfig.class));
     }
 
     @Override
