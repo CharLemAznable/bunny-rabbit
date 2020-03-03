@@ -24,7 +24,6 @@ public final class TestHandler
     @Override
     public void execute(TestRequest request,
                         Handler<AsyncResult<TestResponse>> handler) {
-        System.out.println("test context");
         val response = request.createResponse();
         response.succeed();
         response.setTestResult(request.getTestParameter() + ":" + TestContext.getContext());
