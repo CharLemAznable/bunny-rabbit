@@ -25,27 +25,20 @@
     </scm>
 
     <properties>
-        <netty-all.version>4.1.46.Final</netty-all.version>
         <bunny-client.version>0.0.1-SNAPSHOT</bunny-client.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${netty-all.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-            <version>${vertx.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.github.charlemaznable</groupId>
             <artifactId>bunny-client</artifactId>
             <version>${bunny-client.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.github.bingoohuang</groupId>
             <artifactId>eql</artifactId>
