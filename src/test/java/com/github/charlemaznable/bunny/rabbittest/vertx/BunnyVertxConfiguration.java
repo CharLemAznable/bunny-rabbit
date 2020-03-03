@@ -30,10 +30,8 @@ public class BunnyVertxConfiguration {
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
                 "httpserver.port=12120\n" +
-                        "httpserver.interceptors=@com.github.charlemaznable.bunny.rabbittest.vertx.TestHttpServerInterceptor() " +
-                        "@com.github.charlemaznable.bunny.rabbittest.vertx.EmptyHttpServerInterceptor()\n" +
-                        "eventbus.interceptors=@com.github.charlemaznable.bunny.rabbittest.vertx.TestEventBusInterceptor() " +
-                        "@com.github.charlemaznable.bunny.rabbittest.vertx.EmptyEventBusInterceptor()\n");
+                        "httpserver.interceptors=@com.github.charlemaznable.bunny.rabbittest.vertx.TestHttpServerInterceptor()\n" +
+                        "eventbus.interceptors=@com.github.charlemaznable.bunny.rabbittest.vertx.TestEventBusInterceptor()\n");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:12120/bunny");
     }

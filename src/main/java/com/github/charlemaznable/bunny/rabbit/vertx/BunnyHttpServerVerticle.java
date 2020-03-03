@@ -106,7 +106,7 @@ public final class BunnyHttpServerVerticle extends AbstractVerticle {
                                     @Nullable Throwable throwable) {
             if (interceptors.isEmpty()) return;
 
-            val iterator = interceptors.listIterator(interceptors.size() - 1);
+            val iterator = interceptors.listIterator(interceptors.size());
             while (iterator.hasPrevious()) {
                 val interceptor = iterator.previous();
                 interceptor.afterCompletion(routingContext, response, throwable);
