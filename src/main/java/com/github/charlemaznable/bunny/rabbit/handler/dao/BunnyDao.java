@@ -27,4 +27,9 @@ public interface BunnyDao {
      */
     int commitPaymentSequence(@Param("chargingType") String chargingType,
                               @Param("seqId") String seqId);
+
+    void logError(@Param("chargingType") String chargingType,
+                  @Param("seqId") String seqId,
+                  @Param("logId") String logId,
+                  @Param("errorContent") String errorContent);
 }

@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
@@ -59,6 +57,7 @@ public final class CalculateHandler
     public void execute(CalculateRequest request,
                         Handler<AsyncResult<CalculateResponse>> handler) {
         executeBlocking(future -> {
+            val response = request.createResponse();
             val chargingType = request.getChargingType();
             val chargingParameters = request.getChargingParameters();
 
@@ -79,17 +78,13 @@ public final class CalculateHandler
             }
 
             try {
-                val response = new CalculateResponse();
-                response.setChargingType(chargingType);
                 val result = calculatePlugin.calculate(chargingParameters);
                 if (result.isSuccess()) {
-                    response.setRespCode(RESP_CODE_OK);
-                    response.setRespDesc(RESP_DESC_SUCCESS);
+                    response.succeed();
                     response.setCalculate(result.getCalculate());
                     response.setUnit(result.getUnit());
                 } else {
-                    response.setRespCode(result.getFailCode());
-                    response.setRespDesc(result.getFailDesc());
+                    response.failed(result.getFailCode(), result.getFailDesc());
                 }
                 future.complete(response);
 

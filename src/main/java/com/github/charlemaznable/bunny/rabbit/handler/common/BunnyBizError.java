@@ -1,5 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.handler.common;
 
+import com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -27,4 +28,9 @@ public enum BunnyBizError {
 
     private String respCode;
     private String respDesc;
+
+    public void failed(BunnyBaseResponse response) {
+        response.setRespCode(this.respCode());
+        response.setRespDesc(this.respDesc());
+    }
 }

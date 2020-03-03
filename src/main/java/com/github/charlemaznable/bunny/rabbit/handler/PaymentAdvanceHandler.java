@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Component;
 
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
 import static com.github.charlemaznable.bunny.rabbit.handler.common.BunnyBizError.ADVANCE_FAILED;
 import static com.github.charlemaznable.bunny.rabbit.handler.common.BunnyBizError.DEDUCT_FAILED;
 import static com.github.charlemaznable.core.lang.Str.toStr;
@@ -39,6 +37,7 @@ public final class PaymentAdvanceHandler
     public void execute(PaymentAdvanceRequest request,
                         Handler<AsyncResult<PaymentAdvanceResponse>> handler) {
         executeBlocking(future -> {
+            val response = request.createResponse();
             val chargingType = request.getChargingType();
             val paymentValue = request.getPaymentValue();
 
@@ -46,15 +45,11 @@ public final class PaymentAdvanceHandler
             try {
                 advanceDao.start();
 
-                val response = new PaymentAdvanceResponse();
-                response.setChargingType(chargingType);
-
                 val update = advanceDao.updateBalanceByPayment(
                         chargingType, paymentValue);
                 if (update != 1) { // 扣减失败
                     advanceDao.rollback();
-                    response.setRespCode(DEDUCT_FAILED.respCode());
-                    response.setRespDesc(DEDUCT_FAILED.respDesc());
+                    DEDUCT_FAILED.failed(response);
                     future.complete(response);
                     return;
                 }
@@ -64,15 +59,13 @@ public final class PaymentAdvanceHandler
                         chargingType, paymentValue, seqId);
                 if (create != 1) { // 生成流水失败
                     advanceDao.rollback();
-                    response.setRespCode(ADVANCE_FAILED.respCode());
-                    response.setRespDesc(ADVANCE_FAILED.respDesc());
+                    ADVANCE_FAILED.failed(response);
                     future.complete(response);
                     return;
                 }
 
                 advanceDao.commit();
-                response.setRespCode(RESP_CODE_OK);
-                response.setRespDesc(RESP_DESC_SUCCESS);
+                response.succeed();
                 response.setPaymentId(seqId);
                 future.complete(response);
 

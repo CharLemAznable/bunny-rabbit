@@ -12,4 +12,7 @@ public interface BunnyEventBusInterceptor extends ParamsAppliable {
     default void afterCompletion(Message<String> message,
                                  @Nullable String response,
                                  @Nullable Throwable throwable) {}
+
+    @Override
+    default void applyParams(String[] params) {}
 }

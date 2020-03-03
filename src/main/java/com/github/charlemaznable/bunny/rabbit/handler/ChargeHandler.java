@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
 import static com.github.charlemaznable.bunny.rabbit.handler.common.BunnyBizError.CHARGE_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
@@ -52,19 +50,16 @@ public final class ChargeHandler
     public void execute(ChargeRequest request,
                         Handler<AsyncResult<ChargeResponse>> handler) {
         executeBlocking(future -> {
+            val response = request.createResponse();
             val chargingType = request.getChargingType();
             val chargeValue = request.getChargeValue();
 
             try {
-                val response = new ChargeResponse();
-                response.setChargingType(chargingType);
                 val result = bunnyDao.updateBalanceByCharge(chargingType, chargeValue);
                 if (result == 1) {
-                    response.setRespCode(RESP_CODE_OK);
-                    response.setRespDesc(RESP_DESC_SUCCESS);
+                    response.succeed();
                 } else {
-                    response.setRespCode(CHARGE_FAILED.respCode());
-                    response.setRespDesc(CHARGE_FAILED.respDesc());
+                    CHARGE_FAILED.failed(response);
                 }
                 future.complete(response);
 

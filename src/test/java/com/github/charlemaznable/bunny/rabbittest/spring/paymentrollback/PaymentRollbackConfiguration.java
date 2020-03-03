@@ -70,7 +70,18 @@ public class PaymentRollbackConfiguration {
                 "INSERT INTO `SERVICE_ACCOUNT_SEQ`(SEQ_ID, SERVICE_CODE, SERVICE_USED, SERVICE_UNIT) values\n" +
                 "(100, '00', 1, '条');\n" +
                 "INSERT INTO `SERVICE_ACCOUNT_SEQ`(SEQ_ID, SERVICE_CODE, SERVICE_USED, SERVICE_UNIT) values\n" +
-                "(200, '00', 1, '条');\n");
+                "(200, '00', 1, '条');\n" +
+                "\n" +
+                "DROP TABLE IF EXISTS `SERVICE_ACCOUNT_ERROR_LOG`;\n" +
+                "\n" +
+                "CREATE TABLE `SERVICE_ACCOUNT_ERROR_LOG` (\n" +
+                "  `LOG_ID` BIGINT UNSIGNED NOT NULL COMMENT '异常日志流水号',\n" +
+                "  `SEQ_ID` BIGINT UNSIGNED NOT NULL COMMENT '服务流水号',\n" +
+                "  `SERVICE_CODE` CHAR(2) NOT NULL COMMENT '服务代码',\n" +
+                "  `ERROR_CONTENT` VARCHAR(100) NOT NULL COMMENT '异常内容',\n" +
+                "  `TIME_UPDATE` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',\n" +
+                "  PRIMARY KEY (`LOG_ID`)\n" +
+                ") COMMENT = '服务异常日志表';\n");
     }
 
     @PreDestroy

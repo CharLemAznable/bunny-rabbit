@@ -24,3 +24,16 @@ UPDATE SERVICE_ACCOUNT_SEQ  SAS
  WHERE SAS.SERVICE_CODE     = #chargingType#
    AND SAS.SEQ_ID           = #seqId#
    AND SAS.STATE            = '0'
+
+-- [logError]
+INSERT INTO SERVICE_ACCOUNT_ERROR_LOG
+      (LOG_ID
+      ,SEQ_ID
+      ,SERVICE_CODE
+      ,ERROR_CONTENT)
+SELECT #logId#
+      ,#seqId#
+      ,SA.SERVICE_CODE
+      ,#errorContent#
+  FROM SERVICE_ACCOUNT SA
+ WHERE SA.SERVICE_CODE = #chargingType#

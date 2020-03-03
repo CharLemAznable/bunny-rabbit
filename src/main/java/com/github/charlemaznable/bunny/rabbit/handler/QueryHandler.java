@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
-import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
 import static com.github.charlemaznable.bunny.rabbit.handler.common.BunnyBizError.QUERY_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static java.util.Objects.nonNull;
@@ -53,20 +51,17 @@ public final class QueryHandler
     public void execute(QueryRequest request,
                         Handler<AsyncResult<QueryResponse>> handler) {
         executeBlocking(future -> {
+            val response = request.createResponse();
             val chargingType = request.getChargingType();
 
             try {
-                val response = new QueryResponse();
-                response.setChargingType(chargingType);
                 val result = bunnyDao.queryChargingBalance(chargingType);
                 if (nonNull(result)) {
-                    response.setRespCode(RESP_CODE_OK);
-                    response.setRespDesc(RESP_DESC_SUCCESS);
+                    response.succeed();
                     response.setBalance(result.getBalance());
                     response.setUnit(result.getUnit());
                 } else {
-                    response.setRespCode(QUERY_FAILED.respCode());
-                    response.setRespDesc(QUERY_FAILED.respDesc());
+                    QUERY_FAILED.failed(response);
                 }
                 future.complete(response);
 

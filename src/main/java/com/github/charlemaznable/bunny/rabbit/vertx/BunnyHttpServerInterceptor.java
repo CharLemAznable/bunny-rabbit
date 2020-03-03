@@ -12,4 +12,7 @@ public interface BunnyHttpServerInterceptor extends ParamsAppliable {
     default void afterCompletion(RoutingContext routingContext,
                                  @Nullable String response,
                                  @Nullable Throwable throwable) {}
+
+    @Override
+    default void applyParams(String[] params) {}
 }
