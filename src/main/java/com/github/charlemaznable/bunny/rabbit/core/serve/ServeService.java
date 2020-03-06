@@ -2,9 +2,11 @@ package com.github.charlemaznable.bunny.rabbit.core.serve;
 
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
+import com.github.charlemaznable.core.lang.Executable;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -87,51 +89,22 @@ public final class ServeService {
         // seqId
         // ServeContext出参:
         // unexpectedThrowable*
-        executeBlocking(block -> {
-            try {
-                bunnyServeDao.start();
+        executeTrans(serveContext, () -> {
+            if (nonNull(bunnyServeDao.queryRollbackedSequence(
+                    serveContext.chargingType, serveContext.seqId))) {
+                // 流水已回退
+                return;
+            }
+            if (1 != bunnyServeDao.rollbackPreserveSequence(
+                    serveContext.chargingType, serveContext.seqId)) {
+                // 更新流水失败
+                throw ROLLBACK_FAILED.exception("Sequence Rollback Failed");
+            }
 
-                if (nonNull(bunnyServeDao.queryRollbackedSequence(
-                        serveContext.chargingType, serveContext.seqId))) {
-                    // 流水已回退
-                    bunnyServeDao.commit();
-                    block.complete(serveContext);
-                    return;
-                }
-
-                if (1 != bunnyServeDao.rollbackPreserveSequence(
-                        serveContext.chargingType, serveContext.seqId)) {
-                    // 更新流水失败
-                    bunnyServeDao.rollback();
-                    serveContext.unexpectedThrowable = ROLLBACK_FAILED
-                            .exception("Sequence Rollback Failed");
-                    bunnyDao.logError(toStr(next()), serveContext.seqId,
-                            serveContext.unexpectedThrowable.getMessage());
-                    block.complete(serveContext);
-                    return;
-                }
-
-                if (1 != bunnyServeDao.updateBalanceByRollback(
-                        serveContext.chargingType, serveContext.seqId)) {
-                    // 回退预扣减失败
-                    bunnyServeDao.rollback();
-                    serveContext.unexpectedThrowable = ROLLBACK_FAILED
-                            .exception("Balance Rollback Failed");
-                    bunnyDao.logError(toStr(next()), serveContext.seqId,
-                            serveContext.unexpectedThrowable.getMessage());
-                    block.complete(serveContext);
-                    return;
-                }
-
-                bunnyServeDao.commit();
-                block.complete(serveContext);
-
-            } catch (Exception e) {
-                bunnyServeDao.rollback();
-                serveContext.unexpectedThrowable = e;
-                bunnyDao.logError(toStr(next()), serveContext.seqId,
-                        serveContext.unexpectedThrowable.getMessage());
-                block.complete(serveContext);
+            if (1 != bunnyServeDao.updateBalanceByRollback(
+                    serveContext.chargingType, serveContext.seqId)) {
+                // 回退预扣减失败
+                throw ROLLBACK_FAILED.exception("Balance Rollback Failed");
             }
         }, handler);
     }
@@ -143,29 +116,28 @@ public final class ServeService {
         // seqId
         // ServeContext出参:
         // unexpectedThrowable*
-        executeBlocking(block -> {
+        executeTrans(serveContext, () -> {
+            if (nonNull(bunnyServeDao.queryCommitedSequence(
+                    serveContext.chargingType, serveContext.seqId))) {
+                // 流水已确认
+                return;
+            }
+            if (1 != bunnyServeDao.commitPreserveSequence(
+                    serveContext.chargingType, serveContext.seqId)) {
+                // 更新流水失败
+                throw COMMIT_FAILED.exception("Sequence Commit Failed");
+            }
+        }, handler);
+    }
+
+    private void executeTrans(ServeContext serveContext,
+                              Executable executable,
+                              Handler<AsyncResult<ServeContext>> handler) {
+        Vertx.currentContext().executeBlocking(block -> {
             try {
                 bunnyServeDao.start();
 
-                if (nonNull(bunnyServeDao.queryCommitedSequence(
-                        serveContext.chargingType, serveContext.seqId))) {
-                    // 流水已确认
-                    bunnyServeDao.commit();
-                    block.complete(serveContext);
-                    return;
-                }
-
-                if (1 != bunnyServeDao.commitPreserveSequence(
-                        serveContext.chargingType, serveContext.seqId)) {
-                    // 更新流水失败
-                    bunnyServeDao.rollback();
-                    serveContext.unexpectedThrowable = COMMIT_FAILED
-                            .exception("Sequence Commit Failed");
-                    bunnyDao.logError(toStr(next()), serveContext.seqId,
-                            serveContext.unexpectedThrowable.getMessage());
-                    block.complete(serveContext);
-                    return;
-                }
+                executable.execute();
 
                 bunnyServeDao.commit();
                 block.complete(serveContext);
@@ -177,6 +149,6 @@ public final class ServeService {
                         serveContext.unexpectedThrowable.getMessage());
                 block.complete(serveContext);
             }
-        }, handler);
+        }, false, handler);
     }
 }
