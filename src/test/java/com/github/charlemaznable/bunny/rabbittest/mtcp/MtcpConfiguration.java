@@ -1,5 +1,6 @@
 package com.github.charlemaznable.bunny.rabbittest.mtcp;
 
+import com.github.charlemaznable.bunny.rabbit.mtcp.MtcpInterceptor;
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyDeployedEvent;
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyImport;
 import com.github.charlemaznable.bunny.rabbittest.common.BunnyEqlerDummy;
@@ -18,6 +19,7 @@ import static java.util.Objects.nonNull;
 import static org.joor.Reflect.on;
 
 @ComplexComponentScan(basePackageClasses = {
+        MtcpInterceptor.class,
         MtcpConfiguration.class,
         BunnyEqlerDummy.class
 })

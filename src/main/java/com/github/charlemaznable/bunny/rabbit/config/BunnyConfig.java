@@ -1,9 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.config;
 
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptor;
 import com.github.charlemaznable.core.miner.MinerConfig;
-
-import java.util.List;
 
 @MinerConfig(group = "Bunny", dataId = "default")
 public interface BunnyConfig {
@@ -22,7 +19,4 @@ public interface BunnyConfig {
 
     @MinerConfig(dataId = "httpserver.port", defaultValue = "22114")
     int port();
-
-    @MinerConfig(dataId = "interceptors")
-    List<BunnyInterceptor> interceptors();
 }

@@ -2,6 +2,7 @@ package com.github.charlemaznable.bunny.rabbit.core.verticle;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptor;
 import com.github.charlemaznable.bunny.rabbit.core.wrapper.HttpServerHandlerWrapper;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import io.vertx.core.Future;
@@ -22,10 +23,11 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
 
     public static final String HTTP_SERVER_VERTICLE = "BUNNY_HTTP_SERVER_VERTICLE";
 
-    public HttpServerVerticle(@Nullable BunnyConfig bunnyConfig,
-                              @Nullable BunnyLogDao bunnyLogDao,
-                              List<BunnyHandler> handlers) {
-        super(bunnyConfig, bunnyLogDao, handlers);
+    public HttpServerVerticle(List<BunnyHandler> handlers,
+                              List<BunnyInterceptor> interceptors,
+                              @Nullable BunnyConfig bunnyConfig,
+                              @Nullable BunnyLogDao bunnyLogDao) {
+        super(handlers, interceptors, bunnyConfig, bunnyLogDao);
     }
 
     @Override
@@ -50,8 +52,8 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
 
         for (val handler : handlers) {
             val address = prependIfMissing(handler.address(), "/");
-            bunnyRouter.route(address).handler(new HttpServerHandlerWrapper<>(
-                    handler, bunnyConfig.interceptors(), bunnyLogDao));
+            val wrapper = new HttpServerHandlerWrapper<>(handler, interceptors, bunnyLogDao);
+            bunnyRouter.route(address).handler(wrapper);
         }
         return bunnyRouter;
     }

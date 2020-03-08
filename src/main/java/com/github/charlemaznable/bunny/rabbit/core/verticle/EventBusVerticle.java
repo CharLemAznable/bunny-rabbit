@@ -2,6 +2,7 @@ package com.github.charlemaznable.bunny.rabbit.core.verticle;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptor;
 import com.github.charlemaznable.bunny.rabbit.core.wrapper.EventBusHandlerWrapper;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import lombok.val;
@@ -16,10 +17,11 @@ public final class EventBusVerticle extends BunnyAbstractVerticle {
 
     public static final String EVENT_BUS_VERTICLE = "BUNNY_EVENT_BUS_VERTICLE";
 
-    public EventBusVerticle(@Nullable BunnyConfig bunnyConfig,
-                            @Nullable BunnyLogDao bunnyLogDao,
-                            List<BunnyHandler> handlers) {
-        super(bunnyConfig, bunnyLogDao, handlers);
+    public EventBusVerticle(List<BunnyHandler> handlers,
+                            List<BunnyInterceptor> interceptors,
+                            @Nullable BunnyConfig bunnyConfig,
+                            @Nullable BunnyLogDao bunnyLogDao) {
+        super(handlers, interceptors, bunnyConfig, bunnyLogDao);
     }
 
     @SuppressWarnings("unchecked")
@@ -31,8 +33,8 @@ public final class EventBusVerticle extends BunnyAbstractVerticle {
         val eventBus = vertx.eventBus();
         for (val handler : handlers) {
             val address = prependIfMissing(handler.address(), "/");
-            eventBus.consumer(addressPrefix + address, new EventBusHandlerWrapper(
-                    handler, bunnyConfig.interceptors(), bunnyLogDao));
+            val wrapper = new EventBusHandlerWrapper(handler, interceptors, bunnyLogDao);
+            eventBus.consumer(addressPrefix + address, wrapper);
         }
     }
 }
