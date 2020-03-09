@@ -2,9 +2,10 @@ package com.github.charlemaznable.bunny.rabbittest.guice.illegal;
 
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
-import com.github.charlemaznable.bunny.rabbit.guice.BunnyInjector;
+import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalCommon;
+import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalConfig;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalHandler;
 import com.google.inject.Guice;
 import io.vertx.core.Vertx;
@@ -38,13 +39,13 @@ public class IllegalTest {
         on(springMinerLoader()).field("minerCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
-        MockDiamondServer.setConfigInfo("Bunny", "default",
+        MockDiamondServer.setConfigInfo("Bunny", "illegal",
                 "httpserver.port=42117\n");
 
-        val bunnyInjector = new BunnyInjector();
-        bunnyInjector.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
-        bunnyInjector.addHandlers(IllegalHandler.class);
-        val injector = Guice.createInjector(bunnyInjector.createModule());
+        val bunnyModular = new BunnyModular(IllegalConfig.class);
+        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
+        bunnyModular.addHandlers(IllegalHandler.class);
+        val injector = Guice.createInjector(bunnyModular.createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;

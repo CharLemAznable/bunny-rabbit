@@ -9,7 +9,7 @@ import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
-import com.github.charlemaznable.bunny.rabbit.guice.BunnyInjector;
+import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyDaoServeImpl;
@@ -59,15 +59,15 @@ public class ServeCallbackTest {
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42121/bunny\n");
 
-        val bunnyInjector = new BunnyInjector();
-        bunnyInjector.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl())
+        val bunnyModular = new BunnyModular();
+        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl())
                 .bind(BunnyDao.class, BunnyDaoServeImpl.class)
                 .bind(BunnyServeDao.class, BunnyServeDaoImpl.class)
                 .bind(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class);
-        bunnyInjector.addCalculatePlugins(ServeCalculatePlugin.class);
-        bunnyInjector.addServePlugins(TestServePlugin.class);
-        bunnyInjector.addServeCallbackPlugins(TestServeCallbackPlugin.class);
-        val injector = Guice.createInjector(bunnyInjector.createModule(),
+        bunnyModular.addCalculatePlugins(ServeCalculatePlugin.class);
+        bunnyModular.addServePlugins(TestServePlugin.class);
+        bunnyModular.addServeCallbackPlugins(TestServeCallbackPlugin.class);
+        val injector = Guice.createInjector(bunnyModular.createModule(),
                 new BunnyEventBusModular().createModule(),
                 new BunnyOhClientModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);

@@ -4,6 +4,7 @@ import com.github.charlemaznable.bunny.rabbit.spring.BunnyDeployedEvent;
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyImport;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyEqlerDummy;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalCommon;
+import com.github.charlemaznable.core.miner.MinerScan;
 import com.github.charlemaznable.core.spring.ComplexComponentScan;
 import org.n3r.diamond.client.impl.MockDiamondServer;
 import org.springframework.context.event.EventListener;
@@ -23,6 +24,9 @@ import static org.joor.Reflect.on;
         BunnyEqlerDummy.class
 })
 @BunnyImport
+@MinerScan(basePackageClasses = {
+        IllegalCommon.class
+})
 public final class IllegalConfiguration {
 
     static boolean EVENT_BUS_DEPLOYED = false;
@@ -33,7 +37,7 @@ public final class IllegalConfiguration {
         on(springMinerLoader()).field("minerCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
-        MockDiamondServer.setConfigInfo("Bunny", "default",
+        MockDiamondServer.setConfigInfo("Bunny", "illegal",
                 "httpserver.port=32117\n");
     }
 

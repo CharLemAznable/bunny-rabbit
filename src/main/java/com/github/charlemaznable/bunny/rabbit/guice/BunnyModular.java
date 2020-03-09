@@ -44,7 +44,7 @@ import static com.google.inject.Scopes.SINGLETON;
 import static com.google.inject.multibindings.Multibinder.newSetBinder;
 import static com.google.inject.name.Names.named;
 
-public final class BunnyInjector {
+public final class BunnyModular {
 
     private final Module configModule;
     @Getter
@@ -59,15 +59,15 @@ public final class BunnyInjector {
     private final List<Pair<String, Class<? extends ServePlugin>>> servePlugins;
     private final List<Pair<String, Class<? extends ServeCallbackPlugin>>> serveCallbackPlugins;
 
-    public BunnyInjector() {
+    public BunnyModular() {
         this((BunnyConfig) null);
     }
 
-    public BunnyInjector(Class<? extends BunnyConfig> configClass) {
+    public BunnyModular(Class<? extends BunnyConfig> configClass) {
         this(new MinerModular().createModule(configClass));
     }
 
-    public BunnyInjector(BunnyConfig configImpl) {
+    public BunnyModular(BunnyConfig configImpl) {
         this(new AbstractModule() {
             @Override
             protected void configure() {
@@ -76,7 +76,7 @@ public final class BunnyInjector {
         });
     }
 
-    public BunnyInjector(Module configModule) {
+    public BunnyModular(Module configModule) {
         this.configModule = configModule;
         this.eqlerModuleBuilder = new BunnyEqlerModuleBuilder();
         this.handlerClasses = newArrayList(CalculateHandler.class,
@@ -92,21 +92,21 @@ public final class BunnyInjector {
     }
 
     @SafeVarargs
-    public final BunnyInjector addHandlers(
+    public final BunnyModular addHandlers(
             Class<? extends BunnyHandler>... handlerClasses) {
         this.handlerClasses.addAll(newArrayList(handlerClasses));
         return this;
     }
 
     @SafeVarargs
-    public final BunnyInjector addInterceptors(
+    public final BunnyModular addInterceptors(
             Class<? extends BunnyInterceptor>... interceptorClasses) {
         this.interceptorClasses.addAll(newArrayList(interceptorClasses));
         return this;
     }
 
     @SafeVarargs
-    public final BunnyInjector addCalculatePlugins(
+    public final BunnyModular addCalculatePlugins(
             Class<? extends CalculatePlugin>... calculatePlugins) {
         this.calculatePlugins.addAll(newArrayList(calculatePlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
@@ -114,7 +114,7 @@ public final class BunnyInjector {
     }
 
     @SafeVarargs
-    public final BunnyInjector addServePlugins(
+    public final BunnyModular addServePlugins(
             Class<? extends ServePlugin>... servePlugins) {
         this.servePlugins.addAll(newArrayList(servePlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
@@ -122,7 +122,7 @@ public final class BunnyInjector {
     }
 
     @SafeVarargs
-    public final BunnyInjector addServeCallbackPlugins(
+    public final BunnyModular addServeCallbackPlugins(
             Class<? extends ServeCallbackPlugin>... serveCallbackPlugins) {
         this.serveCallbackPlugins.addAll(newArrayList(serveCallbackPlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));

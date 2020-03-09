@@ -6,7 +6,7 @@ import com.github.charlemaznable.bunny.client.guice.BunnyOhClientModular;
 import com.github.charlemaznable.bunny.client.ohclient.BunnyOhClient;
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
-import com.github.charlemaznable.bunny.rabbit.guice.BunnyInjector;
+import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
 import com.github.charlemaznable.bunny.rabbit.mtcp.MtcpInterceptor;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.mtcp.EmptyInterceptor;
@@ -51,11 +51,11 @@ public class MtcpTest {
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42118/bunny\n");
 
-        val bunnyInjector = new BunnyInjector();
-        bunnyInjector.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
-        bunnyInjector.addHandlers(MtcpHandler.class);
-        bunnyInjector.addInterceptors(MtcpInterceptor.class, EmptyInterceptor.class);
-        val injector = Guice.createInjector(bunnyInjector.createModule(),
+        val bunnyModular = new BunnyModular();
+        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
+        bunnyModular.addHandlers(MtcpHandler.class);
+        bunnyModular.addInterceptors(MtcpInterceptor.class, EmptyInterceptor.class);
+        val injector = Guice.createInjector(bunnyModular.createModule(),
                 new BunnyEventBusModular().createModule(),
                 new BunnyOhClientModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);

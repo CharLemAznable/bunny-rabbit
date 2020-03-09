@@ -6,7 +6,7 @@ import com.github.charlemaznable.bunny.client.guice.BunnyOhClientModular;
 import com.github.charlemaznable.bunny.client.ohclient.BunnyOhClient;
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
-import com.github.charlemaznable.bunny.rabbit.guice.BunnyInjector;
+import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
 import com.github.charlemaznable.bunny.rabbittest.common.calculate.CalculateCommon;
 import com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
@@ -51,10 +51,10 @@ public class CalculateTest {
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42114/bunny\n");
 
-        val bunnyInjector = new BunnyInjector();
-        bunnyInjector.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
-        bunnyInjector.addCalculatePlugins(TestCalculatePlugin.class);
-        val injector = Guice.createInjector(bunnyInjector.createModule(),
+        val bunnyModular = new BunnyModular();
+        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
+        bunnyModular.addCalculatePlugins(TestCalculatePlugin.class);
+        val injector = Guice.createInjector(bunnyModular.createModule(),
                 new BunnyEventBusModular().createModule(),
                 new BunnyOhClientModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);

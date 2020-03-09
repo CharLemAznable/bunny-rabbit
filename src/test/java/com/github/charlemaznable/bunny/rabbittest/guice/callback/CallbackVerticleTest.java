@@ -3,7 +3,7 @@ package com.github.charlemaznable.bunny.rabbittest.guice.callback;
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
-import com.github.charlemaznable.bunny.rabbit.guice.BunnyInjector;
+import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
 import com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin;
 import com.github.charlemaznable.bunny.rabbittest.common.callback.BunnyCallbackDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.callback.CallbackCommon;
@@ -42,11 +42,11 @@ public class CallbackVerticleTest {
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42115/bunny\n");
 
-        val bunnyInjector = new BunnyInjector();
-        bunnyInjector.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl())
+        val bunnyModular = new BunnyModular();
+        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl())
                 .bind(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class);
-        bunnyInjector.addCalculatePlugins(TestCalculatePlugin.class);
-        val injector = Guice.createInjector(bunnyInjector.createModule());
+        bunnyModular.addCalculatePlugins(TestCalculatePlugin.class);
+        val injector = Guice.createInjector(bunnyModular.createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;
