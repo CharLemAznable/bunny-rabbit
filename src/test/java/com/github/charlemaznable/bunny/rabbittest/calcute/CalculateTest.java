@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ContextConfiguration(classes = CalculateConfiguration.class)
 public class CalculateTest {
 
-    private static final String CHARGING_TYPE = "test";
     static final String CALCULATE_KEY = "CALC";
     static final String SUCCESS = "SUCCESS";
     static final String FAILURE = "FAILURE";
+    private static final String CHARGING_TYPE = "test";
     @Autowired
     private BunnyEventBus bunnyEventBus;
     @Autowired

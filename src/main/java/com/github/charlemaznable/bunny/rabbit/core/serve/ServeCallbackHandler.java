@@ -136,6 +136,14 @@ public final class ServeCallbackHandler
 
             // 异步开启回调
             executeBlocking(block -> {
+                val request = serveContext.internalRequest;
+                // 记录回调请求
+                val update = bunnyCallbackDao.updateCallbackRequest(
+                        serveContext.chargingType, serveContext.seqId, json(request));
+                if (1 != update) {
+                    block.complete();
+                    return;
+                }
                 // 查询回调地址
                 val callbackUrl = bunnyCallbackDao.queryCallbackUrl(
                         serveContext.chargingType, serveContext.seqId);
@@ -145,11 +153,9 @@ public final class ServeCallbackHandler
                 }
                 // 记录回调请求
                 bunnyCallbackDao.logCallback(toStr(next()),
-                        serveContext.seqId, "callback-req",
-                        json(serveContext.internalRequest));
+                        serveContext.seqId, "callback-req", json(request));
                 // 回调
-                val callbackResult = new OhReq(callbackUrl)
-                        .parameters(serveContext.internalRequest).get();
+                val callbackResult = new OhReq(callbackUrl).parameters(request).get();
                 // 记录回调响应
                 bunnyCallbackDao.logCallback(toStr(next()),
                         serveContext.seqId, "callback-rsp", callbackResult);

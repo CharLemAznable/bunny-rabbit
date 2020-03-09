@@ -3,8 +3,10 @@ package com.github.charlemaznable.bunny.rabbit.core;
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerLoader;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptorLoader;
+import com.github.charlemaznable.bunny.rabbit.core.verticle.CallbackVerticle;
 import com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle;
 import com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle;
+import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
+import static com.github.charlemaznable.bunny.rabbit.core.verticle.CallbackVerticle.CALLBACK_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
@@ -31,6 +34,7 @@ public final class BunnyVertxApplication {
     private final BunnyInterceptorLoader interceptorLoader;
     private final BunnyConfig bunnyConfig;
     private final BunnyLogDao bunnyLogDao;
+    private final BunnyCallbackDao bunnyCallbackDao;
 
     @Inject
     @Autowired
@@ -38,12 +42,14 @@ public final class BunnyVertxApplication {
                                  BunnyHandlerLoader handlerLoader,
                                  BunnyInterceptorLoader interceptorLoader,
                                  @Nullable BunnyConfig bunnyConfig,
-                                 @Nullable BunnyLogDao bunnyLogDao) {
+                                 @Nullable BunnyLogDao bunnyLogDao,
+                                 @Nullable BunnyCallbackDao bunnyCallbackDao) {
         this.vertx = checkNotNull(vertx);
         this.handlerLoader = checkNotNull(handlerLoader);
         this.interceptorLoader = checkNotNull(interceptorLoader);
         this.bunnyConfig = bunnyConfig;
         this.bunnyLogDao = bunnyLogDao;
+        this.bunnyCallbackDao = bunnyCallbackDao;
     }
 
     public void deploy(@Nullable Handler<AsyncResult<BunnyVerticleDeployment>> completer) {
@@ -53,8 +59,11 @@ public final class BunnyVertxApplication {
                 handlers, interceptors, bunnyConfig, bunnyLogDao);
         val httpServerVerticle = new HttpServerVerticle(
                 handlers, interceptors, bunnyConfig, bunnyLogDao);
+        val callbackVerticle = new CallbackVerticle(
+                bunnyConfig, bunnyCallbackDao);
         vertx.deployVerticle(eventBusVerticle, wrapHandler(EVENT_BUS_VERTICLE, completer));
         vertx.deployVerticle(httpServerVerticle, wrapHandler(HTTP_SERVER_VERTICLE, completer));
+        vertx.deployVerticle(callbackVerticle, wrapHandler(CALLBACK_VERTICLE, completer));
     }
 
     private Handler<AsyncResult<String>> wrapHandler(
