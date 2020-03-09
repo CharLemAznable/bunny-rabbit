@@ -5,7 +5,7 @@ import com.github.charlemaznable.bunny.client.domain.BunnyException;
 import com.github.charlemaznable.bunny.client.domain.CalculateRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeResponse;
-import com.github.charlemaznable.bunny.rabbit.core.calcute.CalculateHandler;
+import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;

@@ -2,6 +2,7 @@ package com.github.charlemaznable.bunny.rabbit.core;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import io.vertx.core.VertxOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +15,7 @@ import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 
 @SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "SpringFacetCodeInspection"})
 @Configuration
-public class BunnyVertxConfiguration {
+public class BunnyVertxConfiguration implements Provider<VertxOptions> {
 
     private final BunnyConfig bunnyConfig;
 
@@ -25,7 +26,8 @@ public class BunnyVertxConfiguration {
     }
 
     @Bean
-    public VertxOptions vertxOptions() {
+    @Override
+    public VertxOptions get() {
         return new VertxOptions().setWorkerPoolSize(bunnyConfig.workerPoolSize())
                 .setMaxWorkerExecuteTime(bunnyConfig.maxWorkerExecuteTime());
     }

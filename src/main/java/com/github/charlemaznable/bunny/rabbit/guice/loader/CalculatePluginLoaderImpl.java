@@ -1,25 +1,28 @@
-package com.github.charlemaznable.bunny.rabbit.spring.loader;
+package com.github.charlemaznable.bunny.rabbit.guice.loader;
 
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePlugin;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
-import com.github.charlemaznable.core.spring.SpringContext;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CALCULATE_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.google.inject.Key.get;
+import static com.google.inject.name.Names.named;
 
-@Component
 public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
 
+    private final Injector injector;
     private final PluginNameMapper pluginNameMapper;
 
-    @Autowired
-    public CalculatePluginLoaderImpl(PluginNameMapper pluginNameMapper) {
+    @Inject
+    public CalculatePluginLoaderImpl(Injector injector,
+                                     PluginNameMapper pluginNameMapper) {
+        this.injector = injector;
         this.pluginNameMapper = pluginNameMapper;
     }
 
@@ -27,7 +30,11 @@ public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
     @Override
     public CalculatePlugin load(String chargingType) {
         val pluginName = pluginNameMapper.calculatePluginName(chargingType);
-        return checkNotNull(SpringContext.getBean(pluginName, CalculatePlugin.class),
-                CALCULATE_FAILED.exception(pluginName + " Plugin Not Found"));
+        try {
+            return checkNotNull(injector.getInstance(
+                    get(CalculatePlugin.class, named(pluginName))));
+        } catch (Exception e) {
+            throw CALCULATE_FAILED.exception(pluginName + " Plugin Not Found");
+        }
     }
 }
