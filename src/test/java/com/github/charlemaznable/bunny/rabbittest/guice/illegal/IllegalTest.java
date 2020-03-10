@@ -3,6 +3,7 @@ package com.github.charlemaznable.bunny.rabbittest.guice.illegal;
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalCommon;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalConfig;
@@ -44,8 +45,10 @@ public class IllegalTest {
 
         val bunnyModular = new BunnyModular(IllegalConfig.class);
         bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
-        bunnyModular.addHandlers(IllegalHandler.class);
-        val injector = Guice.createInjector(bunnyModular.createModule());
+        val injector = Guice.createInjector(bunnyModular
+                        .addHandlers(IllegalHandler.class)
+                        .createModule(),
+                new BunnyVertxModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;

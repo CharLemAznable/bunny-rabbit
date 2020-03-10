@@ -4,6 +4,7 @@ import com.github.charlemaznable.bunny.client.spring.BunnyEventBusImport;
 import com.github.charlemaznable.bunny.client.spring.BunnyOhClientImport;
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyDeployedEvent;
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyImport;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxImport;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyEqlerDummy;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCallbackCommon;
 import com.github.charlemaznable.core.spring.ComplexComponentScan;
@@ -25,6 +26,7 @@ import static org.joor.Reflect.on;
         BunnyEqlerDummy.class
 })
 @BunnyImport
+@BunnyVertxImport
 @BunnyEventBusImport
 @BunnyOhClientImport
 public class ServeCallbackConfiguration {

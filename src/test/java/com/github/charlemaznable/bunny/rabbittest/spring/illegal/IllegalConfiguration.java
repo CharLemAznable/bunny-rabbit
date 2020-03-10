@@ -2,6 +2,7 @@ package com.github.charlemaznable.bunny.rabbittest.spring.illegal;
 
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyDeployedEvent;
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyImport;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxImport;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyEqlerDummy;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalCommon;
 import com.github.charlemaznable.core.miner.MinerScan;
@@ -24,6 +25,7 @@ import static org.joor.Reflect.on;
         BunnyEqlerDummy.class
 })
 @BunnyImport
+@BunnyVertxImport
 @MinerScan(basePackageClasses = {
         IllegalCommon.class
 })

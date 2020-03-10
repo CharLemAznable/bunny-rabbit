@@ -1,7 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.guice;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
-import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxConfiguration;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePlugin;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePluginLoader;
@@ -25,7 +24,6 @@ import com.github.charlemaznable.bunny.rabbit.guice.loader.ServePluginLoaderImpl
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.guice.Modulee;
 import com.github.charlemaznable.core.miner.MinerModular;
-import com.github.charlemaznable.core.vertx.guice.VertxModular;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.util.Providers;
@@ -50,14 +48,13 @@ public final class BunnyModular {
     @Getter
     @Accessors(fluent = true)
     private final BunnyEqlerModuleBuilder eqlerModuleBuilder;
+
     private final List<Class<? extends BunnyHandler>> handlerClasses;
     private final List<Class<? extends BunnyInterceptor>> interceptorClasses;
-    private final Module vertxModule;
-
-    private final Module pluginNameMapperModule;
     private final List<Pair<String, Class<? extends CalculatePlugin>>> calculatePlugins;
     private final List<Pair<String, Class<? extends ServePlugin>>> servePlugins;
     private final List<Pair<String, Class<? extends ServeCallbackPlugin>>> serveCallbackPlugins;
+    private final Module pluginNameMapperModule;
 
     public BunnyModular() {
         this((BunnyConfig) null);
@@ -79,16 +76,16 @@ public final class BunnyModular {
     public BunnyModular(Module configModule) {
         this.configModule = configModule;
         this.eqlerModuleBuilder = new BunnyEqlerModuleBuilder();
+
         this.handlerClasses = newArrayList(CalculateHandler.class,
                 QueryHandler.class, ChargeHandler.class,
                 ServeHandler.class, ServeCallbackHandler.class);
         this.interceptorClasses = newArrayList();
-        this.vertxModule = new VertxModular(BunnyVertxConfiguration.class).createModule();
-
-        this.pluginNameMapperModule = new MinerModular().createModule(PluginNameMapper.class);
         this.calculatePlugins = newArrayList();
         this.servePlugins = newArrayList();
         this.serveCallbackPlugins = newArrayList();
+        this.pluginNameMapperModule = new MinerModular()
+                .createModule(PluginNameMapper.class);
     }
 
     @SafeVarargs
@@ -139,49 +136,28 @@ public final class BunnyModular {
                             handlersBinder.addBinding().to(handlerClass).in(SINGLETON);
                         }
                         bind(BunnyHandlerLoader.class).to(BunnyHandlerLoaderImpl.class).in(SINGLETON);
-                    }
-                },
-                new AbstractModule() {
-                    @Override
-                    protected void configure() {
                         val interceptorsBinder = newSetBinder(binder(), BunnyInterceptor.class);
                         for (val interceptorClass : interceptorClasses) {
                             interceptorsBinder.addBinding().to(interceptorClass).in(SINGLETON);
                         }
                         bind(BunnyInterceptorLoader.class).to(BunnyInterceptorLoaderImpl.class).in(SINGLETON);
-                    }
-                },
-                vertxModule, pluginNameMapperModule,
-                new AbstractModule() {
-                    @Override
-                    protected void configure() {
                         for (val calculatePlugin : calculatePlugins) {
                             bind(CalculatePlugin.class).annotatedWith(named(
                                     calculatePlugin.getKey())).to(calculatePlugin.getValue());
                         }
                         bind(CalculatePluginLoader.class).to(CalculatePluginLoaderImpl.class).in(SINGLETON);
-                    }
-                },
-                new AbstractModule() {
-                    @Override
-                    protected void configure() {
                         for (val servePlugin : servePlugins) {
                             bind(ServePlugin.class).annotatedWith(named(
                                     servePlugin.getKey())).to(servePlugin.getValue());
                         }
                         bind(ServePluginLoader.class).to(ServePluginLoaderImpl.class).in(SINGLETON);
-                    }
-                },
-                new AbstractModule() {
-                    @Override
-                    protected void configure() {
                         for (val serveCallbackPlugin : serveCallbackPlugins) {
                             bind(ServeCallbackPlugin.class).annotatedWith(named(
                                     serveCallbackPlugin.getKey())).to(serveCallbackPlugin.getValue());
                         }
                         bind(ServeCallbackPluginLoader.class).to(ServeCallbackPluginLoaderImpl.class).in(SINGLETON);
                     }
-                });
+                }, pluginNameMapperModule);
     }
 
     private static class NamedClassPairFunction<T>

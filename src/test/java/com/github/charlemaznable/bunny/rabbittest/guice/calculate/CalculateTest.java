@@ -7,6 +7,7 @@ import com.github.charlemaznable.bunny.client.ohclient.BunnyOhClient;
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.calculate.CalculateCommon;
 import com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
@@ -53,8 +54,10 @@ public class CalculateTest {
 
         val bunnyModular = new BunnyModular();
         bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
-        bunnyModular.addCalculatePlugins(TestCalculatePlugin.class);
-        val injector = Guice.createInjector(bunnyModular.createModule(),
+        val injector = Guice.createInjector(bunnyModular
+                        .addCalculatePlugins(TestCalculatePlugin.class)
+                        .createModule(),
+                new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),
                 new BunnyOhClientModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);

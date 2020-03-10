@@ -4,6 +4,7 @@ import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin;
 import com.github.charlemaznable.bunny.rabbittest.common.callback.BunnyCallbackDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.callback.CallbackCommon;
@@ -45,8 +46,10 @@ public class CallbackVerticleTest {
         val bunnyModular = new BunnyModular();
         bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl())
                 .bind(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class);
-        bunnyModular.addCalculatePlugins(TestCalculatePlugin.class);
-        val injector = Guice.createInjector(bunnyModular.createModule());
+        val injector = Guice.createInjector(bunnyModular
+                        .addCalculatePlugins(TestCalculatePlugin.class)
+                        .createModule(),
+                new BunnyVertxModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;

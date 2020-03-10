@@ -2,6 +2,7 @@ package com.github.charlemaznable.bunny.rabbittest.spring.callback;
 
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyDeployedEvent;
 import com.github.charlemaznable.bunny.rabbit.spring.BunnyImport;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxImport;
 import com.github.charlemaznable.bunny.rabbittest.common.callback.CallbackCommon;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyEqlerDummy;
 import com.github.charlemaznable.core.spring.ComplexComponentScan;
@@ -22,6 +23,7 @@ import static org.joor.Reflect.on;
         BunnyEqlerDummy.class
 })
 @BunnyImport
+@BunnyVertxImport
 public class CallbackVerticleConfiguration {
 
     static boolean CALLBACK_DEPLOYED = false;

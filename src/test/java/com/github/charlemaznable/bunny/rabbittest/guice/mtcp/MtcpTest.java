@@ -8,6 +8,7 @@ import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
 import com.github.charlemaznable.bunny.rabbit.mtcp.MtcpInterceptor;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.mtcp.EmptyInterceptor;
 import com.github.charlemaznable.bunny.rabbittest.common.mtcp.MtcpCommon;
@@ -53,9 +54,11 @@ public class MtcpTest {
 
         val bunnyModular = new BunnyModular();
         bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
-        bunnyModular.addHandlers(MtcpHandler.class);
-        bunnyModular.addInterceptors(MtcpInterceptor.class, EmptyInterceptor.class);
-        val injector = Guice.createInjector(bunnyModular.createModule(),
+        val injector = Guice.createInjector(bunnyModular
+                        .addHandlers(MtcpHandler.class)
+                        .addInterceptors(MtcpInterceptor.class, EmptyInterceptor.class)
+                        .createModule(),
+                new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),
                 new BunnyOhClientModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);

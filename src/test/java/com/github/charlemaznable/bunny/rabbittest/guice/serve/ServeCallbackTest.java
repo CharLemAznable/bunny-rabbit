@@ -10,6 +10,7 @@ import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyDaoServeImpl;
@@ -64,10 +65,12 @@ public class ServeCallbackTest {
                 .bind(BunnyDao.class, BunnyDaoServeImpl.class)
                 .bind(BunnyServeDao.class, BunnyServeDaoImpl.class)
                 .bind(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class);
-        bunnyModular.addCalculatePlugins(ServeCalculatePlugin.class);
-        bunnyModular.addServePlugins(TestServePlugin.class);
-        bunnyModular.addServeCallbackPlugins(TestServeCallbackPlugin.class);
-        val injector = Guice.createInjector(bunnyModular.createModule(),
+        val injector = Guice.createInjector(bunnyModular
+                        .addCalculatePlugins(ServeCalculatePlugin.class)
+                        .addServePlugins(TestServePlugin.class)
+                        .addServeCallbackPlugins(TestServeCallbackPlugin.class)
+                        .createModule(),
+                new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),
                 new BunnyOhClientModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);

@@ -1,9 +1,10 @@
-package com.github.charlemaznable.bunny.rabbit.core;
+package com.github.charlemaznable.bunny.rabbit.vertx;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import io.vertx.core.VertxOptions;
+import org.n3r.diamond.client.Minerable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,8 @@ public class BunnyVertxConfiguration implements Provider<VertxOptions> {
     @Bean
     @Override
     public VertxOptions get() {
-        return new VertxOptions().setWorkerPoolSize(bunnyConfig.workerPoolSize())
-                .setMaxWorkerExecuteTime(bunnyConfig.maxWorkerExecuteTime());
+        Minerable config = (Minerable) this.bunnyConfig;
+        return new VertxOptions().setWorkerPoolSize(config.getInt("vertx.worker-pool-size", 64))
+                .setMaxWorkerExecuteTime(config.getLong("vertx.max-worker-execute-time", 60000000000L));
     }
 }
