@@ -109,7 +109,7 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
-                    serveCallbackRequest.setServeType("NotFound");
+                    serveCallbackRequest.setServeType("NotFoundPlugin");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
                     bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
@@ -117,7 +117,7 @@ public class ServeCallbackCommon {
                         assertNull(serveCallbackResponse.getChargingType());
                         assertNull(serveCallbackResponse.getServeType());
                         assertEquals("SERVE_CALLBACK_FAILED", serveCallbackResponse.getRespCode());
-                        assertEquals("Serve Callback Failed: ServeCallback-NotFound Config Not Found", serveCallbackResponse.getRespDesc());
+                        assertEquals("Serve Callback Failed: NotFoundPlugin Plugin Not Found", serveCallbackResponse.getRespDesc());
                         f.complete();
                     }));
                 }),
@@ -308,14 +308,14 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
-                    serveCallbackRequest.setServeType("NotFound");
+                    serveCallbackRequest.setServeType("NotFoundPlugin");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
                     val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
                     assertNull(serveCallbackResponse.getChargingType());
                     assertNull(serveCallbackResponse.getServeType());
                     assertEquals("SERVE_CALLBACK_FAILED", serveCallbackResponse.getRespCode());
-                    assertEquals("Serve Callback Failed: ServeCallback-NotFound Config Not Found", serveCallbackResponse.getRespDesc());
+                    assertEquals("Serve Callback Failed: NotFoundPlugin Plugin Not Found", serveCallbackResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {

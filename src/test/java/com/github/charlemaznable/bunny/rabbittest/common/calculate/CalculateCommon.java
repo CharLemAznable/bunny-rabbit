@@ -73,13 +73,13 @@ public class CalculateCommon {
                 }),
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
-                    calculateRequest.setChargingType("NotFound");
+                    calculateRequest.setChargingType("NotFoundPlugin");
                     calculateRequest.setChargingParameters(of());
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
                         assertNull(calculateResponse.getChargingType());
                         assertEquals("CALCULATE_FAILED", calculateResponse.getRespCode());
-                        assertEquals("Charge Calculate Failed: Calculate-NotFound Config Not Found", calculateResponse.getRespDesc());
+                        assertEquals("Charge Calculate Failed: NotFoundPlugin Plugin Not Found", calculateResponse.getRespDesc());
                         f.complete();
                     }));
                 })
@@ -130,12 +130,12 @@ public class CalculateCommon {
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
-                    calculateRequest.setChargingType("NotFound");
+                    calculateRequest.setChargingType("NotFoundPlugin");
                     calculateRequest.setChargingParameters(of());
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
                     assertEquals("CALCULATE_FAILED", calculateResponse.getRespCode());
-                    assertEquals("Charge Calculate Failed: Calculate-NotFound Config Not Found", calculateResponse.getRespDesc());
+                    assertEquals("Charge Calculate Failed: NotFoundPlugin Plugin Not Found", calculateResponse.getRespDesc());
                     p.complete();
                 }, false, f))
         )).setHandler(event -> test.<CompositeFuture>completing().handle(event));

@@ -114,13 +114,13 @@ public class ServeCommon {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
                     serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
-                    serveRequest.setServeType("NotFound");
+                    serveRequest.setServeType("NotFoundPlugin");
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
                         assertNull(serveResponse.getServeType());
                         assertEquals("SERVE_FAILED", serveResponse.getRespCode());
-                        assertEquals("Serve Failed: Serve-NotFound Config Not Found", serveResponse.getRespDesc());
+                        assertEquals("Serve Failed: NotFoundPlugin Plugin Not Found", serveResponse.getRespDesc());
                         f.complete();
                     }));
                 }),
@@ -359,12 +359,12 @@ public class ServeCommon {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
                     serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
-                    serveRequest.setServeType("NotFound");
+                    serveRequest.setServeType("NotFoundPlugin");
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());
                     assertEquals("SERVE_FAILED", serveResponse.getRespCode());
-                    assertEquals("Serve Failed: Serve-NotFound Config Not Found", serveResponse.getRespDesc());
+                    assertEquals("Serve Failed: NotFoundPlugin Plugin Not Found", serveResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
