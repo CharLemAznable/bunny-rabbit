@@ -22,5 +22,5 @@ public interface BunnyDao {
      */
     void logError(@Param("logId") String logId,
                   @Param("seqId") String seqId,
-                  @Param("errorContent") String errorContent);
+                  @Param("logContent") String logContent);
 }
