@@ -143,17 +143,17 @@ public final class BunnyModular {
                         bind(BunnyInterceptorLoader.class).to(BunnyInterceptorLoaderImpl.class).in(SINGLETON);
                         for (val calculatePlugin : calculatePlugins) {
                             bind(CalculatePlugin.class).annotatedWith(named(
-                                    calculatePlugin.getKey())).to(calculatePlugin.getValue());
+                                    calculatePlugin.getKey())).to(calculatePlugin.getValue()).in(SINGLETON);
                         }
                         bind(CalculatePluginLoader.class).to(CalculatePluginLoaderImpl.class).in(SINGLETON);
                         for (val servePlugin : servePlugins) {
                             bind(ServePlugin.class).annotatedWith(named(
-                                    servePlugin.getKey())).to(servePlugin.getValue());
+                                    servePlugin.getKey())).to(servePlugin.getValue()).in(SINGLETON);
                         }
                         bind(ServePluginLoader.class).to(ServePluginLoaderImpl.class).in(SINGLETON);
                         for (val serveCallbackPlugin : serveCallbackPlugins) {
                             bind(ServeCallbackPlugin.class).annotatedWith(named(
-                                    serveCallbackPlugin.getKey())).to(serveCallbackPlugin.getValue());
+                                    serveCallbackPlugin.getKey())).to(serveCallbackPlugin.getValue()).in(SINGLETON);
                         }
                         bind(ServeCallbackPluginLoader.class).to(ServeCallbackPluginLoaderImpl.class).in(SINGLETON);
                     }

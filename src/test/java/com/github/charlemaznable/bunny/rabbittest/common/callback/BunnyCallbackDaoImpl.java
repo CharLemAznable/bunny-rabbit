@@ -12,10 +12,17 @@ import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 public class BunnyCallbackDaoImpl implements BunnyCallbackDao {
 
     private int count = 0;
+    private List<CallbackRecord> list0;
     private List<CallbackRecord> list1;
     private List<CallbackRecord> list2;
 
     public BunnyCallbackDaoImpl() {
+        val callbackRecord0 = new CallbackRecord();
+        callbackRecord0.setChargingType("chargingType0");
+        callbackRecord0.setSeqId("seqId0");
+        callbackRecord0.setCallbackUrl("");
+        callbackRecord0.setRequestContent("{}");
+        list0 = newArrayList(callbackRecord0);
         val callbackRecord1 = new CallbackRecord();
         callbackRecord1.setChargingType("chargingType1");
         callbackRecord1.setSeqId("seqId1");
@@ -54,8 +61,10 @@ public class BunnyCallbackDaoImpl implements BunnyCallbackDao {
     public List<CallbackRecord> queryCallbackRecords() {
         count++;
         if (1 == count) {
-            return list1;
+            return list0;
         } else if (2 == count) {
+            return list1;
+        } else if (3 == count) {
             return list2;
         } else {
             return newArrayList();
