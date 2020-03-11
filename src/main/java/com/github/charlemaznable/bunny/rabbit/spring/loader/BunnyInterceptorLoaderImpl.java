@@ -11,15 +11,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
+import static java.util.Objects.isNull;
 
 @Component
 public final class BunnyInterceptorLoaderImpl implements BunnyInterceptorLoader {
 
+    private List<BunnyInterceptor> interceptors;
+
     @Override
     public List<BunnyInterceptor> loadInterceptors() {
-        val handlerNames = newArrayList(SpringContext
-                .getBeanNamesForType(BunnyInterceptor.class));
-        Function<String, BunnyInterceptor> handlerBuilder = SpringContext::getBean;
-        return handlerNames.stream().map(handlerBuilder).collect(Collectors.toList());
+        if (isNull(interceptors)) {
+            val handlerNames = newArrayList(SpringContext
+                    .getBeanNamesForType(BunnyInterceptor.class));
+            Function<String, BunnyInterceptor> handlerBuilder = SpringContext::getBean;
+            interceptors = handlerNames.stream().map(handlerBuilder).collect(Collectors.toList());
+        }
+        return interceptors;
     }
 }

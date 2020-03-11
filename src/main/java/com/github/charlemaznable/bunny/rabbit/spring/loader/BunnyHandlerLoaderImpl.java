@@ -11,15 +11,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
+import static java.util.Objects.isNull;
 
 @Component
 public final class BunnyHandlerLoaderImpl implements BunnyHandlerLoader {
 
+    private List<BunnyHandler> handlers;
+
     @Override
-    public List<BunnyHandler> loadHandlers() {
-        val handlerNames = newArrayList(SpringContext
-                .getBeanNamesForType(BunnyHandler.class));
-        Function<String, BunnyHandler> handlerBuilder = SpringContext::getBean;
-        return handlerNames.stream().map(handlerBuilder).collect(Collectors.toList());
+    public synchronized List<BunnyHandler> loadHandlers() {
+        if (isNull(handlers)) {
+            val handlerNames = newArrayList(SpringContext
+                    .getBeanNamesForType(BunnyHandler.class));
+            Function<String, BunnyHandler> handlerBuilder = SpringContext::getBean;
+            handlers = handlerNames.stream().map(handlerBuilder).collect(Collectors.toList());
+        }
+        return handlers;
     }
 }

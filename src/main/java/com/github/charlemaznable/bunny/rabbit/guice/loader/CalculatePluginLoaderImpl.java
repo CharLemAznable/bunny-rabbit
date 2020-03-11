@@ -3,6 +3,8 @@ package com.github.charlemaznable.bunny.rabbit.guice.loader;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePlugin;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
+import com.github.charlemaznable.core.lang.LoadingCachee;
+import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import lombok.val;
@@ -11,6 +13,7 @@ import javax.annotation.Nonnull;
 
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CALCULATE_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.google.common.cache.CacheLoader.from;
 import static com.google.inject.Key.get;
 import static com.google.inject.name.Names.named;
 
@@ -18,6 +21,8 @@ public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
 
     private final Injector injector;
     private final PluginNameMapper pluginNameMapper;
+    private LoadingCache<String, CalculatePlugin> cache
+            = LoadingCachee.simpleCache(from(this::loadCalculatePlugin));
 
     @Inject
     public CalculatePluginLoaderImpl(Injector injector,
@@ -29,6 +34,10 @@ public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
     @Nonnull
     @Override
     public CalculatePlugin load(String chargingType) {
+        return LoadingCachee.get(cache, chargingType);
+    }
+
+    private CalculatePlugin loadCalculatePlugin(String chargingType) {
         val pluginName = pluginNameMapper.calculatePluginName(chargingType);
         try {
             return checkNotNull(injector.getInstance(

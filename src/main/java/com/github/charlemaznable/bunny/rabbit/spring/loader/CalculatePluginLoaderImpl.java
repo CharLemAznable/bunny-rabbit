@@ -3,7 +3,9 @@ package com.github.charlemaznable.bunny.rabbit.spring.loader;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePlugin;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
+import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.github.charlemaznable.core.spring.SpringContext;
+import com.google.common.cache.LoadingCache;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,11 +14,14 @@ import javax.annotation.Nonnull;
 
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CALCULATE_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.google.common.cache.CacheLoader.from;
 
 @Component
 public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
 
     private final PluginNameMapper pluginNameMapper;
+    private LoadingCache<String, CalculatePlugin> cache
+            = LoadingCachee.simpleCache(from(this::loadCalculatePlugin));
 
     @Autowired
     public CalculatePluginLoaderImpl(PluginNameMapper pluginNameMapper) {
@@ -26,6 +31,10 @@ public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
     @Nonnull
     @Override
     public CalculatePlugin load(String chargingType) {
+        return LoadingCachee.get(cache, chargingType);
+    }
+
+    private CalculatePlugin loadCalculatePlugin(String chargingType) {
         val pluginName = pluginNameMapper.calculatePluginName(chargingType);
         return checkNotNull(SpringContext.getBean(pluginName, CalculatePlugin.class),
                 CALCULATE_FAILED.exception(pluginName + " Plugin Not Found"));
