@@ -20,7 +20,7 @@ public class TestCalculatePlugin implements CalculatePlugin {
     static final String FAILURE = "FAILURE";
 
     @Override
-    public void calculate(Map<String, String> chargingParameters,
+    public void calculate(Map<String, Object> chargingParameters,
                           Handler<AsyncResult<CalculateResult>> handler) {
         if (SUCCESS.equals(chargingParameters.get(CALCULATE_KEY))) {
             val calculateResult = new CalculateResult();

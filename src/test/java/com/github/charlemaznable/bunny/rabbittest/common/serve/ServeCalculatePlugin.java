@@ -20,7 +20,7 @@ import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommo
 public class ServeCalculatePlugin implements CalculatePlugin {
 
     @Override
-    public void calculate(Map<String, String> chargingParameters,
+    public void calculate(Map<String, Object> chargingParameters,
                           Handler<AsyncResult<CalculateResult>> handler) {
         if (SUCCESS.equals(chargingParameters.get(CALCULATE_KEY))) {
             val calculateResult = new CalculateResult();

@@ -94,7 +94,6 @@ public final class ServeHandler
         val serveContext = new ServeContext();
         serveContext.chargingType = request.getChargingType();
         serveContext.paymentValue = request.getPaymentValue();
-        serveContext.chargingParameters = newHashMap(request.getChargingParameters());
         serveContext.serveType = request.getServeType();
         serveContext.internalRequest = newHashMap(request.getInternalRequest());
         serveContext.callbackUrl = request.getCallbackUrl();
@@ -113,7 +112,7 @@ public final class ServeHandler
 
             val calculateRequest = new CalculateRequest();
             calculateRequest.setChargingType(serveContext.chargingType);
-            calculateRequest.setChargingParameters(serveContext.chargingParameters);
+            calculateRequest.setChargingParameters(serveContext.internalRequest);
             calculateHandler.execute(calculateRequest, asyncResult -> {
                 if (asyncResult.failed()) {
                     future.fail(asyncResult.cause());
@@ -142,8 +141,6 @@ public final class ServeHandler
             try {
                 val servePlugin = pluginLoader.load(serveContext.serveType);
                 val internalRequest = serveContext.internalRequest;
-                internalRequest.putAll(servePlugin.composeRequest(
-                        serveContext.chargingParameters));
                 servePlugin.serve(internalRequest, async -> {
                     if (async.failed()) {
                         // 插件回调失败 -> 服务调用失败

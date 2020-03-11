@@ -9,14 +9,16 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
+import static com.github.charlemaznable.core.lang.Mapp.getStr;
+
 @Component
 public class MtcpInterceptor implements BunnyInterceptor {
 
     @Override
     public void preHandle(BunnyBaseRequest<?> request) {
         val extend = request.getExtend();
-        MtcpContext.setTenantId(extend.get("tenantId"));
-        MtcpContext.setTenantCode(extend.get("tenantCode"));
+        MtcpContext.setTenantId(getStr(extend, "tenantId"));
+        MtcpContext.setTenantCode(getStr(extend, "tenantCode"));
     }
 
     @Override

@@ -39,7 +39,6 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of());
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
@@ -51,7 +50,7 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, FAILURE));
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, FAILURE));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
@@ -99,8 +98,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     serveRequest.setServeType("notfound");
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
@@ -113,8 +112,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     serveRequest.setServeType("NotFoundPlugin");
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
@@ -127,9 +126,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     serveRequest.setServeType("test");
-                    serveRequest.setInternalRequest(of(SERVE_KEY, SERVE_KEY));
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS, SERVE_KEY, SERVE_KEY));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
@@ -296,7 +294,6 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of());
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertEquals("UNEXPECTED_EXCEPTION", serveResponse.getRespCode());
@@ -306,7 +303,7 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, FAILURE));
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, FAILURE));
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertEquals("SERVE_CALCULATE_FAILED", serveResponse.getRespCode());
@@ -346,8 +343,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     serveRequest.setServeType("notfound");
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());
@@ -358,8 +355,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     serveRequest.setServeType("NotFoundPlugin");
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());
@@ -370,9 +367,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     serveRequest.setServeType("test");
-                    serveRequest.setInternalRequest(of(SERVE_KEY, SERVE_KEY));
+                    serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS, SERVE_KEY, SERVE_KEY));
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());

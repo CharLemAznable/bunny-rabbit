@@ -13,6 +13,7 @@ import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCa
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.FAILURE;
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.SUCCESS;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
+import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Mapp.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -50,7 +51,7 @@ public class CalculateCommon {
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
-                    calculateRequest.setChargingParameters(of());
+                    calculateRequest.setChargingParameters(newHashMap());
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
                         assertNull(calculateResponse.getChargingType());
@@ -62,7 +63,7 @@ public class CalculateCommon {
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("notfound");
-                    calculateRequest.setChargingParameters(of());
+                    calculateRequest.setChargingParameters(newHashMap());
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
                         assertNull(calculateResponse.getChargingType());
@@ -74,7 +75,7 @@ public class CalculateCommon {
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("NotFoundPlugin");
-                    calculateRequest.setChargingParameters(of());
+                    calculateRequest.setChargingParameters(newHashMap());
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
                         assertNull(calculateResponse.getChargingType());
@@ -111,7 +112,7 @@ public class CalculateCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
-                    calculateRequest.setChargingParameters(of());
+                    calculateRequest.setChargingParameters(newHashMap());
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
                     assertEquals("UNEXPECTED_EXCEPTION", calculateResponse.getRespCode());
@@ -121,7 +122,7 @@ public class CalculateCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("notfound");
-                    calculateRequest.setChargingParameters(of());
+                    calculateRequest.setChargingParameters(newHashMap());
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
                     assertEquals("CALCULATE_FAILED", calculateResponse.getRespCode());
@@ -131,7 +132,7 @@ public class CalculateCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("NotFoundPlugin");
-                    calculateRequest.setChargingParameters(of());
+                    calculateRequest.setChargingParameters(newHashMap());
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
                     assertEquals("CALCULATE_FAILED", calculateResponse.getRespCode());

@@ -13,10 +13,6 @@ class ServeContext {
      */
     Integer paymentValue;
     /**
-     * 计费参数
-     */
-    Map<String, String> chargingParameters;
-    /**
      * 计费流水号
      */
     String seqId;
