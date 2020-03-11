@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.guice.loader;
 
-import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackPlugin;
+import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;

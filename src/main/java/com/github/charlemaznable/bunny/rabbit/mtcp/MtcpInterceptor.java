@@ -2,7 +2,7 @@ package com.github.charlemaznable.bunny.rabbit.mtcp;
 
 import com.github.charlemaznable.bunny.client.domain.BunnyBaseRequest;
 import com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptor;
+import com.github.charlemaznable.bunny.plugin.BunnyInterceptor;
 import lombok.val;
 import org.n3r.eql.mtcp.MtcpContext;
 import org.springframework.stereotype.Component;

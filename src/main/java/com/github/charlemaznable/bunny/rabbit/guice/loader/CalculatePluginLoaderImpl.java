@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.guice.loader;
 
-import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePlugin;
+import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;

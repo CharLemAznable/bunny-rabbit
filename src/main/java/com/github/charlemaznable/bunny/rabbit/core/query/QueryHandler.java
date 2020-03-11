@@ -3,7 +3,7 @@ package com.github.charlemaznable.bunny.rabbit.core.query;
 import com.github.charlemaznable.bunny.client.domain.BunnyAddress;
 import com.github.charlemaznable.bunny.client.domain.QueryRequest;
 import com.github.charlemaznable.bunny.client.domain.QueryResponse;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;

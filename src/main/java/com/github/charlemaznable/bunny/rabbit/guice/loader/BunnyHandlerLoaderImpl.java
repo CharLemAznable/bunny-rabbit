@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.guice.loader;
 
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerLoader;
 import com.google.inject.Inject;
 

@@ -1,5 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.core.calculate;
 
+import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
+
 import javax.annotation.Nonnull;
 
 public interface CalculatePluginLoader {

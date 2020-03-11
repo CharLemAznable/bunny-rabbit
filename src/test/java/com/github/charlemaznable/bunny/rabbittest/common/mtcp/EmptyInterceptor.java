@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbittest.common.mtcp;
 
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptor;
+import com.github.charlemaznable.bunny.plugin.BunnyInterceptor;
 import org.springframework.stereotype.Component;
 
 @Component

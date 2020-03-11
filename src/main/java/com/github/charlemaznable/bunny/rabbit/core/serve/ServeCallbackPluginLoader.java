@@ -1,5 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.core.serve;
 
+import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
+
 import javax.annotation.Nonnull;
 
 public interface ServeCallbackPluginLoader {

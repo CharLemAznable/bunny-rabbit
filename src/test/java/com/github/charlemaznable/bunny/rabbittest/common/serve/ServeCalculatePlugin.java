@@ -1,8 +1,8 @@
 package com.github.charlemaznable.bunny.rabbittest.common.serve;
 
 import com.github.charlemaznable.bunny.client.domain.BunnyException;
-import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePlugin;
-import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateResult;
+import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
+import com.github.charlemaznable.bunny.plugin.CalculateResult;
 import com.github.charlemaznable.bunny.rabbittest.common.common.MockException;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;

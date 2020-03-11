@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbittest.common.mtcp;
 
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

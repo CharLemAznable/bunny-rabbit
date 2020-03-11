@@ -25,10 +25,16 @@
     </scm>
 
     <properties>
+        <bunny-plugin.version>0.0.1-SNAPSHOT</bunny-plugin.version>
         <bunny-client.version>0.0.1-SNAPSHOT</bunny-client.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.charlemaznable</groupId>
+            <artifactId>bunny-plugin</artifactId>
+            <version>${bunny-plugin.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.github.charlemaznable</groupId>
             <artifactId>bunny-client</artifactId>

@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.spring.loader;
 
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerLoader;
 import com.github.charlemaznable.core.spring.SpringContext;
 import lombok.val;

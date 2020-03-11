@@ -5,8 +5,8 @@ import com.github.charlemaznable.bunny.client.domain.BunnyException;
 import com.github.charlemaznable.bunny.client.domain.CalculateRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeResponse;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -141,21 +141,30 @@ public final class ServeHandler
             try {
                 val servePlugin = pluginLoader.load(serveContext.serveType);
                 val internalRequest = serveContext.internalRequest;
-                servePlugin.serve(internalRequest, async -> {
-                    if (async.failed()) {
+                servePlugin.serve(internalRequest, asyncServe -> {
+                    if (asyncServe.failed()) {
                         // 插件回调失败 -> 服务调用失败
                         serveContext.returnSuccess = false;
-                        serveContext.internalThrowable = async.cause();
+                        serveContext.internalThrowable = asyncServe.cause();
                         future.complete(serveContext);
                         return;
                     }
                     // 插件调用成功 -> 服务调用成功
                     serveContext.returnSuccess = true;
-                    serveContext.internalResponse = async.result();
+                    serveContext.internalResponse = asyncServe.result();
                     // 插件判断服务下发结果
-                    serveContext.resultSuccess = servePlugin
-                            .checkResponse(serveContext.internalResponse);
-                    future.complete(serveContext);
+                    servePlugin.checkResponse(serveContext.internalResponse, asyncCheck -> {
+                        if (asyncCheck.failed()) {
+                            // 判断结果异常 -> 服务调用失败
+                            serveContext.returnSuccess = false;
+                            serveContext.internalResponse = null;
+                            serveContext.internalThrowable = asyncCheck.cause();
+                        } else {
+                            // 记录服务下发结果
+                            serveContext.resultSuccess = asyncCheck.result();
+                        }
+                        future.complete(serveContext);
+                    });
                 });
             } catch (Exception e) {
                 // 插件加载失败|插件抛出异常 -> 服务调用失败

@@ -3,7 +3,7 @@ package com.github.charlemaznable.bunny.rabbit.core.calculate;
 import com.github.charlemaznable.bunny.client.domain.BunnyAddress;
 import com.github.charlemaznable.bunny.client.domain.CalculateRequest;
 import com.github.charlemaznable.bunny.client.domain.CalculateResponse;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;

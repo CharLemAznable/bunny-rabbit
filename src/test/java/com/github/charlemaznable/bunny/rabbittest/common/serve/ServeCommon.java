@@ -205,6 +205,21 @@ public class ServeCommon {
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
+                        assertNull(serveResponse.getChargingType());
+                        assertNull(serveResponse.getServeType());
+                        assertEquals("UNEXPECTED_EXCEPTION", serveResponse.getRespCode());
+                        assertEquals("Unexpected Exception: Serve Check Error", serveResponse.getRespDesc());
+                        f.complete();
+                    }));
+                }),
+                Future.<Void>future(f -> {
+                    val serveRequest = new ServeRequest();
+                    serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.setPaymentValue(1);
+                    serveRequest.setServeType("test");
+                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, FAILURE));
+                    bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
+                        val serveResponse = async.result();
                         assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
                         assertEquals("test", serveResponse.getServeType());
                         assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
@@ -434,6 +449,19 @@ public class ServeCommon {
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS));
+                    val serveResponse = bunnyOhClient.request(serveRequest);
+                    assertNull(serveResponse.getChargingType());
+                    assertNull(serveResponse.getServeType());
+                    assertEquals("UNEXPECTED_EXCEPTION", serveResponse.getRespCode());
+                    assertEquals("Unexpected Exception: Serve Check Error", serveResponse.getRespDesc());
+                    p.complete();
+                }, false, f)),
+                Future.<Void>future(f -> vertx.executeBlocking(p -> {
+                    val serveRequest = new ServeRequest();
+                    serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.setPaymentValue(1);
+                    serveRequest.setServeType("test");
+                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, FAILURE));
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
                     assertEquals("test", serveResponse.getServeType());

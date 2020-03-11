@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.guice.loader;
 
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptor;
+import com.github.charlemaznable.bunny.plugin.BunnyInterceptor;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptorLoader;
 import com.google.inject.Inject;
 

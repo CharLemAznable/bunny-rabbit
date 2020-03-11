@@ -3,7 +3,7 @@ package com.github.charlemaznable.bunny.rabbit.core.serve;
 import com.github.charlemaznable.bunny.client.domain.BunnyAddress;
 import com.github.charlemaznable.bunny.client.domain.ServeCallbackRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeCallbackResponse;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.core.net.ohclient.OhReq;
 import com.google.inject.Inject;
@@ -101,9 +101,16 @@ public final class ServeCallbackHandler
             try {
                 val serveCallbackPlugin = pluginLoader.load(serveContext.serveType);
                 // 插件判断服务下发结果
-                serveContext.resultSuccess = serveCallbackPlugin
-                        .checkRequest(serveContext.internalRequest);
-                future.complete(serveContext);
+                serveCallbackPlugin.checkRequest(serveContext.internalRequest, asyncResult -> {
+                    if (asyncResult.failed()) {
+                        // 判断结果异常 -> 回调检查失败
+                        future.fail(asyncResult.cause());
+                    } else {
+                        // 记录服务下发结果
+                        serveContext.resultSuccess = asyncResult.result();
+                        future.complete(serveContext);
+                    }
+                });
             } catch (Exception e) {
                 // 插件加载失败|插件抛出异常 -> 回调检查失败
                 future.fail(e);

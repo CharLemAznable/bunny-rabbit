@@ -1,8 +1,8 @@
 package com.github.charlemaznable.bunny.rabbit.core.verticle;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandler;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptor;
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.BunnyInterceptor;
 import com.github.charlemaznable.bunny.rabbit.core.wrapper.EventBusHandlerWrapper;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import lombok.val;
