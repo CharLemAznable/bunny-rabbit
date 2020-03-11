@@ -23,7 +23,8 @@ public class BunnyVertxConfiguration implements Provider<VertxOptions> {
     @Inject
     @Autowired
     public BunnyVertxConfiguration(@Nullable BunnyConfig bunnyConfig) {
-        this.bunnyConfig = nullThen(bunnyConfig, () -> getMiner(BunnyConfig.class));
+        this.bunnyConfig = nullThen(bunnyConfig,
+                () -> getMiner(BunnyConfig.class));
     }
 
     @Bean

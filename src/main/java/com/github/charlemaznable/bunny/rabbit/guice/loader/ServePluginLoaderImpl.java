@@ -10,9 +10,12 @@ import com.google.inject.Injector;
 import lombok.val;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.SERVE_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.github.charlemaznable.core.lang.Condition.nullThen;
+import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 import static com.google.common.cache.CacheLoader.from;
 import static com.google.inject.Key.get;
 import static com.google.inject.name.Names.named;
@@ -26,9 +29,10 @@ public final class ServePluginLoaderImpl implements ServePluginLoader {
 
     @Inject
     public ServePluginLoaderImpl(Injector injector,
-                                 PluginNameMapper pluginNameMapper) {
-        this.injector = injector;
-        this.pluginNameMapper = pluginNameMapper;
+                                 @Nullable PluginNameMapper pluginNameMapper) {
+        this.injector = checkNotNull(injector);
+        this.pluginNameMapper = nullThen(pluginNameMapper,
+                () -> getMiner(PluginNameMapper.class));
     }
 
     @Nonnull

@@ -36,9 +36,9 @@ public final class ServeHandler
     public ServeHandler(CalculateHandler calculateHandler,
                         ServePluginLoader pluginLoader,
                         ServeService serveService) {
-        this.calculateHandler = calculateHandler;
+        this.calculateHandler = checkNotNull(calculateHandler);
         this.pluginLoader = checkNotNull(pluginLoader);
-        this.serveService = serveService;
+        this.serveService = checkNotNull(serveService);
     }
 
     @Override

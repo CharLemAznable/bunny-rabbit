@@ -46,7 +46,7 @@ public final class ServeCallbackHandler
                                 ServeService serveService,
                                 @Nullable BunnyCallbackDao bunnyCallbackDao) {
         this.pluginLoader = checkNotNull(pluginLoader);
-        this.serveService = serveService;
+        this.serveService = checkNotNull(serveService);
         this.bunnyCallbackDao = nullThen(bunnyCallbackDao,
                 () -> getEqler(BunnyCallbackDao.class));
     }
