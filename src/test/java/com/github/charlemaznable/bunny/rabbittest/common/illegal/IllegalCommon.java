@@ -18,7 +18,7 @@ public class IllegalCommon {
         CompositeFuture.all(newArrayList(
                 Future.<Void>future(f -> {
                     val message = "";
-                    vertx.eventBus().<String>request("/bunny/illegal", message, async -> test.verify(() -> {
+                    vertx.eventBus().<String>request("/illegal", message, async -> test.verify(() -> {
                         val response = unJson(async.result().body(), IllegalResponse.class);
                         assertEquals("REQUEST_BODY_ERROR", response.getRespCode());
                         assertEquals("Request Body Error: Body is Blank", response.getRespDesc());
@@ -27,7 +27,7 @@ public class IllegalCommon {
                 }),
                 Future.<Void>future(f -> {
                     val request = new IllegalRequest();
-                    vertx.eventBus().<String>request("/bunny/illegal", json(request), async -> test.verify(() -> {
+                    vertx.eventBus().<String>request("/illegal", json(request), async -> test.verify(() -> {
                         val response = unJson(async.result().body(), IllegalResponse.class);
                         assertEquals("REQUEST_BODY_ERROR", response.getRespCode());
                         assertEquals("Request Body Error: Verify Failed", response.getRespDesc());
@@ -40,7 +40,7 @@ public class IllegalCommon {
     public static void testIllegalHttpServer(VertxTestContext test, Vertx vertx, int port) {
         CompositeFuture.all(newArrayList(
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val result = new OhReq("http://127.0.0.1:" + port + "/bunny/illegal")
+                    val result = new OhReq("http://127.0.0.1:" + port + "/illegal")
                             .requestBody("").post();
                     val response = unJson(result, IllegalResponse.class);
                     assertEquals("REQUEST_BODY_ERROR", response.getRespCode());
@@ -49,7 +49,7 @@ public class IllegalCommon {
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val request = new IllegalRequest();
-                    val result = new OhReq("http://127.0.0.1:" + port + "/bunny/illegal")
+                    val result = new OhReq("http://127.0.0.1:" + port + "/illegal")
                             .requestBody(json(request)).post();
                     val response = unJson(result, IllegalResponse.class);
                     assertEquals("REQUEST_BODY_ERROR", response.getRespCode());

@@ -54,7 +54,7 @@ public final class BunnyModular {
     private final List<Pair<String, Class<? extends CalculatePlugin>>> calculatePlugins;
     private final List<Pair<String, Class<? extends ServePlugin>>> servePlugins;
     private final List<Pair<String, Class<? extends ServeCallbackPlugin>>> serveCallbackPlugins;
-    private final Module pluginNameMapperModule;
+    private Module pluginNameMapperModule;
 
     public BunnyModular() {
         this((BunnyConfig) null);
@@ -84,8 +84,12 @@ public final class BunnyModular {
         this.calculatePlugins = newArrayList();
         this.servePlugins = newArrayList();
         this.serveCallbackPlugins = newArrayList();
-        this.pluginNameMapperModule = new MinerModular()
-                .createModule(PluginNameMapper.class);
+        this.pluginNameMapperModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(PluginNameMapper.class).toProvider(Providers.of(null));
+            }
+        };
     }
 
     @SafeVarargs
@@ -123,6 +127,21 @@ public final class BunnyModular {
             Class<? extends ServeCallbackPlugin>... serveCallbackPlugins) {
         this.serveCallbackPlugins.addAll(newArrayList(serveCallbackPlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
+        return this;
+    }
+
+    public final BunnyModular pluginNameMapper(Class<? extends PluginNameMapper> mapperClass) {
+        this.pluginNameMapperModule = new MinerModular().createModule(mapperClass);
+        return this;
+    }
+
+    public final BunnyModular pluginNameMapper(PluginNameMapper mapperImpl) {
+        this.pluginNameMapperModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(PluginNameMapper.class).toProvider(Providers.of(mapperImpl));
+            }
+        };
         return this;
     }
 

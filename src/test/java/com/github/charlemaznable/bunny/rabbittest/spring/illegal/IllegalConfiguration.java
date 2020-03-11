@@ -40,7 +40,9 @@ public final class IllegalConfiguration {
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "illegal",
-                "httpserver.port=32117\n");
+                "httpserver.port=32117\n" +
+                        "httpserver.context-path=\n" +
+                        "eventbus.address-prefix=\n");
     }
 
     @PreDestroy

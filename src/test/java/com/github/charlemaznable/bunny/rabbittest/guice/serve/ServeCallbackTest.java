@@ -10,6 +10,7 @@ import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl;
@@ -32,6 +33,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
 
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;
+import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 import static com.github.charlemaznable.core.miner.MinerFactory.springMinerLoader;
 import static com.github.charlemaznable.core.net.ohclient.OhFactory.springOhLoader;
 import static java.time.Duration.ofMillis;
@@ -69,6 +71,7 @@ public class ServeCallbackTest {
                         .addCalculatePlugins(ServeCalculatePlugin.class)
                         .addServePlugins(TestServePlugin.class)
                         .addServeCallbackPlugins(TestServeCallbackPlugin.class)
+                        .pluginNameMapper(getMiner(PluginNameMapper.class))
                         .createModule(),
                 new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),

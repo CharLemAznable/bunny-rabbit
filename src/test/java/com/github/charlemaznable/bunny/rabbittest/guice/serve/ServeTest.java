@@ -10,6 +10,7 @@ import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl;
@@ -70,6 +71,7 @@ public class ServeTest {
                         .addCalculatePlugins(ServeCalculatePlugin.class)
                         .addServePlugins(TestServePlugin.class)
                         .addServeCallbackPlugins(TestServeCallbackPlugin.class)
+                        .pluginNameMapper(PluginNameMapper.class)
                         .createModule(),
                 new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),
