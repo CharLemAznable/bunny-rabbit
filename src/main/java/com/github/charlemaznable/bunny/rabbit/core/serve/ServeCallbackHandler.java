@@ -121,7 +121,7 @@ public final class ServeCallbackHandler
                                 serveContext.resultSuccess = asyncResult.result();
                                 future.complete(serveContext);
                             }
-                });
+                        });
             } catch (Exception e) {
                 // 插件加载失败|插件抛出异常 -> 回调检查失败
                 future.fail(e);
