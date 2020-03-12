@@ -4,12 +4,14 @@ import com.github.charlemaznable.bunny.rabbit.core.query.QueryResult;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbittest.common.common.MockException;
 import lombok.val;
+import org.n3r.eql.mtcp.MtcpContext;
 import org.springframework.stereotype.Component;
 
 import static com.github.charlemaznable.bunny.rabbittest.common.query.QueryCommon.CHARGING_TYPE_00;
 import static com.github.charlemaznable.bunny.rabbittest.common.query.QueryCommon.CHARGING_TYPE_01;
 import static com.github.charlemaznable.bunny.rabbittest.common.query.QueryCommon.CHARGING_TYPE_02;
 import static com.github.charlemaznable.bunny.rabbittest.common.query.QueryCommon.CHARGING_TYPE_03;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Component
 public class BunnyDaoQueryImpl implements BunnyDao {
@@ -21,6 +23,8 @@ public class BunnyDaoQueryImpl implements BunnyDao {
 
     @Override
     public QueryResult queryChargingBalance(String chargingType) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         val queryResult = new QueryResult();
         if (CHARGING_TYPE_00.equals(chargingType)) {
             queryResult.setBalance(0);

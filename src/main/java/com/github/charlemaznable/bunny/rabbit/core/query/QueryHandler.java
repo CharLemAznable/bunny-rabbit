@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
+import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.QUERY_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
-import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static java.util.Objects.isNull;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
@@ -49,7 +49,7 @@ public final class QueryHandler
         val response = request.createResponse();
         val chargingType = request.getChargingType();
 
-        executeBlocking(block -> {
+        executeBlocking(request.getContext(), block -> {
             val result = bunnyDao.queryChargingBalance(chargingType);
             if (isNull(result)) {
                 block.fail(QUERY_FAILED.exception());

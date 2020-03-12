@@ -12,20 +12,28 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.github.charlemaznable.core.lang.Mapp.getInt;
+import static com.github.charlemaznable.core.lang.Mapp.getStr;
+
 @Component("TestCalculate")
 public class TestCalculatePlugin implements CalculatePlugin {
 
+    static final String RESULT_KEY = "RESULT";
+    static final int RESULT = 1;
+    static final String UNIT_KEY = "UNIT";
+    static final String UNIT = "条";
     static final String CALCULATE_KEY = "CALC";
     static final String SUCCESS = "SUCCESS";
     static final String FAILURE = "FAILURE";
 
     @Override
-    public void calculate(Map<String, Object> chargingParameters,
+    public void calculate(Map<String, Object> context,
+                          Map<String, Object> chargingParameters,
                           Handler<AsyncResult<CalculateResult>> handler) {
         if (SUCCESS.equals(chargingParameters.get(CALCULATE_KEY))) {
             val calculateResult = new CalculateResult();
-            calculateResult.setCalculate(1);
-            calculateResult.setUnit("条");
+            calculateResult.setCalculate(getInt(context, RESULT_KEY));
+            calculateResult.setUnit(getStr(context, UNIT_KEY));
             handler.handle(Future.succeededFuture(calculateResult));
         } else if (FAILURE.equals(chargingParameters.get(CALCULATE_KEY))) {
             handler.handle(Future.failedFuture(new BunnyException(

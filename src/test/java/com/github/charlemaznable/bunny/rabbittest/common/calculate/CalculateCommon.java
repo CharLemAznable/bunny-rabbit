@@ -8,10 +8,15 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import lombok.val;
+import org.n3r.eql.mtcp.MtcpContext;
 
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.CALCULATE_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.FAILURE;
+import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.RESULT;
+import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.RESULT_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.SUCCESS;
+import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.UNIT;
+import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.UNIT_KEY;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Mapp.of;
@@ -27,18 +32,23 @@ public class CalculateCommon {
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
+                    calculateRequest.getContext().putAll(of(RESULT_KEY, RESULT, UNIT_KEY, UNIT));
                     calculateRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
                         assertEquals(CHARGING_TYPE, calculateResponse.getChargingType());
-                        assertEquals(1, calculateResponse.getCalculate());
-                        assertEquals("条", calculateResponse.getUnit());
+                        assertEquals(RESULT, calculateResponse.getCalculate());
+                        assertEquals(UNIT, calculateResponse.getUnit());
                         f.complete();
                     }));
                 }),
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(of(CALCULATE_KEY, FAILURE));
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
@@ -51,6 +61,8 @@ public class CalculateCommon {
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(newHashMap());
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
@@ -63,6 +75,8 @@ public class CalculateCommon {
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("notfound");
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(newHashMap());
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
@@ -75,6 +89,8 @@ public class CalculateCommon {
                 Future.<Void>future(f -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("NotFoundPlugin");
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(newHashMap());
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
@@ -92,16 +108,21 @@ public class CalculateCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
+                    calculateRequest.getContext().putAll(of(RESULT_KEY, RESULT, UNIT_KEY, UNIT));
                     calculateRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertEquals(CHARGING_TYPE, calculateResponse.getChargingType());
-                    assertEquals(1, calculateResponse.getCalculate());
-                    assertEquals("条", calculateResponse.getUnit());
+                    assertEquals(RESULT, calculateResponse.getCalculate());
+                    assertEquals(UNIT, calculateResponse.getUnit());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(of(CALCULATE_KEY, FAILURE));
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
@@ -112,6 +133,8 @@ public class CalculateCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType(CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(newHashMap());
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
@@ -122,6 +145,8 @@ public class CalculateCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("notfound");
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(newHashMap());
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
@@ -132,6 +157,8 @@ public class CalculateCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val calculateRequest = new CalculateRequest();
                     calculateRequest.setChargingType("NotFoundPlugin");
+                    calculateRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE);
+                    calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE);
                     calculateRequest.setChargingParameters(newHashMap());
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());

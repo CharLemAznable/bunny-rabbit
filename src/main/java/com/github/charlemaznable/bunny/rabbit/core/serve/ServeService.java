@@ -1,5 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.core.serve;
 
+import com.github.charlemaznable.bunny.plugin.elf.MtcpElf;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.core.lang.Executable;
@@ -14,12 +15,12 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 
 import static com.github.bingoohuang.westid.WestId.next;
+import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.COMMIT_FAILED;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.PRE_SERVE_FAILED;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.ROLLBACK_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Str.toStr;
-import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static java.util.Objects.nonNull;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
@@ -47,7 +48,7 @@ public final class ServeService {
         // callbackUrl
         // ServeContext出参:
         // seqId
-        executeBlocking(block -> {
+        executeBlocking(serveContext.context, block -> {
             try {
                 bunnyServeDao.start();
 
@@ -135,6 +136,7 @@ public final class ServeService {
                               Handler<AsyncResult<ServeContext>> handler) {
         Vertx.currentContext().executeBlocking(block -> {
             try {
+                MtcpElf.preHandle(serveContext.context);
                 bunnyServeDao.start();
 
                 executable.execute();
@@ -148,6 +150,8 @@ public final class ServeService {
                 bunnyDao.logError(toStr(next()), serveContext.seqId,
                         serveContext.unexpectedThrowable.getMessage());
                 block.complete(serveContext);
+            } finally {
+                MtcpElf.afterCompletion();
             }
         }, false, handler);
     }

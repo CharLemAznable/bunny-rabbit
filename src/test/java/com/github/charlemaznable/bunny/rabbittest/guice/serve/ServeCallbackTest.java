@@ -56,7 +56,7 @@ public class ServeCallbackTest {
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
-                "httpserver.port=42121\n" +
+                "httpserver.port=42121\ncallback.delay=1000\n" +
                         "ServeCallback-test=TestServeCallback\n" +
                         "ServeCallback-notfound=NotFound\n");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",

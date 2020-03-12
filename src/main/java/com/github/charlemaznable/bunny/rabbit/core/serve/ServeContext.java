@@ -9,6 +9,10 @@ class ServeContext {
      */
     String chargingType;
     /**
+     * 扩展参数
+     */
+    Map<String, Object> context;
+    /**
      * 费用计量
      */
     Integer paymentValue;

@@ -95,6 +95,7 @@ public final class ServeHandler
     private ServeContext buildServeContext(ServeRequest request) {
         val serveContext = new ServeContext();
         serveContext.chargingType = request.getChargingType();
+        serveContext.context = request.getContext();
         serveContext.paymentValue = request.getPaymentValue();
         serveContext.serveType = request.getServeType();
         serveContext.internalRequest = newHashMap(request.getInternalRequest());
@@ -114,6 +115,7 @@ public final class ServeHandler
 
             val calculateRequest = new CalculateRequest();
             calculateRequest.setChargingType(serveContext.chargingType);
+            calculateRequest.getContext().putAll(serveContext.context);
             calculateRequest.setChargingParameters(serveContext.internalRequest);
             calculateHandler.execute(calculateRequest, asyncResult -> {
                 if (asyncResult.failed()) {
@@ -142,8 +144,9 @@ public final class ServeHandler
         return Future.future(future -> {
             try {
                 val servePlugin = pluginLoader.load(serveContext.serveType);
+                val context = serveContext.context;
                 val internalRequest = serveContext.internalRequest;
-                servePlugin.serve(internalRequest, asyncServe -> {
+                servePlugin.serve(context, internalRequest, asyncServe -> {
                     if (asyncServe.failed()) {
                         // 插件回调失败 -> 服务调用失败
                         serveContext.returnSuccess = false;
@@ -154,8 +157,9 @@ public final class ServeHandler
                     // 插件调用成功 -> 服务调用成功
                     serveContext.returnSuccess = true;
                     serveContext.internalResponse = asyncServe.result();
+
                     // 插件判断服务下发结果
-                    servePlugin.checkResponse(serveContext.internalResponse, asyncCheck -> {
+                    servePlugin.checkResponse(context, serveContext.internalResponse, asyncCheck -> {
                         if (asyncCheck.failed()) {
                             // 判断结果异常 -> 服务调用失败
                             serveContext.returnSuccess = false;

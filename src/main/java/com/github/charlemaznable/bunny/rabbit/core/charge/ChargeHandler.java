@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
+import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CHARGE_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
-import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
 @Component
@@ -49,7 +49,7 @@ public final class ChargeHandler
         val chargingType = request.getChargingType();
         val chargeValue = request.getChargeValue();
 
-        executeBlocking(block -> {
+        executeBlocking(request.getContext(), block -> {
             val result = bunnyDao.updateBalanceByCharge(
                     chargingType, chargeValue);
             if (1 != result) {

@@ -42,11 +42,12 @@ public final class CalculateHandler
                         Handler<AsyncResult<CalculateResponse>> handler) {
         val response = request.createResponse();
         val chargingType = request.getChargingType();
-        val chargingParameters = request.getChargingParameters();
+        val context = request.getContext();
+        val parameters = request.getChargingParameters();
 
         try {
             val calculatePlugin = pluginLoader.load(chargingType);
-            calculatePlugin.calculate(chargingParameters, async -> {
+            calculatePlugin.calculate(context, parameters, async -> {
                 if (async.failed()) {
                     handler.handle(failedFuture(async.cause()));
                     return;

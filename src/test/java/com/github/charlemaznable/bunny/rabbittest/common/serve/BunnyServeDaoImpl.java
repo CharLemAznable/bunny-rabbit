@@ -2,7 +2,10 @@ package com.github.charlemaznable.bunny.rabbittest.common.serve;
 
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbittest.common.common.MockException;
+import org.n3r.eql.mtcp.MtcpContext;
 import org.springframework.stereotype.Component;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Component
 public class BunnyServeDaoImpl implements BunnyServeDao {
@@ -18,6 +21,8 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
 
     @Override
     public int updateBalanceByPayment(String chargingType, int paymentValue) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         if (CHARGING_TYPE_00.equals(chargingType)) {
             if (1 == paymentValue) return 1;
             else if (2 == paymentValue) return 0;
@@ -30,6 +35,8 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
     @Override
     public int createPreserveSequence(String chargingType, int paymentValue,
                                       String callbackUrl, String seqId) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         if (CHARGING_TYPE_00.equals(chargingType)) {
             if (1 == paymentValue) return 1;
             else if (2 == paymentValue) return 1; // unreachable
@@ -40,6 +47,8 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
 
     @Override
     public String queryRollbackedSequence(String chargingType, String seqId) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         if (CHARGING_TYPE_01.equals(chargingType)) {
             return seqId;
         } else if (CHARGING_TYPE_04.equals(chargingType)) {
@@ -50,6 +59,8 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
 
     @Override
     public int rollbackPreserveSequence(String chargingType, String seqId) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         if (CHARGING_TYPE_02.equals(chargingType)) {
             return 0;
         }
@@ -58,6 +69,8 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
 
     @Override
     public int updateBalanceByRollback(String chargingType, String seqId) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         if (CHARGING_TYPE_03.equals(chargingType)) {
             return 0;
         }
@@ -66,6 +79,8 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
 
     @Override
     public String queryCommitedSequence(String chargingType, String seqId) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         if (CHARGING_TYPE_05.equals(chargingType)) {
             return seqId;
         } else if (CHARGING_TYPE_07.equals(chargingType)) {
@@ -76,6 +91,8 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
 
     @Override
     public int commitPreserveSequence(String chargingType, String seqId) {
+        assertEquals(chargingType, MtcpContext.getTenantId());
+        assertEquals(chargingType, MtcpContext.getTenantCode());
         if (CHARGING_TYPE_06.equals(chargingType)) {
             return 0;
         }

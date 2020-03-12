@@ -8,6 +8,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import lombok.val;
+import org.n3r.eql.mtcp.MtcpContext;
 
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
@@ -40,6 +41,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
@@ -51,6 +54,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, FAILURE));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
@@ -63,6 +68,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(2);
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
@@ -75,6 +82,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(3);
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
@@ -87,6 +96,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(4);
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
                         val serveResponse = async.result();
@@ -99,6 +110,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setServeType("notfound");
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
@@ -113,6 +126,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setServeType("NotFoundPlugin");
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
@@ -127,6 +142,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS, SERVE_KEY, SERVE_KEY));
                     bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
@@ -141,6 +158,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_01);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -156,6 +175,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_02);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -171,6 +192,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_03);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -186,6 +209,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_04);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_04);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_04);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -201,6 +226,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS));
@@ -219,6 +246,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_05);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_05);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_05);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
@@ -237,6 +266,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_06);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_06);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_06);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
@@ -255,6 +286,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_07);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_07);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_07);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
@@ -278,6 +311,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertEquals("UNEXPECTED_EXCEPTION", serveResponse.getRespCode());
@@ -287,6 +322,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, FAILURE));
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
@@ -297,6 +334,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(2);
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
@@ -307,6 +346,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(3);
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
@@ -317,6 +358,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(4);
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
@@ -327,6 +370,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setServeType("notfound");
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     val serveResponse = bunnyOhClient.request(serveRequest);
@@ -339,6 +384,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setServeType("NotFoundPlugin");
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS));
                     val serveResponse = bunnyOhClient.request(serveRequest);
@@ -351,6 +398,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(CALCULATE_KEY, SUCCESS, SERVE_KEY, SERVE_KEY));
                     val serveResponse = bunnyOhClient.request(serveRequest);
@@ -363,6 +412,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_01);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -376,6 +427,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_02);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -389,6 +442,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_03);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -402,6 +457,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_04);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_04);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_04);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, FAILURE));
@@ -415,6 +472,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS));
@@ -431,6 +490,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_05);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_05);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_05);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
@@ -447,6 +508,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_06);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_06);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_06);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
@@ -463,6 +526,8 @@ public class ServeCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_07);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_07);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_07);
                     serveRequest.setPaymentValue(1);
                     serveRequest.setServeType("test");
                     serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
@@ -485,6 +550,8 @@ public class ServeCommon {
         return Future.future(f -> {
             val serveRequest = new ServeRequest();
             serveRequest.setChargingType(CHARGING_TYPE_00);
+            serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+            serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
             serveRequest.setPaymentValue(1);
             serveRequest.setServeType("test");
             serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, checkValue));
@@ -508,6 +575,8 @@ public class ServeCommon {
         return Future.future(f -> vertx.executeBlocking(p -> {
             val serveRequest = new ServeRequest();
             serveRequest.setChargingType(CHARGING_TYPE_00);
+            serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+            serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
             serveRequest.setPaymentValue(1);
             serveRequest.setServeType("test");
             serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, checkValue));

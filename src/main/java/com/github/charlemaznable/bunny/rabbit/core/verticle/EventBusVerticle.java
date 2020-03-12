@@ -1,8 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.core.verticle;
 
-import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
-import com.github.charlemaznable.bunny.plugin.BunnyInterceptor;
+import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.wrapper.EventBusHandlerWrapper;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import lombok.val;
@@ -18,10 +17,9 @@ public final class EventBusVerticle extends BunnyAbstractVerticle {
     public static final String EVENT_BUS_VERTICLE = "BUNNY_EVENT_BUS_VERTICLE";
 
     public EventBusVerticle(List<BunnyHandler> handlers,
-                            List<BunnyInterceptor> interceptors,
                             @Nullable BunnyConfig bunnyConfig,
                             @Nullable BunnyLogDao bunnyLogDao) {
-        super(handlers, interceptors, bunnyConfig, bunnyLogDao);
+        super(handlers, bunnyConfig, bunnyLogDao);
     }
 
     @SuppressWarnings("unchecked")
@@ -33,7 +31,7 @@ public final class EventBusVerticle extends BunnyAbstractVerticle {
         val eventBus = vertx.eventBus();
         for (val handler : handlers) {
             val address = prependIfMissing(handler.address(), "/");
-            val wrapper = new EventBusHandlerWrapper(handler, interceptors, bunnyLogDao);
+            val wrapper = new EventBusHandlerWrapper(handler, bunnyLogDao);
             eventBus.consumer(addressPrefix + address, wrapper);
         }
     }

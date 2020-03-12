@@ -1,23 +1,20 @@
 package com.github.charlemaznable.bunny.rabbit.guice;
 
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
+import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
+import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
+import com.github.charlemaznable.bunny.plugin.ServePlugin;
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
-import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.charge.ChargeHandler;
-import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerLoader;
-import com.github.charlemaznable.bunny.plugin.BunnyInterceptor;
-import com.github.charlemaznable.bunny.rabbit.core.common.BunnyInterceptorLoader;
 import com.github.charlemaznable.bunny.rabbit.core.query.QueryHandler;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackHandler;
-import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeHandler;
-import com.github.charlemaznable.bunny.plugin.ServePlugin;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.BunnyHandlerLoaderImpl;
-import com.github.charlemaznable.bunny.rabbit.guice.loader.BunnyInterceptorLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.CalculatePluginLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.ServeCallbackPluginLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.ServePluginLoaderImpl;
@@ -50,7 +47,6 @@ public final class BunnyModular {
     private final BunnyEqlerModuleBuilder eqlerModuleBuilder;
 
     private final List<Class<? extends BunnyHandler>> handlerClasses;
-    private final List<Class<? extends BunnyInterceptor>> interceptorClasses;
     private final List<Pair<String, Class<? extends CalculatePlugin>>> calculatePlugins;
     private final List<Pair<String, Class<? extends ServePlugin>>> servePlugins;
     private final List<Pair<String, Class<? extends ServeCallbackPlugin>>> serveCallbackPlugins;
@@ -80,7 +76,6 @@ public final class BunnyModular {
         this.handlerClasses = newArrayList(CalculateHandler.class,
                 QueryHandler.class, ChargeHandler.class,
                 ServeHandler.class, ServeCallbackHandler.class);
-        this.interceptorClasses = newArrayList();
         this.calculatePlugins = newArrayList();
         this.servePlugins = newArrayList();
         this.serveCallbackPlugins = newArrayList();
@@ -96,13 +91,6 @@ public final class BunnyModular {
     public final BunnyModular addHandlers(
             Class<? extends BunnyHandler>... handlerClasses) {
         this.handlerClasses.addAll(newArrayList(handlerClasses));
-        return this;
-    }
-
-    @SafeVarargs
-    public final BunnyModular addInterceptors(
-            Class<? extends BunnyInterceptor>... interceptorClasses) {
-        this.interceptorClasses.addAll(newArrayList(interceptorClasses));
         return this;
     }
 
@@ -155,11 +143,6 @@ public final class BunnyModular {
                             handlersBinder.addBinding().to(handlerClass).in(SINGLETON);
                         }
                         bind(BunnyHandlerLoader.class).to(BunnyHandlerLoaderImpl.class).in(SINGLETON);
-                        val interceptorsBinder = newSetBinder(binder(), BunnyInterceptor.class);
-                        for (val interceptorClass : interceptorClasses) {
-                            interceptorsBinder.addBinding().to(interceptorClass).in(SINGLETON);
-                        }
-                        bind(BunnyInterceptorLoader.class).to(BunnyInterceptorLoaderImpl.class).in(SINGLETON);
                         for (val calculatePlugin : calculatePlugins) {
                             bind(CalculatePlugin.class).annotatedWith(named(
                                     calculatePlugin.getKey())).to(calculatePlugin.getValue()).in(SINGLETON);

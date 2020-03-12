@@ -14,6 +14,7 @@ import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import org.n3r.eql.mtcp.MtcpContext;
 
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
@@ -45,17 +46,17 @@ public class ServeCallbackCommon {
     static final String SUCCESS = "SUCCESS";
     static final String FAILURE = "FAILURE";
     private static MockWebServer mockWebServer;
-    private static boolean callback01;
-    private static boolean callback02;
-    private static boolean callback03;
-    private static boolean callback04;
+    private static int callback01;
+    private static int callback02;
+    private static int callback03;
+    private static int callback04;
 
     @SneakyThrows
     public static void beforeAll() {
-        callback01 = false;
-        callback02 = false;
-        callback03 = false;
-        callback04 = false;
+        callback01 = 0;
+        callback02 = 0;
+        callback03 = 0;
+        callback04 = 0;
         mockWebServer = new MockWebServer();
         mockWebServer.setDispatcher(new Dispatcher() {
             @Override
@@ -63,16 +64,16 @@ public class ServeCallbackCommon {
                 val requestUrl = request.getRequestUrl();
                 switch (requestUrl.encodedPath()) {
                     case "/callback01":
-                        callback01 = true;
+                        callback01 += 1;
                         return new MockResponse().setBody("ERROR");
                     case "/callback02":
-                        callback02 = true;
+                        callback02 += 1;
                         return new MockResponse().setBody("ERROR");
                     case "/callback03":
-                        callback03 = true;
+                        callback03 += 1;
                         return new MockResponse().setBody("OK");
                     case "/callback04":
-                        callback04 = true;
+                        callback04 += 1;
                         return new MockResponse().setBody("OK");
                     default:
                         return new MockResponse()
@@ -94,6 +95,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("notfound");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -109,6 +112,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("NotFoundPlugin");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -124,6 +129,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -139,6 +146,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_01);
@@ -153,12 +162,14 @@ public class ServeCallbackCommon {
                     }));
                 }),
                 Future.<Void>future(f -> {
-                    await().forever().until(() -> callback01);
+                    await().forever().until(() -> callback01 == 3);
                     f.complete();
                 }),
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_01);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -174,6 +185,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_02);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -190,6 +203,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_03);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -206,6 +221,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_04);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_04);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_04);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -222,6 +239,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_03);
@@ -236,12 +255,14 @@ public class ServeCallbackCommon {
                     }));
                 }),
                 Future.<Void>future(f -> {
-                    await().forever().until(() -> callback03);
+                    await().forever().until(() -> callback03 == 1);
                     f.complete();
                 }),
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_05);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_05);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_05);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -258,6 +279,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_06);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_06);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_06);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -274,6 +297,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_07);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_07);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_07);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -295,6 +320,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("notfound");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -308,6 +335,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("NotFoundPlugin");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -321,6 +350,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, null));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -334,6 +365,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_02);
@@ -346,12 +379,14 @@ public class ServeCallbackCommon {
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> {
-                    await().forever().until(() -> callback02);
+                    await().forever().until(() -> callback02 == 3);
                     f.complete();
                 }),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_01);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -365,6 +400,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_02);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -379,6 +416,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_03);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -393,6 +432,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_04);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_04);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_04);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -407,6 +448,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_04);
@@ -419,12 +462,14 @@ public class ServeCallbackCommon {
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> {
-                    await().forever().until(() -> callback04);
+                    await().forever().until(() -> callback04 == 1);
                     f.complete();
                 }),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_05);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_05);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_05);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -439,6 +484,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_06);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_06);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_06);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);
@@ -453,6 +500,8 @@ public class ServeCallbackCommon {
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveCallbackRequest = new ServeCallbackRequest();
                     serveCallbackRequest.setChargingType(CHARGING_TYPE_07);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_07);
+                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_07);
                     serveCallbackRequest.setServeType("test");
                     serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
                     serveCallbackRequest.setSeqId(SEQ_ID_00);

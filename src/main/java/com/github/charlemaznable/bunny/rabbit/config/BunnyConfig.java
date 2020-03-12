@@ -20,6 +20,9 @@ public interface BunnyConfig {
     @MinerConfig(dataId = "httpserver.port", defaultValue = "22114")
     int port();
 
+    @MinerConfig(dataId = "callback.limit", defaultValue = "3")
+    int callbackLimit(); // callback times limit
+
     @MinerConfig(dataId = "callback.delay", defaultValue = "60000")
     long callbackDelay(); // in MILLISECONDS
 }
