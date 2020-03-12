@@ -43,7 +43,7 @@ class ServeContext {
     /**
      * 服务下发结果
      */
-    boolean resultSuccess;
+    Boolean resultSuccess;
     /**
      * 非期望的内部异常
      */

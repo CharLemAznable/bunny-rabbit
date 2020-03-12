@@ -33,6 +33,7 @@ public class ServeCommon {
     static final String SERVE_CHECK_KEY = "SERVE_CHECK";
     static final String SUCCESS = "SUCCESS";
     static final String FAILURE = "FAILURE";
+    static final String UNDEFINED = "UNDEFINED";
 
     public static void testServeEventBus(VertxTestContext test, BunnyEventBus bunnyEventBus) {
         CompositeFuture.all(newArrayList(
@@ -212,41 +213,9 @@ public class ServeCommon {
                         f.complete();
                     }));
                 }),
-                Future.<Void>future(f -> {
-                    val serveRequest = new ServeRequest();
-                    serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setPaymentValue(1);
-                    serveRequest.setServeType("test");
-                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, FAILURE));
-                    bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
-                        val serveResponse = async.result();
-                        assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
-                        assertEquals("test", serveResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
-                        assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
-                        assertNull(serveResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
-                Future.<Void>future(f -> {
-                    val serveRequest = new ServeRequest();
-                    serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setPaymentValue(1);
-                    serveRequest.setServeType("test");
-                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
-                    bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
-                        val serveResponse = async.result();
-                        assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
-                        assertEquals("test", serveResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
-                        assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
-                        assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
-                        assertNull(serveResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
+                eventBusServeCheckFuture(test, bunnyEventBus, FAILURE),
+                eventBusServeCheckFuture(test, bunnyEventBus, UNDEFINED),
+                eventBusServeCheckFuture(test, bunnyEventBus, SUCCESS),
                 Future.<Void>future(f -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_05);
@@ -456,37 +425,9 @@ public class ServeCommon {
                     assertEquals("Unexpected Exception: Serve Check Error", serveResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveRequest = new ServeRequest();
-                    serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setPaymentValue(1);
-                    serveRequest.setServeType("test");
-                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, FAILURE));
-                    val serveResponse = bunnyOhClient.request(serveRequest);
-                    assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
-                    assertEquals("test", serveResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
-                    assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
-                    assertNull(serveResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveRequest = new ServeRequest();
-                    serveRequest.setChargingType(CHARGING_TYPE_00);
-                    serveRequest.setPaymentValue(1);
-                    serveRequest.setServeType("test");
-                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
-                    val serveResponse = bunnyOhClient.request(serveRequest);
-                    assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
-                    assertEquals("test", serveResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
-                    assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
-                    assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
-                    assertNull(serveResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
+                httpServerServeCheckFuture(vertx, bunnyOhClient, FAILURE),
+                httpServerServeCheckFuture(vertx, bunnyOhClient, UNDEFINED),
+                httpServerServeCheckFuture(vertx, bunnyOhClient, SUCCESS),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val serveRequest = new ServeRequest();
                     serveRequest.setChargingType(CHARGING_TYPE_05);
@@ -536,5 +477,49 @@ public class ServeCommon {
                     p.complete();
                 }, false, f))
         )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+    }
+
+    private static Future<Void> eventBusServeCheckFuture(VertxTestContext test,
+                                                         BunnyEventBus bunnyEventBus,
+                                                         String checkValue) {
+        return Future.future(f -> {
+            val serveRequest = new ServeRequest();
+            serveRequest.setChargingType(CHARGING_TYPE_00);
+            serveRequest.setPaymentValue(1);
+            serveRequest.setServeType("test");
+            serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, checkValue));
+            bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
+                val serveResponse = async.result();
+                assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
+                assertEquals("test", serveResponse.getServeType());
+                assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
+                assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
+                assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
+                assertEquals(checkValue, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
+                assertNull(serveResponse.getUnexpectedFailure());
+                f.complete();
+            }));
+        });
+    }
+
+    private static Future<Void> httpServerServeCheckFuture(Vertx vertx,
+                                                           BunnyOhClient bunnyOhClient,
+                                                           String checkValue) {
+        return Future.future(f -> vertx.executeBlocking(p -> {
+            val serveRequest = new ServeRequest();
+            serveRequest.setChargingType(CHARGING_TYPE_00);
+            serveRequest.setPaymentValue(1);
+            serveRequest.setServeType("test");
+            serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, checkValue));
+            val serveResponse = bunnyOhClient.request(serveRequest);
+            assertEquals(CHARGING_TYPE_00, serveResponse.getChargingType());
+            assertEquals("test", serveResponse.getServeType());
+            assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
+            assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
+            assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
+            assertEquals(checkValue, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
+            assertNull(serveResponse.getUnexpectedFailure());
+            p.complete();
+        }, false, f));
     }
 }

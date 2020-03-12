@@ -21,6 +21,8 @@ import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
 @Component
@@ -180,17 +182,19 @@ public final class ServeHandler
      */
     private Future<ServeContext> sufserve(ServeContext serveContext) {
         return Future.future(future -> {
-            if (!serveContext.returnSuccess) {
+            if (!serveContext.returnSuccess ||
+                    FALSE.equals(serveContext.resultSuccess)) {
                 // 服务调用失败 -> 回退预扣减
+                // 服务下发失败 -> 回退预扣减
                 serveService.executeRollback(serveContext, future);
                 return;
             }
-            if (serveContext.resultSuccess) {
+            if (TRUE.equals(serveContext.resultSuccess)) {
                 // 服务调用成功, 服务下发成功 -> 确认预扣减
                 serveService.executeCommit(serveContext, future);
                 return;
             }
-            // 服务调用成功, 服务下发未成功 -> 返回, 等待回调
+            // 服务调用成功, 服务下发未成功(resultSuccess==null) -> 返回, 等待回调
             future.complete(serveContext);
         });
     }

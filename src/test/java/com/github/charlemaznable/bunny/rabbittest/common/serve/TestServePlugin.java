@@ -13,6 +13,7 @@ import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommo
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.SERVE_CHECK_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.SERVE_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.SUCCESS;
+import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.UNDEFINED;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 
@@ -39,6 +40,8 @@ public class TestServePlugin implements ServePlugin {
             handler.handle(succeededFuture(true));
         } else if (FAILURE.equals(response.get(SERVE_CHECK_KEY))) {
             handler.handle(succeededFuture(false));
+        } else if (UNDEFINED.equals(response.get(SERVE_CHECK_KEY))) {
+            handler.handle(succeededFuture());
         } else {
             handler.handle(failedFuture(new MockException("Serve Check Error")));
         }
