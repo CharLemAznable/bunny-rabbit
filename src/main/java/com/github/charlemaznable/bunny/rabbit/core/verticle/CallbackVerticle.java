@@ -11,7 +11,6 @@ import lombok.val;
 import javax.annotation.Nullable;
 
 import static com.github.bingoohuang.westid.WestId.next;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackConstant.CALLBACK_STANDBY;
 import static com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackConstant.CALLBACK_SUCCESS;
 import static com.github.charlemaznable.core.codec.Json.unJson;
@@ -19,6 +18,7 @@ import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Str.isBlank;
 import static com.github.charlemaznable.core.lang.Str.toStr;
 import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
+import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
 public class CallbackVerticle extends AbstractVerticle {

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 
 import static com.github.bingoohuang.westid.WestId.next;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackConstant.CALLBACK_STANDBY;
 import static com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackConstant.CALLBACK_SUCCESS;
 import static com.github.charlemaznable.core.codec.Json.json;
@@ -27,6 +26,7 @@ import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Str.isBlank;
 import static com.github.charlemaznable.core.lang.Str.toStr;
+import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 import static java.lang.Boolean.TRUE;

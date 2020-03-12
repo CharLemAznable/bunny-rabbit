@@ -17,9 +17,9 @@ import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.COMMIT_FAILED;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.PRE_SERVE_FAILED;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.ROLLBACK_FAILED;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerElf.executeBlocking;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Str.toStr;
+import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static java.util.Objects.nonNull;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 

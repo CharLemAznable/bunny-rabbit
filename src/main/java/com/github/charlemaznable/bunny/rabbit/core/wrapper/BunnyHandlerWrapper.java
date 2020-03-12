@@ -15,7 +15,6 @@ import java.util.List;
 
 import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.REQUEST_BODY_ERROR;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerElf.executeBlocking;
 import static com.github.charlemaznable.core.codec.Json.json;
 import static com.github.charlemaznable.core.codec.Json.spec;
 import static com.github.charlemaznable.core.codec.Json.unJson;
@@ -24,6 +23,7 @@ import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Str.isBlank;
 import static com.github.charlemaznable.core.lang.Str.toStr;
+import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
 public abstract class BunnyHandlerWrapper<T extends BunnyBaseRequest<U>, U extends BunnyBaseResponse, R>

@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.QUERY_FAILED;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerElf.executeBlocking;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
+import static com.github.charlemaznable.core.vertx.VertxElf.executeBlocking;
 import static java.util.Objects.isNull;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
