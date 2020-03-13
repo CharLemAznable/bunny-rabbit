@@ -34,7 +34,7 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
         val rootRouter = buildRootRouter(bunnyRouter);
         vertx.createHttpServer().requestHandler(rootRouter)
                 .listen(bunnyConfig.port(), result -> {
-                    log.info("Bunny Http Server start: " +
+                    log.info("Bunny Http Server start:{} {}", bunnyConfig.port(),
                             (result.succeeded() ? "SUCCESS" : "FAILED"));
                     startFuture.handle(result.mapEmpty());
                 });
