@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestServePlugin implements ServePlugin {
 
     @Override
-    public void serve(Map<String, Object> context,
+    public void serve(Map<String, Object> context, String seqId,
                       Map<String, Object> request,
                       Handler<AsyncResult<Map<String, Object>>> handler) {
         assertNotNull(context.get(MtcpContext.TENANT_ID));

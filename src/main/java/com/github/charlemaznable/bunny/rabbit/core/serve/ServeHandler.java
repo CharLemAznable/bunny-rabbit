@@ -143,8 +143,9 @@ public final class ServeHandler
             try {
                 val servePlugin = pluginLoader.load(serveContext.serveType);
                 val context = serveContext.context;
+                val seqId = serveContext.seqId;
                 val internalRequest = serveContext.internalRequest;
-                servePlugin.serve(context, internalRequest, asyncServe -> {
+                servePlugin.serve(context, seqId, internalRequest, asyncServe -> {
                     if (asyncServe.failed()) {
                         // 插件回调失败 -> 服务调用失败
                         serveContext.returnSuccess = false;
