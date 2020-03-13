@@ -24,7 +24,7 @@ public class TestServeCallbackPlugin implements ServeCallbackPlugin {
     @Override
     public void checkRequest(Map<String, Object> context,
                              Map<String, Object> request,
-                             Handler<AsyncResult<Boolean>> handler) {
+                             Handler<AsyncResult<Integer>> handler) {
         assertNotNull(context.get(MtcpContext.TENANT_ID));
         assertNotNull(context.get(MtcpContext.TENANT_CODE));
         assertEquals(context.get(MtcpContext.TENANT_ID), context.get(MtcpContext.TENANT_CODE));
@@ -33,7 +33,7 @@ public class TestServeCallbackPlugin implements ServeCallbackPlugin {
             handler.handle(failedFuture(
                     new MockException("Serve Callback Error")));
         } else {
-            handler.handle(succeededFuture(SUCCESS.equals(callback)));
+            handler.handle(succeededFuture(SUCCESS.equals(callback) ? 1 : 0));
         }
     }
 }

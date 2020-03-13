@@ -43,14 +43,14 @@ public class TestServePlugin implements ServePlugin {
     @Override
     public void checkResponse(Map<String, Object> context,
                               Map<String, Object> response,
-                              Handler<AsyncResult<Boolean>> handler) {
+                              Handler<AsyncResult<Integer>> handler) {
         assertNotNull(context.get(MtcpContext.TENANT_ID));
         assertNotNull(context.get(MtcpContext.TENANT_CODE));
         assertEquals(context.get(MtcpContext.TENANT_ID), context.get(MtcpContext.TENANT_CODE));
         if (SUCCESS.equals(response.get(SERVE_CHECK_KEY))) {
-            handler.handle(succeededFuture(true));
+            handler.handle(succeededFuture(1));
         } else if (FAILURE.equals(response.get(SERVE_CHECK_KEY))) {
-            handler.handle(succeededFuture(false));
+            handler.handle(succeededFuture(0));
         } else if (UNDEFINED.equals(response.get(SERVE_CHECK_KEY))) {
             handler.handle(succeededFuture());
         } else {

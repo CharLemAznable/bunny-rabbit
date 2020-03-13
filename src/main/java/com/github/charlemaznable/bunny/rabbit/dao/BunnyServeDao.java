@@ -22,32 +22,21 @@ public interface BunnyServeDao extends EqlTranable {
                                @Param("seqId") String seqId);
 
     /**
-     * 回退预扣减, 检查流水记录状态
+     * 确认扣减, 检查流水记录状态
      */
-    String queryRollbackedSequence(@Param("chargingType") String chargingType,
-                                   @Param("seqId") String seqId);
+    String queryConfirmedSequence(@Param("chargingType") String chargingType,
+                                  @Param("seqId") String seqId);
 
     /**
-     * 回退预扣减, 更新流水记录状态
+     * 确认扣减, 更新流水记录状态
      */
-    int rollbackPreserveSequence(@Param("chargingType") String chargingType,
-                                 @Param("seqId") String seqId);
+    int confirmPreserveSequence(@Param("chargingType") String chargingType,
+                                @Param("seqId") String seqId,
+                                @Param("confirmValue") int confirmValue);
 
     /**
-     * 回退预扣减, 更新服务余额
+     * 确认扣减, 更新服务余额
      */
-    int updateBalanceByRollback(@Param("chargingType") String chargingType,
-                                @Param("seqId") String seqId);
-
-    /**
-     * 确认预扣减, 检查流水记录状态
-     */
-    String queryCommitedSequence(@Param("chargingType") String chargingType,
-                                 @Param("seqId") String seqId);
-
-    /**
-     * 确认预扣减, 更新流水记录状态
-     */
-    int commitPreserveSequence(@Param("chargingType") String chargingType,
+    int updateBalanceByConfirm(@Param("chargingType") String chargingType,
                                @Param("seqId") String seqId);
 }

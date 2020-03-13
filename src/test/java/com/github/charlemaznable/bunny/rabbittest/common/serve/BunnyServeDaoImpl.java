@@ -2,6 +2,7 @@ package com.github.charlemaznable.bunny.rabbittest.common.serve;
 
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbittest.common.common.MockException;
+import org.n3r.eql.eqler.annotations.Param;
 import org.n3r.eql.mtcp.MtcpContext;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
     static final String CHARGING_TYPE_05 = "05";
     static final String CHARGING_TYPE_06 = "06";
     static final String CHARGING_TYPE_07 = "07";
+    static final String CHARGING_TYPE_08 = "08";
 
     @Override
     public int updateBalanceByPayment(String chargingType, int paymentValue) {
@@ -46,54 +48,40 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
     }
 
     @Override
-    public String queryRollbackedSequence(String chargingType, String seqId) {
+    public String queryConfirmedSequence(@Param("chargingType") String chargingType,
+                                         @Param("seqId") String seqId) {
         assertEquals(chargingType, MtcpContext.getTenantId());
         assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_01.equals(chargingType)) {
+        if (CHARGING_TYPE_01.equals(chargingType) ||
+                CHARGING_TYPE_05.equals(chargingType)) {
             return seqId;
-        } else if (CHARGING_TYPE_04.equals(chargingType)) {
-            throw new MockException("Serve Rollback Exception");
+        } else if (CHARGING_TYPE_04.equals(chargingType) ||
+                CHARGING_TYPE_08.equals(chargingType)) {
+            throw new MockException("Serve Confirm Exception");
         }
         return null;
     }
 
     @Override
-    public int rollbackPreserveSequence(String chargingType, String seqId) {
+    public int confirmPreserveSequence(@Param("chargingType") String chargingType,
+                                       @Param("seqId") String seqId,
+                                       @Param("confirmValue") int confirmValue) {
         assertEquals(chargingType, MtcpContext.getTenantId());
         assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_02.equals(chargingType)) {
+        if (CHARGING_TYPE_02.equals(chargingType) ||
+                CHARGING_TYPE_06.equals(chargingType)) {
             return 0;
         }
         return 1;
     }
 
     @Override
-    public int updateBalanceByRollback(String chargingType, String seqId) {
+    public int updateBalanceByConfirm(@Param("chargingType") String chargingType,
+                                      @Param("seqId") String seqId) {
         assertEquals(chargingType, MtcpContext.getTenantId());
         assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_03.equals(chargingType)) {
-            return 0;
-        }
-        return 1;
-    }
-
-    @Override
-    public String queryCommitedSequence(String chargingType, String seqId) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_05.equals(chargingType)) {
-            return seqId;
-        } else if (CHARGING_TYPE_07.equals(chargingType)) {
-            throw new MockException("Serve Commit Exception");
-        }
-        return null;
-    }
-
-    @Override
-    public int commitPreserveSequence(String chargingType, String seqId) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_06.equals(chargingType)) {
+        if (CHARGING_TYPE_03.equals(chargingType) ||
+                CHARGING_TYPE_07.equals(chargingType)) {
             return 0;
         }
         return 1;

@@ -3,7 +3,6 @@ package com.github.charlemaznable.bunny.rabbit.core.serve;
 import com.github.charlemaznable.bunny.plugin.elf.MtcpElf;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
-import com.github.charlemaznable.core.lang.Executable;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -16,9 +15,8 @@ import javax.annotation.Nullable;
 
 import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.COMMIT_FAILED;
+import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CONFIRM_FAILED;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.PRE_SERVE_FAILED;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.ROLLBACK_FAILED;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Str.toStr;
 import static java.util.Objects.nonNull;
@@ -83,63 +81,38 @@ public final class ServeService {
         }, handler);
     }
 
-    public void executeRollback(ServeContext serveContext,
-                                Handler<AsyncResult<ServeContext>> handler) {
+    public void executeConfirm(ServeContext serveContext,
+                               Handler<AsyncResult<ServeContext>> handler) {
         // ServeContext入参:
         // chargingType
         // seqId
+        // confirmValue
         // ServeContext出参:
         // unexpectedThrowable*
-        executeTrans(serveContext, () -> {
-            if (nonNull(bunnyServeDao.queryRollbackedSequence(
-                    serveContext.chargingType, serveContext.seqId))) {
-                // 流水已回退
-                return;
-            }
-            if (1 != bunnyServeDao.rollbackPreserveSequence(
-                    serveContext.chargingType, serveContext.seqId)) {
-                // 更新流水失败
-                throw ROLLBACK_FAILED.exception("Sequence Rollback Failed");
-            }
-
-            if (1 != bunnyServeDao.updateBalanceByRollback(
-                    serveContext.chargingType, serveContext.seqId)) {
-                // 回退预扣减失败
-                throw ROLLBACK_FAILED.exception("Balance Rollback Failed");
-            }
-        }, handler);
-    }
-
-    public void executeCommit(ServeContext serveContext,
-                              Handler<AsyncResult<ServeContext>> handler) {
-        // ServeContext入参:
-        // chargingType
-        // seqId
-        // ServeContext出参:
-        // unexpectedThrowable*
-        executeTrans(serveContext, () -> {
-            if (nonNull(bunnyServeDao.queryCommitedSequence(
-                    serveContext.chargingType, serveContext.seqId))) {
-                // 流水已确认
-                return;
-            }
-            if (1 != bunnyServeDao.commitPreserveSequence(
-                    serveContext.chargingType, serveContext.seqId)) {
-                // 更新流水失败
-                throw COMMIT_FAILED.exception("Sequence Commit Failed");
-            }
-        }, handler);
-    }
-
-    private void executeTrans(ServeContext serveContext,
-                              Executable executable,
-                              Handler<AsyncResult<ServeContext>> handler) {
         Vertx.currentContext().executeBlocking(block -> {
             try {
                 MtcpElf.preHandle(serveContext.context);
                 bunnyServeDao.start();
 
-                executable.execute();
+                if (nonNull(bunnyServeDao.queryConfirmedSequence(
+                        serveContext.chargingType, serveContext.seqId))) {
+                    // 流水已确认
+                    bunnyServeDao.commit();
+                    block.complete(serveContext);
+                    return;
+                }
+                if (1 != bunnyServeDao.confirmPreserveSequence(
+                        serveContext.chargingType, serveContext.seqId,
+                        nullThen(serveContext.confirmValue, () -> 0))) {
+                    // 更新流水失败
+                    throw CONFIRM_FAILED.exception("Sequence Confirm Failed");
+                }
+
+                if (1 != bunnyServeDao.updateBalanceByConfirm(
+                        serveContext.chargingType, serveContext.seqId)) {
+                    // 更新服务余额失败
+                    throw CONFIRM_FAILED.exception("Balance Confirm Failed");
+                }
 
                 bunnyServeDao.commit();
                 block.complete(serveContext);

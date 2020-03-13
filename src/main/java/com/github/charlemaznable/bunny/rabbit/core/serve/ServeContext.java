@@ -45,9 +45,9 @@ class ServeContext {
      */
     Map<String, Object> internalResponse;
     /**
-     * 服务下发结果
+     * 服务下发确认计量
      */
-    Boolean resultSuccess;
+    Integer confirmValue;
     /**
      * 非期望的内部异常
      */

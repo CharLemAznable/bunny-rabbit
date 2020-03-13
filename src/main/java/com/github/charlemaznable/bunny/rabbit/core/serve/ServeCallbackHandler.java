@@ -33,7 +33,6 @@ import static com.github.charlemaznable.core.lang.Str.toStr;
 import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
-import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
@@ -118,7 +117,7 @@ public final class ServeCallbackHandler
                                 future.fail(asyncResult.cause());
                             } else {
                                 // 记录服务下发结果
-                                serveContext.resultSuccess = asyncResult.result();
+                                serveContext.confirmValue = asyncResult.result();
                                 future.complete(serveContext);
                             }
                         });
@@ -133,15 +132,9 @@ public final class ServeCallbackHandler
      * step2 确认/回退预扣减
      */
     private Future<ServeContext> sufcheck(ServeContext serveContext) {
-        return Future.future(future -> {
-            if (!TRUE.equals(serveContext.resultSuccess)) {
-                // 服务下发未成功 -> 回退预扣减
-                serveService.executeRollback(serveContext, future);
-            } else {
-                // 服务下发成功 -> 确认预扣减
-                serveService.executeCommit(serveContext, future);
-            }
-        });
+        return Future.future(future ->
+                // 根据服务下发结果, 确认预扣减
+                serveService.executeConfirm(serveContext, future));
     }
 
     /**

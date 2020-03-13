@@ -18,8 +18,7 @@ import org.n3r.eql.mtcp.MtcpContext;
 
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.COMMIT_FAILED;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.ROLLBACK_FAILED;
+import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CONFIRM_FAILED;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl.SEQ_ID_00;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl.SEQ_ID_01;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl.SEQ_ID_02;
@@ -33,12 +32,12 @@ import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServe
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_05;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_06;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_07;
+import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_08;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Mapp.of;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ServeCallbackCommon {
 
@@ -143,175 +142,24 @@ public class ServeCallbackCommon {
                         f.complete();
                     }));
                 }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_01);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_00, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                        assertNull(serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
+                eventBusSuccessCallbackFuture(test, bunnyEventBus, CHARGING_TYPE_00, SEQ_ID_01),
                 Future.<Void>future(f -> {
                     await().forever().until(() -> callback01 == 3);
                     f.complete();
                 }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_01);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_01, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertTrue(serveCallbackResponse.isSuccess());
-                        assertNull(serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_02);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_02, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                        assertEquals(ROLLBACK_FAILED.exception("Sequence Rollback Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_03);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_03, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                        assertEquals(ROLLBACK_FAILED.exception("Balance Rollback Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_04);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_04);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_04);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_04, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                        assertEquals("Serve Rollback Exception", serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_03);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_00, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                        assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                        assertNull(serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
+                eventBusSuccessCallbackFuture(test, bunnyEventBus, CHARGING_TYPE_01, SEQ_ID_00),
+                eventBusSequenceConfirmFailedFuture(test, bunnyEventBus, CHARGING_TYPE_02, SEQ_ID_00),
+                eventBusBalanceConfirmFailedFuture(test, bunnyEventBus, CHARGING_TYPE_03, SEQ_ID_00),
+                eventBusServeConfirmExceptionFuture(test, bunnyEventBus, CHARGING_TYPE_04, SEQ_ID_00),
+                eventBusSuccessCallbackFuture(test, bunnyEventBus, CHARGING_TYPE_00, SEQ_ID_03),
                 Future.<Void>future(f -> {
                     await().forever().until(() -> callback03 == 1);
                     f.complete();
                 }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_05);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_05);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_05);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_05, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals("OK", serveCallbackResponse.getRespCode());
-                        assertEquals("SUCCESS", serveCallbackResponse.getRespDesc());
-                        assertNull(serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_06);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_06);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_06);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_06, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                        assertEquals(COMMIT_FAILED.exception("Sequence Commit Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                }),
-                Future.<Void>future(f -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_07);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_07);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_07);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
-                        val serveCallbackResponse = async.result();
-                        assertEquals(CHARGING_TYPE_07, serveCallbackResponse.getChargingType());
-                        assertEquals("test", serveCallbackResponse.getServeType());
-                        assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                        assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                        assertEquals("Serve Commit Exception", serveCallbackResponse.getUnexpectedFailure());
-                        f.complete();
-                    }));
-                })
+                eventBusSuccessCallbackFuture(test, bunnyEventBus, CHARGING_TYPE_05, SEQ_ID_00),
+                eventBusSequenceConfirmFailedFuture(test, bunnyEventBus, CHARGING_TYPE_06, SEQ_ID_00),
+                eventBusBalanceConfirmFailedFuture(test, bunnyEventBus, CHARGING_TYPE_07, SEQ_ID_00),
+                eventBusServeConfirmExceptionFuture(test, bunnyEventBus, CHARGING_TYPE_08, SEQ_ID_00)
         )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
     }
 
@@ -362,157 +210,206 @@ public class ServeCallbackCommon {
                     assertEquals("Unexpected Exception: Serve Callback Error", serveCallbackResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_02);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_00, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                    assertNull(serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
+                httpServerSuccessCallbackFuture(vertx, bunnyOhClient, CHARGING_TYPE_00, SEQ_ID_02),
                 Future.<Void>future(f -> {
                     await().forever().until(() -> callback02 == 3);
                     f.complete();
                 }),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_01);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_01, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertTrue(serveCallbackResponse.isSuccess());
-                    assertNull(serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_02);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_02, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                    assertEquals(ROLLBACK_FAILED.exception("Sequence Rollback Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_03);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_03, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                    assertEquals(ROLLBACK_FAILED.exception("Balance Rollback Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_04);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_04);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_04);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_04, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                    assertEquals("Serve Rollback Exception", serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_04);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_00, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                    assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                    assertNull(serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
+                httpServerSuccessCallbackFuture(vertx, bunnyOhClient, CHARGING_TYPE_01, SEQ_ID_00),
+                httpServerSequenceConfirmFailedFuture(vertx, bunnyOhClient, CHARGING_TYPE_02, SEQ_ID_00),
+                httpServerBalanceConfirmFailedFuture(vertx, bunnyOhClient, CHARGING_TYPE_03, SEQ_ID_00),
+                httpServerServeConfirmExceptionFuture(vertx, bunnyOhClient, CHARGING_TYPE_04, SEQ_ID_00),
+                httpServerSuccessCallbackFuture(vertx, bunnyOhClient, CHARGING_TYPE_00, SEQ_ID_04),
                 Future.<Void>future(f -> {
                     await().forever().until(() -> callback04 == 1);
                     f.complete();
                 }),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_05);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_05);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_05);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_05, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals("OK", serveCallbackResponse.getRespCode());
-                    assertEquals("SUCCESS", serveCallbackResponse.getRespDesc());
-                    assertNull(serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_06);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_06);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_06);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_06, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                    assertEquals(COMMIT_FAILED.exception("Sequence Commit Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f)),
-                Future.<Void>future(f -> vertx.executeBlocking(p -> {
-                    val serveCallbackRequest = new ServeCallbackRequest();
-                    serveCallbackRequest.setChargingType(CHARGING_TYPE_07);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_07);
-                    serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_07);
-                    serveCallbackRequest.setServeType("test");
-                    serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
-                    serveCallbackRequest.setSeqId(SEQ_ID_00);
-                    val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
-                    assertEquals(CHARGING_TYPE_07, serveCallbackResponse.getChargingType());
-                    assertEquals("test", serveCallbackResponse.getServeType());
-                    assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
-                    assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
-                    assertEquals("Serve Commit Exception", serveCallbackResponse.getUnexpectedFailure());
-                    p.complete();
-                }, false, f))
+                httpServerSuccessCallbackFuture(vertx, bunnyOhClient, CHARGING_TYPE_05, SEQ_ID_00),
+                httpServerSequenceConfirmFailedFuture(vertx, bunnyOhClient, CHARGING_TYPE_06, SEQ_ID_00),
+                httpServerBalanceConfirmFailedFuture(vertx, bunnyOhClient, CHARGING_TYPE_07, SEQ_ID_00),
+                httpServerServeConfirmExceptionFuture(vertx, bunnyOhClient, CHARGING_TYPE_08, SEQ_ID_00)
         )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+    }
+
+    private static Future<Void> eventBusSuccessCallbackFuture(VertxTestContext test,
+                                                              BunnyEventBus bunnyEventBus,
+                                                              String chargingType, String seqId) {
+        return Future.future(f -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
+            serveCallbackRequest.setSeqId(seqId);
+            bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
+                val serveCallbackResponse = async.result();
+                assertEquals(chargingType, serveCallbackResponse.getChargingType());
+                assertEquals("test", serveCallbackResponse.getServeType());
+                assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+                assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+                assertNull(serveCallbackResponse.getUnexpectedFailure());
+                f.complete();
+            }));
+        });
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Future<Void> eventBusSequenceConfirmFailedFuture(VertxTestContext test,
+                                                                    BunnyEventBus bunnyEventBus,
+                                                                    String chargingType, String seqId) {
+        return Future.future(f -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
+            serveCallbackRequest.setSeqId(seqId);
+            bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
+                val serveCallbackResponse = async.result();
+                assertEquals(chargingType, serveCallbackResponse.getChargingType());
+                assertEquals("test", serveCallbackResponse.getServeType());
+                assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+                assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+                assertEquals(CONFIRM_FAILED.exception("Sequence Confirm Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
+                f.complete();
+            }));
+        });
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Future<Void> eventBusBalanceConfirmFailedFuture(VertxTestContext test,
+                                                                   BunnyEventBus bunnyEventBus,
+                                                                   String chargingType, String seqId) {
+        return Future.future(f -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
+            serveCallbackRequest.setSeqId(seqId);
+            bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
+                val serveCallbackResponse = async.result();
+                assertEquals(chargingType, serveCallbackResponse.getChargingType());
+                assertEquals("test", serveCallbackResponse.getServeType());
+                assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+                assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+                assertEquals(CONFIRM_FAILED.exception("Balance Confirm Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
+                f.complete();
+            }));
+        });
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Future<Void> eventBusServeConfirmExceptionFuture(VertxTestContext test,
+                                                                    BunnyEventBus bunnyEventBus,
+                                                                    String chargingType, String seqId) {
+        return Future.future(f -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
+            serveCallbackRequest.setSeqId(seqId);
+            bunnyEventBus.request(serveCallbackRequest, async -> test.verify(() -> {
+                val serveCallbackResponse = async.result();
+                assertEquals(chargingType, serveCallbackResponse.getChargingType());
+                assertEquals("test", serveCallbackResponse.getServeType());
+                assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+                assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+                assertEquals("Serve Confirm Exception", serveCallbackResponse.getUnexpectedFailure());
+                f.complete();
+            }));
+        });
+    }
+
+    private static Future<Void> httpServerSuccessCallbackFuture(Vertx vertx,
+                                                                BunnyOhClient bunnyOhClient,
+                                                                String chargingType, String seqId) {
+        return Future.future(f -> vertx.executeBlocking(p -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
+            serveCallbackRequest.setSeqId(seqId);
+            val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
+            assertEquals(chargingType, serveCallbackResponse.getChargingType());
+            assertEquals("test", serveCallbackResponse.getServeType());
+            assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+            assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+            assertNull(serveCallbackResponse.getUnexpectedFailure());
+            p.complete();
+        }, false, f));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Future<Void> httpServerSequenceConfirmFailedFuture(Vertx vertx,
+                                                                      BunnyOhClient bunnyOhClient,
+                                                                      String chargingType, String seqId) {
+        return Future.future(f -> vertx.executeBlocking(p -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
+            serveCallbackRequest.setSeqId(seqId);
+            val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
+            assertEquals(chargingType, serveCallbackResponse.getChargingType());
+            assertEquals("test", serveCallbackResponse.getServeType());
+            assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+            assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+            assertEquals(CONFIRM_FAILED.exception("Sequence Confirm Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
+            p.complete();
+        }, false, f));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Future<Void> httpServerBalanceConfirmFailedFuture(Vertx vertx,
+                                                                     BunnyOhClient bunnyOhClient,
+                                                                     String chargingType, String seqId) {
+        return Future.future(f -> vertx.executeBlocking(p -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, FAILURE));
+            serveCallbackRequest.setSeqId(seqId);
+            val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
+            assertEquals(chargingType, serveCallbackResponse.getChargingType());
+            assertEquals("test", serveCallbackResponse.getServeType());
+            assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+            assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+            assertEquals(CONFIRM_FAILED.exception("Balance Confirm Failed").getMessage(), serveCallbackResponse.getUnexpectedFailure());
+            p.complete();
+        }, false, f));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Future<Void> httpServerServeConfirmExceptionFuture(Vertx vertx,
+                                                                      BunnyOhClient bunnyOhClient,
+                                                                      String chargingType, String seqId) {
+        return Future.future(f -> vertx.executeBlocking(p -> {
+            val serveCallbackRequest = new ServeCallbackRequest();
+            serveCallbackRequest.setChargingType(chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_ID, chargingType);
+            serveCallbackRequest.getContext().put(MtcpContext.TENANT_CODE, chargingType);
+            serveCallbackRequest.setServeType("test");
+            serveCallbackRequest.setInternalRequest(of(SERVE_CALLBACK_KEY, SUCCESS));
+            serveCallbackRequest.setSeqId(seqId);
+            val serveCallbackResponse = bunnyOhClient.request(serveCallbackRequest);
+            assertEquals(chargingType, serveCallbackResponse.getChargingType());
+            assertEquals("test", serveCallbackResponse.getServeType());
+            assertEquals(RESP_CODE_OK, serveCallbackResponse.getRespCode());
+            assertEquals(RESP_DESC_SUCCESS, serveCallbackResponse.getRespDesc());
+            assertEquals("Serve Confirm Exception", serveCallbackResponse.getUnexpectedFailure());
+            p.complete();
+        }, false, f));
     }
 }

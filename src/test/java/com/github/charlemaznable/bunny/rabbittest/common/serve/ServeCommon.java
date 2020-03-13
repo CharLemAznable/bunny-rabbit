@@ -12,7 +12,7 @@ import org.n3r.eql.mtcp.MtcpContext;
 
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_DESC_SUCCESS;
-import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.COMMIT_FAILED;
+import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CONFIRM_FAILED;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_00;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_01;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_02;
@@ -21,6 +21,7 @@ import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServe
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_05;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_06;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_07;
+import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CHARGING_TYPE_08;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Mapp.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -184,8 +185,8 @@ public class ServeCommon {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
                         assertNull(serveResponse.getServeType());
-                        assertEquals("TEST_SERVE_FAILED(ROLLBACK_FAILED)", serveResponse.getRespCode());
-                        assertEquals("Test Serve Failed(Serve Rollback Failed: Sequence Rollback Failed)", serveResponse.getRespDesc());
+                        assertEquals("TEST_SERVE_FAILED(CONFIRM_FAILED)", serveResponse.getRespCode());
+                        assertEquals("Test Serve Failed(Serve Confirm Failed: Sequence Confirm Failed)", serveResponse.getRespDesc());
                         f.complete();
                     }));
                 }),
@@ -201,8 +202,8 @@ public class ServeCommon {
                         val serveResponse = async.result();
                         assertNull(serveResponse.getChargingType());
                         assertNull(serveResponse.getServeType());
-                        assertEquals("TEST_SERVE_FAILED(ROLLBACK_FAILED)", serveResponse.getRespCode());
-                        assertEquals("Test Serve Failed(Serve Rollback Failed: Balance Rollback Failed)", serveResponse.getRespDesc());
+                        assertEquals("TEST_SERVE_FAILED(CONFIRM_FAILED)", serveResponse.getRespCode());
+                        assertEquals("Test Serve Failed(Serve Confirm Failed: Balance Confirm Failed)", serveResponse.getRespDesc());
                         f.complete();
                     }));
                 }),
@@ -219,7 +220,7 @@ public class ServeCommon {
                         assertNull(serveResponse.getChargingType());
                         assertNull(serveResponse.getServeType());
                         assertEquals("TEST_SERVE_FAILED(UNEXPECTED_EXCEPTION)", serveResponse.getRespCode());
-                        assertEquals("Test Serve Failed(Unexpected Exception: Serve Rollback Exception)", serveResponse.getRespDesc());
+                        assertEquals("Test Serve Failed(Unexpected Exception: Serve Confirm Exception)", serveResponse.getRespDesc());
                         f.complete();
                     }));
                 }),
@@ -279,7 +280,7 @@ public class ServeCommon {
                         assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
                         assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
                         assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
-                        assertEquals(COMMIT_FAILED.exception("Sequence Commit Failed").getMessage(), serveResponse.getUnexpectedFailure());
+                        assertEquals(CONFIRM_FAILED.exception("Sequence Confirm Failed").getMessage(), serveResponse.getUnexpectedFailure());
                         f.complete();
                     }));
                 }),
@@ -299,7 +300,27 @@ public class ServeCommon {
                         assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
                         assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
                         assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
-                        assertEquals("Serve Commit Exception", serveResponse.getUnexpectedFailure());
+                        assertEquals(CONFIRM_FAILED.exception("Balance Confirm Failed").getMessage(), serveResponse.getUnexpectedFailure());
+                        f.complete();
+                    }));
+                }),
+                Future.<Void>future(f -> {
+                    val serveRequest = new ServeRequest();
+                    serveRequest.setChargingType(CHARGING_TYPE_08);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_08);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_08);
+                    serveRequest.setPaymentValue(1);
+                    serveRequest.setServeType("test");
+                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
+                    bunnyEventBus.request(serveRequest, async -> test.verify(() -> {
+                        val serveResponse = async.result();
+                        assertEquals(CHARGING_TYPE_08, serveResponse.getChargingType());
+                        assertEquals("test", serveResponse.getServeType());
+                        assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
+                        assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
+                        assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
+                        assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
+                        assertEquals("Serve Confirm Exception", serveResponse.getUnexpectedFailure());
                         f.complete();
                     }));
                 })
@@ -435,8 +456,8 @@ public class ServeCommon {
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());
-                    assertEquals("TEST_SERVE_FAILED(ROLLBACK_FAILED)", serveResponse.getRespCode());
-                    assertEquals("Test Serve Failed(Serve Rollback Failed: Sequence Rollback Failed)", serveResponse.getRespDesc());
+                    assertEquals("TEST_SERVE_FAILED(CONFIRM_FAILED)", serveResponse.getRespCode());
+                    assertEquals("Test Serve Failed(Serve Confirm Failed: Sequence Confirm Failed)", serveResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
@@ -450,8 +471,8 @@ public class ServeCommon {
                     val serveResponse = bunnyOhClient.request(serveRequest);
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());
-                    assertEquals("TEST_SERVE_FAILED(ROLLBACK_FAILED)", serveResponse.getRespCode());
-                    assertEquals("Test Serve Failed(Serve Rollback Failed: Balance Rollback Failed)", serveResponse.getRespDesc());
+                    assertEquals("TEST_SERVE_FAILED(CONFIRM_FAILED)", serveResponse.getRespCode());
+                    assertEquals("Test Serve Failed(Serve Confirm Failed: Balance Confirm Failed)", serveResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
@@ -466,7 +487,7 @@ public class ServeCommon {
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());
                     assertEquals("TEST_SERVE_FAILED(UNEXPECTED_EXCEPTION)", serveResponse.getRespCode());
-                    assertEquals("Test Serve Failed(Unexpected Exception: Serve Rollback Exception)", serveResponse.getRespDesc());
+                    assertEquals("Test Serve Failed(Unexpected Exception: Serve Confirm Exception)", serveResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
@@ -520,7 +541,7 @@ public class ServeCommon {
                     assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
                     assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
                     assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
-                    assertEquals(COMMIT_FAILED.exception("Sequence Commit Failed").getMessage(), serveResponse.getUnexpectedFailure());
+                    assertEquals(CONFIRM_FAILED.exception("Sequence Confirm Failed").getMessage(), serveResponse.getUnexpectedFailure());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
@@ -538,7 +559,25 @@ public class ServeCommon {
                     assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
                     assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
                     assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
-                    assertEquals("Serve Commit Exception", serveResponse.getUnexpectedFailure());
+                    assertEquals(CONFIRM_FAILED.exception("Balance Confirm Failed").getMessage(), serveResponse.getUnexpectedFailure());
+                    p.complete();
+                }, false, f)),
+                Future.<Void>future(f -> vertx.executeBlocking(p -> {
+                    val serveRequest = new ServeRequest();
+                    serveRequest.setChargingType(CHARGING_TYPE_08);
+                    serveRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_08);
+                    serveRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_08);
+                    serveRequest.setPaymentValue(1);
+                    serveRequest.setServeType("test");
+                    serveRequest.setInternalRequest(of(SERVE_KEY, SUCCESS, SERVE_CHECK_KEY, SUCCESS));
+                    val serveResponse = bunnyOhClient.request(serveRequest);
+                    assertEquals(CHARGING_TYPE_08, serveResponse.getChargingType());
+                    assertEquals("test", serveResponse.getServeType());
+                    assertEquals(RESP_CODE_OK, serveResponse.getRespCode());
+                    assertEquals(RESP_DESC_SUCCESS, serveResponse.getRespDesc());
+                    assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_KEY));
+                    assertEquals(SUCCESS, serveResponse.getInternalResponse().get(SERVE_CHECK_KEY));
+                    assertEquals("Serve Confirm Exception", serveResponse.getUnexpectedFailure());
                     p.complete();
                 }, false, f))
         )).setHandler(event -> test.<CompositeFuture>completing().handle(event));

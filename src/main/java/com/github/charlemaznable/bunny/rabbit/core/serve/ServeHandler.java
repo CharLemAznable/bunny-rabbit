@@ -21,8 +21,6 @@ import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
 @Component
@@ -167,7 +165,7 @@ public final class ServeHandler
                             serveContext.internalThrowable = asyncCheck.cause();
                         } else {
                             // 记录服务下发结果
-                            serveContext.resultSuccess = asyncCheck.result();
+                            serveContext.confirmValue = asyncCheck.result();
                         }
                         future.complete(serveContext);
                     });
@@ -187,18 +185,13 @@ public final class ServeHandler
     private Future<ServeContext> sufserve(ServeContext serveContext) {
         return Future.future(future -> {
             if (!serveContext.returnSuccess ||
-                    FALSE.equals(serveContext.resultSuccess)) {
-                // 服务调用失败 -> 回退预扣减
-                // 服务下发失败 -> 回退预扣减
-                serveService.executeRollback(serveContext, future);
+                    nonNull(serveContext.confirmValue)) {
+                // 服务调用失败 -> 确认预扣减(全量回退)
+                // 服务下发结果确认 -> 确认预扣减(全量确认/部分回退)
+                serveService.executeConfirm(serveContext, future);
                 return;
             }
-            if (TRUE.equals(serveContext.resultSuccess)) {
-                // 服务调用成功, 服务下发成功 -> 确认预扣减
-                serveService.executeCommit(serveContext, future);
-                return;
-            }
-            // 服务调用成功, 服务下发未成功(resultSuccess==null) -> 返回, 等待回调
+            // 服务调用成功, 服务下发未成功(confirmValue==null) -> 返回, 等待回调
             future.complete(serveContext);
         });
     }

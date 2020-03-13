@@ -24,9 +24,7 @@ public enum BunnyError {
 
     PRE_SERVE_FAILED("PRE_SERVE_FAILED", "Pre-Serve Failed"),
 
-    ROLLBACK_FAILED("ROLLBACK_FAILED", "Serve Rollback Failed"),
-
-    COMMIT_FAILED("COMMIT_FAILED", "Serve Commit Failed"),
+    CONFIRM_FAILED("CONFIRM_FAILED", "Serve Confirm Failed"),
 
     SERVE_CALLBACK_FAILED("SERVE_CALLBACK_FAILED", "Serve Callback Failed"),
 
