@@ -63,15 +63,23 @@ public class ServeCallbackCommon {
                 val requestUrl = request.getRequestUrl();
                 switch (requestUrl.encodedPath()) {
                     case "/callback01":
+                        assertEquals(FAILURE, requestUrl
+                                .queryParameter(SERVE_CALLBACK_KEY));
                         callback01 += 1;
                         return new MockResponse().setBody("ERROR");
                     case "/callback02":
+                        assertEquals(FAILURE, requestUrl
+                                .queryParameter(SERVE_CALLBACK_KEY));
                         callback02 += 1;
                         return new MockResponse().setBody("ERROR");
                     case "/callback03":
+                        assertEquals(FAILURE, requestUrl
+                                .queryParameter(SERVE_CALLBACK_KEY));
                         callback03 += 1;
                         return new MockResponse().setBody("OK");
                     case "/callback04":
+                        assertEquals(FAILURE, requestUrl
+                                .queryParameter(SERVE_CALLBACK_KEY));
                         callback04 += 1;
                         return new MockResponse().setBody("OK");
                     default:

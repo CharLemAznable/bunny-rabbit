@@ -7,7 +7,7 @@ public interface BunnyCallbackDao {
 
     /**
      * 查询回调地址
-     * 需要服务流水回调状态为未完成
+     * 需要服务流水回调状态为待回调
      */
     String queryCallbackUrl(@Param("chargingType") String chargingType,
                             @Param("seqId") String seqId);
