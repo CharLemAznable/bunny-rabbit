@@ -29,15 +29,19 @@ import lombok.experimental.Accessors;
 import lombok.val;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
+import static com.github.charlemaznable.core.spring.ClzResolver.getClasses;
 import static com.google.inject.Scopes.SINGLETON;
 import static com.google.inject.multibindings.Multibinder.newSetBinder;
 import static com.google.inject.name.Names.named;
+import static java.util.Objects.nonNull;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 public final class BunnyModular {
 
@@ -57,7 +61,7 @@ public final class BunnyModular {
     }
 
     public BunnyModular(Class<? extends BunnyConfig> configClass) {
-        this(new MinerModular().createModule(configClass));
+        this(new MinerModular().bindClasses(configClass).createModule());
     }
 
     public BunnyModular(BunnyConfig configImpl) {
@@ -90,6 +94,11 @@ public final class BunnyModular {
     @SafeVarargs
     public final BunnyModular addHandlers(
             Class<? extends BunnyHandler>... handlerClasses) {
+        return addHandlers(newArrayList(handlerClasses));
+    }
+
+    public BunnyModular addHandlers(
+            Iterable<Class<? extends BunnyHandler>> handlerClasses) {
         this.handlerClasses.addAll(newArrayList(handlerClasses));
         return this;
     }
@@ -97,6 +106,11 @@ public final class BunnyModular {
     @SafeVarargs
     public final BunnyModular addCalculatePlugins(
             Class<? extends CalculatePlugin>... calculatePlugins) {
+        return addCalculatePlugins(newArrayList(calculatePlugins));
+    }
+
+    public BunnyModular addCalculatePlugins(
+            Iterable<Class<? extends CalculatePlugin>> calculatePlugins) {
         this.calculatePlugins.addAll(newArrayList(calculatePlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
         return this;
@@ -105,6 +119,11 @@ public final class BunnyModular {
     @SafeVarargs
     public final BunnyModular addServePlugins(
             Class<? extends ServePlugin>... servePlugins) {
+        return addServePlugins(newArrayList(servePlugins));
+    }
+
+    public BunnyModular addServePlugins(
+            Iterable<Class<? extends ServePlugin>> servePlugins) {
         this.servePlugins.addAll(newArrayList(servePlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
         return this;
@@ -113,17 +132,51 @@ public final class BunnyModular {
     @SafeVarargs
     public final BunnyModular addServeCallbackPlugins(
             Class<? extends ServeCallbackPlugin>... serveCallbackPlugins) {
+        return addServeCallbackPlugins(newArrayList(serveCallbackPlugins));
+    }
+
+    public BunnyModular addServeCallbackPlugins(
+            Iterable<Class<? extends ServeCallbackPlugin>> serveCallbackPlugins) {
         this.serveCallbackPlugins.addAll(newArrayList(serveCallbackPlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
         return this;
     }
 
-    public final BunnyModular pluginNameMapper(Class<? extends PluginNameMapper> mapperClass) {
-        this.pluginNameMapperModule = new MinerModular().createModule(mapperClass);
+    public BunnyModular scanPackages(String... basePackages) {
+        return scanPackages(newArrayList(basePackages));
+    }
+
+    public BunnyModular scanPackages(Iterable<String> basePackages) {
+        for (val basePackage : basePackages) {
+            addHandlers(getSubClasses(basePackage, BunnyHandler.class));
+            addCalculatePlugins(getSubClasses(basePackage, CalculatePlugin.class));
+            addServePlugins(getSubClasses(basePackage, ServePlugin.class));
+            addServeCallbackPlugins(getSubClasses(basePackage, ServeCallbackPlugin.class));
+        }
         return this;
     }
 
-    public final BunnyModular pluginNameMapper(PluginNameMapper mapperImpl) {
+    public BunnyModular scanPackageClasses(Class<?>... basePackageClasses) {
+        return scanPackageClasses(newArrayList(basePackageClasses));
+    }
+
+    public BunnyModular scanPackageClasses(Iterable<Class<?>> basePackageClasses) {
+        for (val basePackageClass : basePackageClasses) {
+            val basePackage = ClassUtils.getPackageName(basePackageClass);
+            addHandlers(getSubClasses(basePackage, BunnyHandler.class));
+            addCalculatePlugins(getSubClasses(basePackage, CalculatePlugin.class));
+            addServePlugins(getSubClasses(basePackage, ServePlugin.class));
+            addServeCallbackPlugins(getSubClasses(basePackage, ServeCallbackPlugin.class));
+        }
+        return this;
+    }
+
+    public BunnyModular pluginNameMapper(Class<? extends PluginNameMapper> mapperClass) {
+        this.pluginNameMapperModule = new MinerModular().bindClasses(mapperClass).createModule();
+        return this;
+    }
+
+    public BunnyModular pluginNameMapper(PluginNameMapper mapperImpl) {
         this.pluginNameMapperModule = new AbstractModule() {
             @Override
             protected void configure() {
@@ -160,6 +213,13 @@ public final class BunnyModular {
                         bind(ServeCallbackPluginLoader.class).to(ServeCallbackPluginLoaderImpl.class).in(SINGLETON);
                     }
                 }, pluginNameMapperModule);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> List<Class<? extends T>> getSubClasses(String basePackage, Class<T> superClass) {
+        return getClasses(basePackage, clazz -> nonNull(getAnnotation(clazz, Component.class))
+                && superClass.isAssignableFrom(clazz)).stream().map(clazz -> (Class<? extends T>) clazz)
+                .collect(Collectors.toList());
     }
 
     private static class NamedClassPairFunction<T>

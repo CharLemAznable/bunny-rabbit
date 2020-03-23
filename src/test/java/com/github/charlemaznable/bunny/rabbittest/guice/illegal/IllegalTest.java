@@ -13,6 +13,7 @@ import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import lombok.val;
+import org.apache.commons.lang3.ClassUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,8 @@ public class IllegalTest {
         val bunnyModular = new BunnyModular(IllegalConfig.class);
         bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
         val injector = Guice.createInjector(bunnyModular
-                        .addHandlers(IllegalHandler.class)
+                        .addHandlers()
+                        .scanPackages(ClassUtils.getPackageName(IllegalHandler.class))
                         .createModule(),
                 new BunnyVertxModular().createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);

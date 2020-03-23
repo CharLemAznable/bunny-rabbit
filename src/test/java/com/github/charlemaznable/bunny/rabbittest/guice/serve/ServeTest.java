@@ -16,10 +16,7 @@ import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyDaoServeImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl;
-import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCalculatePlugin;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon;
-import com.github.charlemaznable.bunny.rabbittest.common.serve.TestServeCallbackPlugin;
-import com.github.charlemaznable.bunny.rabbittest.common.serve.TestServePlugin;
 import com.google.inject.Guice;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -68,9 +65,10 @@ public class ServeTest {
                 .bind(BunnyServeDao.class, BunnyServeDaoImpl.class)
                 .bind(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class);
         val injector = Guice.createInjector(bunnyModular
-                        .addCalculatePlugins(ServeCalculatePlugin.class)
-                        .addServePlugins(TestServePlugin.class)
-                        .addServeCallbackPlugins(TestServeCallbackPlugin.class)
+                        .addCalculatePlugins()
+                        .addServePlugins()
+                        .addServeCallbackPlugins()
+                        .scanPackageClasses(ServeCommon.class)
                         .pluginNameMapper(PluginNameMapper.class)
                         .createModule(),
                 new BunnyVertxModular().createModule(),
