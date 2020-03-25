@@ -46,6 +46,26 @@ with baby lambs across sunny green meadows.
                         -- vert.x Core document
 ```
 
+##### Maven Dependency
+
+```xml
+<dependency>
+  <groupId>com.github.charlemaznable</groupId>
+  <artifactId>bunny-rabbit</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
+
+##### Maven Dependency SNAPSHOT
+
+```xml
+<dependency>
+  <groupId>com.github.charlemaznable</groupId>
+  <artifactId>bunny-rabbit</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+
 #### 接口列表
 
 以下接口应包含内容:
