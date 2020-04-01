@@ -144,7 +144,7 @@ public class ServeCommon {
                         assertNull(serveResponse.getChargingType());
                         assertNull(serveResponse.getServeType());
                         assertEquals("SERVE_FAILED", serveResponse.getRespCode());
-                        assertEquals("Serve Failed: NotFoundPlugin Plugin Not Found", serveResponse.getRespDesc());
+                        assertEquals("Serve Failed: Serve.NotFoundPlugin Plugin Not Found", serveResponse.getRespDesc());
                         f.complete();
                     }));
                 }),
@@ -535,7 +535,7 @@ public class ServeCommon {
                     assertNull(serveResponse.getChargingType());
                     assertNull(serveResponse.getServeType());
                     assertEquals("SERVE_FAILED", serveResponse.getRespCode());
-                    assertEquals("Serve Failed: NotFoundPlugin Plugin Not Found", serveResponse.getRespDesc());
+                    assertEquals("Serve Failed: Serve.NotFoundPlugin Plugin Not Found", serveResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {

@@ -96,7 +96,7 @@ public class CalculateCommon {
                         val calculateResponse = async.result();
                         assertNull(calculateResponse.getChargingType());
                         assertEquals("CALCULATE_FAILED", calculateResponse.getRespCode());
-                        assertEquals("Charge Calculate Failed: NotFoundPlugin Plugin Not Found", calculateResponse.getRespDesc());
+                        assertEquals("Charge Calculate Failed: Calculate.NotFoundPlugin Plugin Not Found", calculateResponse.getRespDesc());
                         f.complete();
                     }));
                 })
@@ -163,7 +163,7 @@ public class CalculateCommon {
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertNull(calculateResponse.getChargingType());
                     assertEquals("CALCULATE_FAILED", calculateResponse.getRespCode());
-                    assertEquals("Charge Calculate Failed: NotFoundPlugin Plugin Not Found", calculateResponse.getRespDesc());
+                    assertEquals("Charge Calculate Failed: Calculate.NotFoundPlugin Plugin Not Found", calculateResponse.getRespDesc());
                     p.complete();
                 }, false, f))
         )).setHandler(event -> test.<CompositeFuture>completing().handle(event));

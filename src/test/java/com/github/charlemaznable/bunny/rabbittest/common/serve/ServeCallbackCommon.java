@@ -129,7 +129,7 @@ public class ServeCallbackCommon {
                         assertNull(serveCallbackResponse.getChargingType());
                         assertNull(serveCallbackResponse.getServeType());
                         assertEquals("SERVE_CALLBACK_FAILED", serveCallbackResponse.getRespCode());
-                        assertEquals("Serve Callback Failed: NotFoundPlugin Plugin Not Found", serveCallbackResponse.getRespDesc());
+                        assertEquals("Serve Callback Failed: ServeCallback.NotFoundPlugin Plugin Not Found", serveCallbackResponse.getRespDesc());
                         f.complete();
                     }));
                 }),
@@ -200,7 +200,7 @@ public class ServeCallbackCommon {
                     assertNull(serveCallbackResponse.getChargingType());
                     assertNull(serveCallbackResponse.getServeType());
                     assertEquals("SERVE_CALLBACK_FAILED", serveCallbackResponse.getRespCode());
-                    assertEquals("Serve Callback Failed: NotFoundPlugin Plugin Not Found", serveCallbackResponse.getRespDesc());
+                    assertEquals("Serve Callback Failed: ServeCallback.NotFoundPlugin Plugin Not Found", serveCallbackResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {

@@ -54,8 +54,7 @@ public class ServeCallbackTest {
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
                 "httpserver.port=42121\ncallback.delay=1000\n" +
-                        "ServeCallback-test=TestServeCallback\n" +
-                        "ServeCallback-notfound=NotFound\n");
+                        "ServeCallback.notfound=NotFound\n");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42121/bunny\n");
 
