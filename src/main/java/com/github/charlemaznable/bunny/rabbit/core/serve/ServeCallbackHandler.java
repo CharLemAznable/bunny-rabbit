@@ -134,7 +134,7 @@ public final class ServeCallbackHandler
     private Future<ServeContext> sufcheck(ServeContext serveContext) {
         return Future.future(future ->
                 // 根据服务下发结果, 确认预扣减
-                serveService.executeConfirm(serveContext, future));
+                serveService.confirm(serveContext, future));
     }
 
     /**

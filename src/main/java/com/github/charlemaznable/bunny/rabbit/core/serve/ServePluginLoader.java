@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 public interface ServePluginLoader {
 
     /**
-     * 依据计费类型获取计费插件
+     * 依据服务类型获取服务插件
      */
     @Nonnull
     ServePlugin load(String serveType);

@@ -16,6 +16,12 @@ public interface PluginNameMapper extends Minerable {
     }
 
     @Nonnull
+    default String serveSwitchPluginName(String serveType) {
+        val configKey = "ServeSwitch-" + serveType;
+        return getString(configKey, serveType);
+    }
+
+    @Nonnull
     default String servePluginName(String serveType) {
         val configKey = "Serve-" + serveType;
         return getString(configKey, serveType);

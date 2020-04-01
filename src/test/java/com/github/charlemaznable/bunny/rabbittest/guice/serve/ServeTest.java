@@ -55,7 +55,8 @@ public class ServeTest {
                 "httpserver.port=42120\n" +
                         "Calculate-00=ServeCalculate\n" +
                         "Serve-test=TestServe\n" +
-                        "Serve-notfound=NotFound\n");
+                        "Serve-notfound=NotFound\n" +
+                        "ServeSwitch-test=TestServeSwitch\n");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42120/bunny\n");
 
@@ -68,6 +69,7 @@ public class ServeTest {
                         .addCalculatePlugins()
                         .addServePlugins()
                         .addServeCallbackPlugins()
+                        .addServeSwitchPlugins()
                         .scanPackageClasses(ServeCommon.class)
                         .pluginNameMapper(PluginNameMapper.class)
                         .createModule(),

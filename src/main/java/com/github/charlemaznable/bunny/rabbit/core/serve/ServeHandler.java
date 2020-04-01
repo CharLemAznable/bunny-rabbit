@@ -16,9 +16,11 @@ import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.rabbit.core.wrapper.BunnyElf.failure;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
+import static com.github.charlemaznable.core.lang.Str.toStr;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 import static java.util.Objects.nonNull;
@@ -95,6 +97,7 @@ public final class ServeHandler
         serveContext.chargingType = request.getChargingType();
         serveContext.context = request.getContext();
         serveContext.paymentValue = request.getPaymentValue();
+        serveContext.seqId = toStr(next());
         serveContext.serveType = request.getServeType();
         serveContext.internalRequest = newHashMap(request.getInternalRequest());
         serveContext.callbackUrl = request.getCallbackUrl();
@@ -132,7 +135,7 @@ public final class ServeHandler
      */
     private Future<ServeContext> preserve(ServeContext serveContext) {
         return Future.future(future -> serveService
-                .executePreserve(serveContext, future));
+                .preserve(serveContext, future));
     }
 
     /**
@@ -190,7 +193,7 @@ public final class ServeHandler
                     nonNull(serveContext.confirmValue)) {
                 // 服务调用失败 -> 确认预扣减(全量回退)
                 // 服务下发结果确认 -> 确认预扣减(全量确认/部分回退)
-                serveService.executeConfirm(serveContext, future);
+                serveService.confirm(serveContext, future);
                 return;
             }
             // 服务调用成功, 服务下发未成功(confirmValue==null) -> 返回, 等待回调
