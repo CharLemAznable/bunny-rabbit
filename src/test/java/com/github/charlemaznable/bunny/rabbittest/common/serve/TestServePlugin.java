@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCalculatePlugin.CALCED_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.FAILURE;
+import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.PRESERVE_NAME;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.SUCCESS;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeServiceCommon.ERROR;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeServiceCommon.SERVE_CHECK_KEY;
@@ -32,6 +34,10 @@ public class TestServePlugin implements ServePlugin {
         assertNotNull(context.get(MtcpContext.TENANT_ID));
         assertNotNull(context.get(MtcpContext.TENANT_CODE));
         assertEquals(context.get(MtcpContext.TENANT_ID), context.get(MtcpContext.TENANT_CODE));
+
+        if (PRESERVE_NAME.equals(context.get(MtcpContext.TENANT_ID))) {
+            assertEquals(SUCCESS, context.get(CALCED_KEY));
+        }
 
         if (SUCCESS.equals(request.get(SERVE_KEY))) {
             handler.handle(succeededFuture(request));

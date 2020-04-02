@@ -123,6 +123,7 @@ public final class ServeHandler
                     future.fail(asyncResult.cause());
                     return;
                 }
+                serveContext.context.putAll(calculateRequest.getContext());
                 val calculateResponse = asyncResult.result();
                 serveContext.paymentValue = calculateResponse.getCalculate();
                 future.complete(serveContext);

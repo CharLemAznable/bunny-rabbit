@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ServeCalculatePlugin implements CalculatePlugin {
 
     static final String CALC_KEY = "CALC";
+    static final String CALCED_KEY = "CALCED";
 
     @Override
     public void calculate(Map<String, Object> context,
@@ -35,6 +36,7 @@ public class ServeCalculatePlugin implements CalculatePlugin {
             val calculateResult = new CalculateResult();
             calculateResult.setCalculate(1);
             calculateResult.setUnit("条");
+            context.put(CALCED_KEY, SUCCESS);
             handler.handle(Future.succeededFuture(calculateResult));
 
         } else if (FAILURE.equals(chargingParameters.get(CALC_KEY))) {
