@@ -2,7 +2,6 @@ package com.github.charlemaznable.bunny.rabbittest.common.serve;
 
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbittest.common.common.MockException;
-import org.n3r.eql.eqler.annotations.Param;
 import org.n3r.eql.mtcp.MtcpContext;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Component
 public class BunnyServeDaoImpl implements BunnyServeDao {
+
+    private static final String CHARGE_CODE = "serve.ChargeCode";
+
+    static final String UPDATE_BALANCE_ERROR = "UPDATE_BALANCE_ERROR";
+    static final String UPDATE_BALANCE_FAILURE = "UPDATE_BALANCE_FAILURE";
+    static final String CREATE_SEQ_FAILURE = "CREATE_SEQ_FAILURE";
+    static final String CONFIRMED_SEQ_SUCCESS = "CONFIRMED_SEQ_SUCCESS";
+    static final String CONFIRMED_SEQ_FAILURE = "CONFIRMED_SEQ_FAILURE";
+    static final String CONFIRM_FAILURE = "CONFIRM_FAILURE";
+    static final String UPDATE_CONFIRM_FAILURE = "UPDATE_CONFIRM_FAILURE";
 
     static final String CHARGING_TYPE_00 = "00";
     static final String CHARGING_TYPE_01 = "01";
@@ -22,69 +31,72 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
     static final String CHARGING_TYPE_08 = "08";
 
     @Override
-    public int updateBalanceByPayment(String chargingType, int paymentValue) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_00.equals(chargingType)) {
-            if (1 == paymentValue) return 1;
-            else if (2 == paymentValue) return 0;
-            else if (3 == paymentValue) return 1;
-            else if (4 == paymentValue) throw new MockException("Serve Exception");
+    public int updateBalanceByPayment(String chargeCode, int paymentValue) {
+        assertEquals(CHARGE_CODE, chargeCode);
+        assertEquals(MtcpContext.getTenantId(), MtcpContext.getTenantCode());
+
+        if (UPDATE_BALANCE_ERROR.equals(MtcpContext.getTenantId())) {
+            throw new MockException("Serve Exception");
+        } else if (UPDATE_BALANCE_FAILURE.equals(MtcpContext.getTenantId())) {
+            return 0;
+        } else {
+            return 1;
         }
-        return 1;
     }
 
     @Override
-    public int createPreserveSequence(String chargingType, int paymentValue,
+    public int createPreserveSequence(String chargeCode, int paymentValue,
                                       String callbackUrl, String seqId) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_00.equals(chargingType)) {
-            if (1 == paymentValue) return 1;
-            else if (2 == paymentValue) return 1; // unreachable
-            else if (3 == paymentValue) return 0;
+        assertEquals(CHARGE_CODE, chargeCode);
+        assertEquals(MtcpContext.getTenantId(), MtcpContext.getTenantCode());
+
+        if (CREATE_SEQ_FAILURE.equals(MtcpContext.getTenantId())) {
+            return 0;
+        } else {
+            return 1;
         }
-        return 1;
     }
 
     @Override
-    public String queryConfirmedSequence(@Param("chargingType") String chargingType,
-                                         @Param("seqId") String seqId) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_01.equals(chargingType) ||
-                CHARGING_TYPE_05.equals(chargingType)) {
+    public String queryConfirmedSequence(String chargeCode,
+                                         String seqId) {
+        assertEquals(CHARGE_CODE, chargeCode);
+        assertEquals(MtcpContext.getTenantId(), MtcpContext.getTenantCode());
+
+        if (CONFIRMED_SEQ_SUCCESS.equals(MtcpContext.getTenantId())) {
             return seqId;
-        } else if (CHARGING_TYPE_04.equals(chargingType) ||
-                CHARGING_TYPE_08.equals(chargingType)) {
+        } else if (CONFIRMED_SEQ_FAILURE.equals(MtcpContext.getTenantId())) {
             throw new MockException("Serve Confirm Exception");
+        } else {
+            return null;
         }
-        return null;
     }
 
     @Override
-    public int confirmPreserveSequence(@Param("chargingType") String chargingType,
-                                       @Param("seqId") String seqId,
-                                       @Param("confirmValue") int confirmValue) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_02.equals(chargingType) ||
-                CHARGING_TYPE_06.equals(chargingType)) {
+    public int confirmPreserveSequence(String chargeCode,
+                                       String seqId,
+                                       int confirmValue) {
+        assertEquals(CHARGE_CODE, chargeCode);
+        assertEquals(MtcpContext.getTenantId(), MtcpContext.getTenantCode());
+
+        if (CONFIRM_FAILURE.equals(MtcpContext.getTenantId())) {
             return 0;
+        } else {
+            return 1;
         }
-        return 1;
     }
 
     @Override
-    public int updateBalanceByConfirm(@Param("chargingType") String chargingType,
-                                      @Param("seqId") String seqId) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
-        if (CHARGING_TYPE_03.equals(chargingType) ||
-                CHARGING_TYPE_07.equals(chargingType)) {
+    public int updateBalanceByConfirm(String chargeCode,
+                                      String seqId) {
+        assertEquals(CHARGE_CODE, chargeCode);
+        assertEquals(MtcpContext.getTenantId(), MtcpContext.getTenantCode());
+
+        if (UPDATE_CONFIRM_FAILURE.equals(MtcpContext.getTenantId())) {
             return 0;
+        } else {
+            return 1;
         }
-        return 1;
     }
 
     @Override

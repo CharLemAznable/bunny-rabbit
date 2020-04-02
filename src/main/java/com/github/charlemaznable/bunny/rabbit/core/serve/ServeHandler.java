@@ -7,6 +7,7 @@ import com.github.charlemaznable.bunny.client.domain.ServeRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
+import com.github.charlemaznable.bunny.rabbit.core.common.ServePluginLoader;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -30,17 +31,17 @@ public final class ServeHandler
         implements BunnyHandler<ServeRequest, ServeResponse> {
 
     private final CalculateHandler calculateHandler;
-    private final ServePluginLoader pluginLoader;
     private final ServeService serveService;
+    private final ServePluginLoader pluginLoader;
 
     @Inject
     @Autowired
     public ServeHandler(CalculateHandler calculateHandler,
-                        ServePluginLoader pluginLoader,
-                        ServeService serveService) {
+                        ServeService serveService,
+                        ServePluginLoader pluginLoader) {
         this.calculateHandler = checkNotNull(calculateHandler);
-        this.pluginLoader = checkNotNull(pluginLoader);
         this.serveService = checkNotNull(serveService);
+        this.pluginLoader = checkNotNull(pluginLoader);
     }
 
     @Override
@@ -94,12 +95,11 @@ public final class ServeHandler
 
     private ServeContext buildServeContext(ServeRequest request) {
         val serveContext = new ServeContext();
-        serveContext.chargingType = request.getChargingType();
+        serveContext.serveName = request.getServeName();
         serveContext.context = request.getContext();
         serveContext.paymentValue = request.getPaymentValue();
-        serveContext.seqId = toStr(next());
-        serveContext.serveType = request.getServeType();
         serveContext.internalRequest = newHashMap(request.getInternalRequest());
+        serveContext.seqId = toStr(next());
         serveContext.callbackUrl = request.getCallbackUrl();
         return serveContext;
     }
@@ -115,7 +115,7 @@ public final class ServeHandler
             }
 
             val calculateRequest = new CalculateRequest();
-            calculateRequest.setChargingType(serveContext.chargingType);
+            calculateRequest.setServeName(serveContext.serveName);
             calculateRequest.getContext().putAll(serveContext.context);
             calculateRequest.setChargingParameters(serveContext.internalRequest);
             calculateHandler.execute(calculateRequest, asyncResult -> {
@@ -144,7 +144,7 @@ public final class ServeHandler
     private Future<ServeContext> serve(ServeContext serveContext) {
         return Future.future(future -> {
             try {
-                val servePlugin = pluginLoader.load(serveContext.serveType);
+                val servePlugin = pluginLoader.load(serveContext.serveName);
                 val context = serveContext.context;
                 val paymentValue = serveContext.paymentValue;
                 val seqId = serveContext.seqId;
@@ -161,19 +161,27 @@ public final class ServeHandler
                     serveContext.returnSuccess = true;
                     serveContext.internalResponse = asyncServe.result();
 
-                    // 插件判断服务下发结果
-                    servePlugin.checkResponse(context, serveContext.internalResponse, asyncCheck -> {
-                        if (asyncCheck.failed()) {
-                            // 判断结果异常 -> 服务调用失败
-                            serveContext.returnSuccess = false;
-                            serveContext.internalResponse = null;
-                            serveContext.internalThrowable = asyncCheck.cause();
-                        } else {
-                            // 记录服务下发结果
-                            serveContext.confirmValue = asyncCheck.result();
-                        }
+                    try {
+                        // 插件判断服务下发结果
+                        servePlugin.checkResponse(context, serveContext.internalResponse, asyncCheck -> {
+                            if (asyncCheck.failed()) {
+                                // 判断结果异常 -> 服务调用失败
+                                serveContext.returnSuccess = false;
+                                serveContext.internalResponse = null;
+                                serveContext.internalThrowable = asyncCheck.cause();
+                            } else {
+                                // 记录服务下发结果
+                                serveContext.confirmValue = asyncCheck.result();
+                            }
+                            future.complete(serveContext);
+                        });
+                    } catch (Exception e) {
+                        // 插件抛出异常 -> 服务调用失败
+                        serveContext.returnSuccess = false;
+                        serveContext.internalResponse = null;
+                        serveContext.internalThrowable = e;
                         future.complete(serveContext);
-                    });
+                    }
                 });
             } catch (Exception e) {
                 // 插件加载失败|插件抛出异常 -> 服务调用失败

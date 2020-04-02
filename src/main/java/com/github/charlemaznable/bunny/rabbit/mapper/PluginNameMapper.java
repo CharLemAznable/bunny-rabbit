@@ -2,7 +2,6 @@ package com.github.charlemaznable.bunny.rabbit.mapper;
 
 import com.github.charlemaznable.core.config.Config;
 import com.github.charlemaznable.core.miner.MinerConfig;
-import lombok.val;
 import org.n3r.diamond.client.Minerable;
 
 import javax.annotation.Nonnull;
@@ -13,27 +12,23 @@ import static com.github.charlemaznable.core.lang.Condition.nullThen;
 public interface PluginNameMapper extends Minerable {
 
     @Nonnull
-    default String calculatePluginName(String chargingType) {
-        val configKey = "Calculate." + chargingType;
-        return getPluginName(configKey);
+    default String calculatePluginName(String serveName) {
+        return getPluginName(serveName + ".Calculate");
     }
 
     @Nonnull
-    default String serveSwitchPluginName(String serveType) {
-        val configKey = "ServeSwitch." + serveType;
-        return getPluginName(configKey);
+    default String serveSwitchPluginName(String serveName) {
+        return getPluginName(serveName + ".Switch");
     }
 
     @Nonnull
-    default String servePluginName(String serveType) {
-        val configKey = "Serve." + serveType;
-        return getPluginName(configKey);
+    default String servePluginName(String serveName) {
+        return getPluginName(serveName + ".Serve");
     }
 
     @Nonnull
-    default String serveCallbackPluginName(String serveType) {
-        val configKey = "ServeCallback." + serveType;
-        return getPluginName(configKey);
+    default String serveCallbackPluginName(String serveName) {
+        return getPluginName(serveName + ".ServeCallback");
     }
 
     default String getPluginName(String configKey) {

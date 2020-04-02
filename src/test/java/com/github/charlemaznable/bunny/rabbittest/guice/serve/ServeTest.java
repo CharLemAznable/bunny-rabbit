@@ -10,6 +10,7 @@ import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
@@ -17,6 +18,7 @@ import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoI
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyDaoServeImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon;
+import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeServiceCommon;
 import com.google.inject.Guice;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -53,7 +55,11 @@ public class ServeTest {
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
                 "httpserver.port=42120\n" +
-                        "Serve.notfound=NotFound\n");
+                        "notfound.Calculate=ServeCalculate\n" +
+                        "notfound.Switch=TestSwitch\n" +
+                        "notfound.Serve=NotFound\n" +
+                        "NotFoundPlugin.Calculate=ServeCalculate\n" +
+                        "NotFoundPlugin.Switch=TestSwitch\n");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42120/bunny\n");
 
@@ -66,8 +72,9 @@ public class ServeTest {
                         .addCalculatePlugins()
                         .addServePlugins()
                         .addServeCallbackPlugins()
-                        .addServeSwitchPlugins()
+                        .addSwitchPlugins()
                         .scanPackageClasses(ServeCommon.class)
+                        .chargeCodeMapper(ChargeCodeMapper.class)
                         .pluginNameMapper(PluginNameMapper.class)
                         .createModule(),
                 new BunnyVertxModular().createModule(),
@@ -95,16 +102,30 @@ public class ServeTest {
     }
 
     @Test
-    public void testServeEventBus(VertxTestContext test) {
+    public void testPreserveEventBus(VertxTestContext test) {
         await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
                 .until(() -> ServeTest.EVENT_BUS_DEPLOYED);
-        ServeCommon.testServeEventBus(test, bunnyEventBus);
+        ServeCommon.testPreserveEventBus(test, bunnyEventBus);
     }
 
     @Test
-    public void testServeHttpServer(VertxTestContext test) {
+    public void testPreserveHttpServer(VertxTestContext test) {
         await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
                 .until(() -> ServeTest.HTTP_SERVER_DEPLOYED);
-        ServeCommon.testServeHttpServer(test, vertx, bunnyOhClient);
+        ServeCommon.testPreserveHttpServer(test, vertx, bunnyOhClient);
+    }
+
+    @Test
+    public void testServeServiceEventBus(VertxTestContext test) {
+        await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
+                .until(() -> ServeTest.EVENT_BUS_DEPLOYED);
+        ServeServiceCommon.testServeServiceEventBus(test, bunnyEventBus);
+    }
+
+    @Test
+    public void testServeServiceHttpServer(VertxTestContext test) {
+        await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
+                .until(() -> ServeTest.HTTP_SERVER_DEPLOYED);
+        ServeServiceCommon.testServeServiceHttpServer(test, vertx, bunnyOhClient);
     }
 }

@@ -33,8 +33,7 @@ public abstract class BunnyHandlerWrapper<T extends BunnyBaseRequest<U>, U exten
     public BunnyHandlerWrapper(BunnyHandler<T, U> bunnyHandler,
                                @Nullable BunnyLogDao bunnyLogDao) {
         this.bunnyHandler = checkNotNull(bunnyHandler);
-        this.bunnyLogDao = nullThen(bunnyLogDao,
-                () -> getEqler(BunnyLogDao.class));
+        this.bunnyLogDao = nullThen(bunnyLogDao, () -> getEqler(BunnyLogDao.class));
     }
 
     @Override

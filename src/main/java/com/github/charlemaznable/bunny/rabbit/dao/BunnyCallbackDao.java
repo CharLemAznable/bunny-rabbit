@@ -9,8 +9,7 @@ public interface BunnyCallbackDao {
      * 查询回调地址
      * 需要服务流水回调状态为待回调
      */
-    String queryCallbackUrl(@Param("chargingType") String chargingType,
-                            @Param("seqId") String seqId);
+    String queryCallbackUrl(@Param("seqId") String seqId);
 
     /**
      * 记录回调日志
@@ -23,7 +22,6 @@ public interface BunnyCallbackDao {
     /**
      * 更新回调状态, 自增回调次数
      */
-    void updateCallbackState(@Param("chargingType") String chargingType,
-                             @Param("seqId") String seqId,
+    void updateCallbackState(@Param("seqId") String seqId,
                              @Param("callbackState") String callbackState);
 }

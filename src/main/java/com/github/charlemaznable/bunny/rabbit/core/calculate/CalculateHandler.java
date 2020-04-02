@@ -4,6 +4,7 @@ import com.github.charlemaznable.bunny.client.domain.BunnyAddress;
 import com.github.charlemaznable.bunny.client.domain.CalculateRequest;
 import com.github.charlemaznable.bunny.client.domain.CalculateResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
+import com.github.charlemaznable.bunny.rabbit.core.common.CalculatePluginLoader;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -41,12 +42,12 @@ public final class CalculateHandler
     public void execute(CalculateRequest request,
                         Handler<AsyncResult<CalculateResponse>> handler) {
         val response = request.createResponse();
-        val chargingType = request.getChargingType();
+        val serveName = request.getServeName();
         val context = request.getContext();
         val parameters = request.getChargingParameters();
 
         try {
-            val calculatePlugin = pluginLoader.load(chargingType);
+            val calculatePlugin = pluginLoader.load(serveName);
             calculatePlugin.calculate(context, parameters, async -> {
                 if (async.failed()) {
                     handler.handle(failedFuture(async.cause()));

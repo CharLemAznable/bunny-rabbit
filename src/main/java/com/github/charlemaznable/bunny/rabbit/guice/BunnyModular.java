@@ -4,23 +4,24 @@ import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
 import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
 import com.github.charlemaznable.bunny.plugin.ServePlugin;
-import com.github.charlemaznable.bunny.plugin.ServeSwitchPlugin;
+import com.github.charlemaznable.bunny.plugin.SwitchPlugin;
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
-import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.charge.ChargeHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerLoader;
+import com.github.charlemaznable.bunny.rabbit.core.common.CalculatePluginLoader;
+import com.github.charlemaznable.bunny.rabbit.core.common.ServeCallbackPluginLoader;
+import com.github.charlemaznable.bunny.rabbit.core.common.ServePluginLoader;
+import com.github.charlemaznable.bunny.rabbit.core.common.SwitchPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.query.QueryHandler;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackHandler;
-import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeHandler;
-import com.github.charlemaznable.bunny.rabbit.core.serve.ServePluginLoader;
-import com.github.charlemaznable.bunny.rabbit.core.serve.ServeSwitchPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.BunnyHandlerLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.CalculatePluginLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.ServeCallbackPluginLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.ServePluginLoaderImpl;
-import com.github.charlemaznable.bunny.rabbit.guice.loader.ServeSwitchPluginLoaderImpl;
+import com.github.charlemaznable.bunny.rabbit.guice.loader.SwitchPluginLoaderImpl;
+import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.guice.Modulee;
 import com.github.charlemaznable.core.miner.MinerModular;
@@ -57,7 +58,8 @@ public final class BunnyModular {
     private final List<Pair<String, Class<? extends CalculatePlugin>>> calculatePlugins;
     private final List<Pair<String, Class<? extends ServePlugin>>> servePlugins;
     private final List<Pair<String, Class<? extends ServeCallbackPlugin>>> serveCallbackPlugins;
-    private final List<Pair<String, Class<? extends ServeSwitchPlugin>>> serveSwitchPlugins;
+    private final List<Pair<String, Class<? extends SwitchPlugin>>> switchPlugins;
+    private Module chargeCodeMapperModule;
     private Module pluginNameMapperModule;
 
     public BunnyModular() {
@@ -87,7 +89,13 @@ public final class BunnyModular {
         this.calculatePlugins = newArrayList();
         this.servePlugins = newArrayList();
         this.serveCallbackPlugins = newArrayList();
-        this.serveSwitchPlugins = newArrayList();
+        this.switchPlugins = newArrayList();
+        this.chargeCodeMapperModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(ChargeCodeMapper.class).toProvider(Providers.of(null));
+            }
+        };
         this.pluginNameMapperModule = new AbstractModule() {
             @Override
             protected void configure() {
@@ -148,14 +156,14 @@ public final class BunnyModular {
     }
 
     @SafeVarargs
-    public final BunnyModular addServeSwitchPlugins(
-            Class<? extends ServeSwitchPlugin>... serveSwitchPlugins) {
-        return addServeSwitchPlugins(newArrayList(serveSwitchPlugins));
+    public final BunnyModular addSwitchPlugins(
+            Class<? extends SwitchPlugin>... serveSwitchPlugins) {
+        return addSwitchPlugins(newArrayList(serveSwitchPlugins));
     }
 
-    public BunnyModular addServeSwitchPlugins(
-            Iterable<Class<? extends ServeSwitchPlugin>> serveSwitchPlugins) {
-        this.serveSwitchPlugins.addAll(newArrayList(serveSwitchPlugins).stream()
+    public BunnyModular addSwitchPlugins(
+            Iterable<Class<? extends SwitchPlugin>> serveSwitchPlugins) {
+        this.switchPlugins.addAll(newArrayList(serveSwitchPlugins).stream()
                 .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
         return this;
     }
@@ -170,7 +178,7 @@ public final class BunnyModular {
             addCalculatePlugins(getSubClasses(basePackage, CalculatePlugin.class));
             addServePlugins(getSubClasses(basePackage, ServePlugin.class));
             addServeCallbackPlugins(getSubClasses(basePackage, ServeCallbackPlugin.class));
-            addServeSwitchPlugins(getSubClasses(basePackage, ServeSwitchPlugin.class));
+            addSwitchPlugins(getSubClasses(basePackage, SwitchPlugin.class));
         }
         return this;
     }
@@ -186,8 +194,23 @@ public final class BunnyModular {
             addCalculatePlugins(getSubClasses(basePackage, CalculatePlugin.class));
             addServePlugins(getSubClasses(basePackage, ServePlugin.class));
             addServeCallbackPlugins(getSubClasses(basePackage, ServeCallbackPlugin.class));
-            addServeSwitchPlugins(getSubClasses(basePackage, ServeSwitchPlugin.class));
+            addSwitchPlugins(getSubClasses(basePackage, SwitchPlugin.class));
         }
+        return this;
+    }
+
+    public BunnyModular chargeCodeMapper(Class<? extends ChargeCodeMapper> mapperClass) {
+        this.chargeCodeMapperModule = new MinerModular().bindClasses(mapperClass).createModule();
+        return this;
+    }
+
+    public BunnyModular chargeCodeMapper(ChargeCodeMapper mapperImpl) {
+        this.chargeCodeMapperModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(ChargeCodeMapper.class).toProvider(Providers.of(mapperImpl));
+            }
+        };
         return this;
     }
 
@@ -231,13 +254,13 @@ public final class BunnyModular {
                                     serveCallbackPlugin.getKey())).to(serveCallbackPlugin.getValue()).in(SINGLETON);
                         }
                         bind(ServeCallbackPluginLoader.class).to(ServeCallbackPluginLoaderImpl.class).in(SINGLETON);
-                        for (val serveSwitchPlugin : serveSwitchPlugins) {
-                            bind(ServeSwitchPlugin.class).annotatedWith(named(
+                        for (val serveSwitchPlugin : switchPlugins) {
+                            bind(SwitchPlugin.class).annotatedWith(named(
                                     serveSwitchPlugin.getKey())).to(serveSwitchPlugin.getValue()).in(SINGLETON);
                         }
-                        bind(ServeSwitchPluginLoader.class).to(ServeSwitchPluginLoaderImpl.class).in(SINGLETON);
+                        bind(SwitchPluginLoader.class).to(SwitchPluginLoaderImpl.class).in(SINGLETON);
                     }
-                }, pluginNameMapperModule);
+                }, chargeCodeMapperModule, pluginNameMapperModule);
     }
 
     @SuppressWarnings("unchecked")

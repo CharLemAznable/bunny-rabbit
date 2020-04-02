@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.CALCULATE_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.FAILURE;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon.SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Component("ServeCalculate")
 public class ServeCalculatePlugin implements CalculatePlugin {
 
+    static final String CALC_KEY = "CALC";
+
     @Override
     public void calculate(Map<String, Object> context,
                           Map<String, Object> chargingParameters,
@@ -29,14 +30,17 @@ public class ServeCalculatePlugin implements CalculatePlugin {
         assertNotNull(context.get(MtcpContext.TENANT_ID));
         assertNotNull(context.get(MtcpContext.TENANT_CODE));
         assertEquals(context.get(MtcpContext.TENANT_ID), context.get(MtcpContext.TENANT_CODE));
-        if (SUCCESS.equals(chargingParameters.get(CALCULATE_KEY))) {
+
+        if (SUCCESS.equals(chargingParameters.get(CALC_KEY))) {
             val calculateResult = new CalculateResult();
             calculateResult.setCalculate(1);
             calculateResult.setUnit("条");
             handler.handle(Future.succeededFuture(calculateResult));
-        } else if (FAILURE.equals(chargingParameters.get(CALCULATE_KEY))) {
+
+        } else if (FAILURE.equals(chargingParameters.get(CALC_KEY))) {
             handler.handle(Future.failedFuture(new BunnyException(
                     "SERVE_CALCULATE_FAILED", "Serve Calculate Failed")));
+
         } else {
             throw new MockException("Serve Calculate Error");
         }

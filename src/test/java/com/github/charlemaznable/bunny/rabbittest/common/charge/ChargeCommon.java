@@ -20,30 +20,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ChargeCommon {
 
-    static final String CHARGING_TYPE_00 = "00";
-    static final String CHARGING_TYPE_01 = "01";
-    static final String CHARGING_TYPE_02 = "02";
-    static final String CHARGING_TYPE_03 = "03";
+    private static final String SERVE_NAME_00 = "00";
+    private static final String SERVE_NAME_01 = "01";
+    private static final String SERVE_NAME_02 = "02";
+    private static final String SERVE_NAME_03 = "03";
 
     public static void testChargeEventBus(VertxTestContext test, BunnyEventBus bunnyEventBus) {
         CompositeFuture.all(newArrayList(
                 Future.<Void>future(f -> {
                     val chargeRequest = new ChargeRequest();
-                    chargeRequest.setChargingType(CHARGING_TYPE_00);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
+                    chargeRequest.setServeName(SERVE_NAME_00);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_00);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_00);
                     chargeRequest.setChargeValue(100);
                     bunnyEventBus.request(chargeRequest, async -> test.verify(() -> {
                         val chargeResponse = async.result();
-                        assertEquals(CHARGING_TYPE_00, chargeResponse.getChargingType());
+                        assertEquals(SERVE_NAME_00, chargeResponse.getServeName());
                         assertTrue(chargeResponse.isSuccess());
                         val queryRequest = new QueryRequest();
-                        queryRequest.setChargingType(CHARGING_TYPE_00);
-                        queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                        queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
+                        queryRequest.setServeName(SERVE_NAME_00);
+                        queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_00);
+                        queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_00);
                         bunnyEventBus.request(queryRequest, async2 -> test.verify(() -> {
                             val queryResponse = async2.result();
-                            assertEquals(CHARGING_TYPE_00, queryResponse.getChargingType());
+                            assertEquals(SERVE_NAME_00, queryResponse.getServeName());
                             assertEquals(100, queryResponse.getBalance());
                             assertEquals("条", queryResponse.getUnit());
                             f.complete();
@@ -52,13 +52,13 @@ public class ChargeCommon {
                 }),
                 Future.<Void>future(f -> {
                     val chargeRequest = new ChargeRequest();
-                    chargeRequest.setChargingType(CHARGING_TYPE_02);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
+                    chargeRequest.setServeName(SERVE_NAME_02);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_02);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_02);
                     chargeRequest.setChargeValue(100);
                     bunnyEventBus.request(chargeRequest, async -> test.verify(() -> {
                         val chargeResponse = async.result();
-                        assertNull(chargeResponse.getChargingType());
+                        assertNull(chargeResponse.getServeName());
                         assertEquals(CHARGE_FAILED.respCode(), chargeResponse.getRespCode());
                         assertEquals(CHARGE_FAILED.respDesc(), chargeResponse.getRespDesc());
                         f.complete();
@@ -66,13 +66,13 @@ public class ChargeCommon {
                 }),
                 Future.<Void>future(f -> {
                     val chargeRequest = new ChargeRequest();
-                    chargeRequest.setChargingType(CHARGING_TYPE_03);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
+                    chargeRequest.setServeName(SERVE_NAME_03);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_03);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_03);
                     chargeRequest.setChargeValue(100);
                     bunnyEventBus.request(chargeRequest, async -> test.verify(() -> {
                         val chargeResponse = async.result();
-                        assertNull(chargeResponse.getChargingType());
+                        assertNull(chargeResponse.getServeName());
                         assertEquals(UNEXPECTED_EXCEPTION.respCode(), chargeResponse.getRespCode());
                         assertEquals(UNEXPECTED_EXCEPTION.respDesc() + ": Charge Exception", chargeResponse.getRespDesc());
                         f.complete();
@@ -85,43 +85,43 @@ public class ChargeCommon {
         CompositeFuture.all(newArrayList(
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val chargeRequest = new ChargeRequest();
-                    chargeRequest.setChargingType(CHARGING_TYPE_01);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
+                    chargeRequest.setServeName(SERVE_NAME_01);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_01);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_01);
                     chargeRequest.setChargeValue(100);
                     val chargeResponse = bunnyOhClient.request(chargeRequest);
-                    assertEquals(CHARGING_TYPE_01, chargeResponse.getChargingType());
+                    assertEquals(SERVE_NAME_01, chargeResponse.getServeName());
                     assertTrue(chargeResponse.isSuccess());
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_01);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
+                    queryRequest.setServeName(SERVE_NAME_01);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_01);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_01);
                     val queryResponse = bunnyOhClient.request(queryRequest);
-                    assertEquals(CHARGING_TYPE_01, queryResponse.getChargingType());
+                    assertEquals(SERVE_NAME_01, queryResponse.getServeName());
                     assertEquals(200, queryResponse.getBalance());
                     assertEquals("MB", queryResponse.getUnit());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val chargeRequest = new ChargeRequest();
-                    chargeRequest.setChargingType(CHARGING_TYPE_02);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
+                    chargeRequest.setServeName(SERVE_NAME_02);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_02);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_02);
                     chargeRequest.setChargeValue(100);
                     val chargeResponse = bunnyOhClient.request(chargeRequest);
-                    assertNull(chargeResponse.getChargingType());
+                    assertNull(chargeResponse.getServeName());
                     assertEquals(CHARGE_FAILED.respCode(), chargeResponse.getRespCode());
                     assertEquals(CHARGE_FAILED.respDesc(), chargeResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val chargeRequest = new ChargeRequest();
-                    chargeRequest.setChargingType(CHARGING_TYPE_03);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
-                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
+                    chargeRequest.setServeName(SERVE_NAME_03);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_03);
+                    chargeRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_03);
                     chargeRequest.setChargeValue(100);
                     val chargeResponse = bunnyOhClient.request(chargeRequest);
-                    assertNull(chargeResponse.getChargingType());
+                    assertNull(chargeResponse.getServeName());
                     assertEquals(UNEXPECTED_EXCEPTION.respCode(), chargeResponse.getRespCode());
                     assertEquals(UNEXPECTED_EXCEPTION.respDesc() + ": Charge Exception", chargeResponse.getRespDesc());
                     p.complete();

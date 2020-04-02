@@ -35,9 +35,11 @@ public class TestCalculatePlugin implements CalculatePlugin {
             calculateResult.setCalculate(getInt(context, RESULT_KEY));
             calculateResult.setUnit(getStr(context, UNIT_KEY));
             handler.handle(Future.succeededFuture(calculateResult));
+
         } else if (FAILURE.equals(chargingParameters.get(CALCULATE_KEY))) {
             handler.handle(Future.failedFuture(new BunnyException(
                     "TEST_CALCULATE_FAILED", "Test Calculate Failed")));
+
         } else {
             throw new MockException("Calculate Error");
         }

@@ -18,21 +18,21 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class QueryCommon {
 
-    static final String CHARGING_TYPE_00 = "00";
-    static final String CHARGING_TYPE_01 = "01";
-    static final String CHARGING_TYPE_02 = "02";
-    static final String CHARGING_TYPE_03 = "03";
+    private static final String SERVE_NAME_00 = "00";
+    private static final String SERVE_NAME_01 = "01";
+    private static final String SERVE_NAME_02 = "02";
+    private static final String SERVE_NAME_03 = "03";
 
     public static void testQueryEventBus(VertxTestContext test, BunnyEventBus bunnyEventBus) {
         CompositeFuture.all(newArrayList(
                 Future.<Void>future(f -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_00);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
+                    queryRequest.setServeName(SERVE_NAME_00);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_00);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_00);
                     bunnyEventBus.request(queryRequest, async -> test.verify(() -> {
                         val queryResponse = async.result();
-                        assertEquals(CHARGING_TYPE_00, queryResponse.getChargingType());
+                        assertEquals(SERVE_NAME_00, queryResponse.getServeName());
                         assertEquals(0, queryResponse.getBalance());
                         assertEquals("条", queryResponse.getUnit());
                         f.complete();
@@ -40,12 +40,12 @@ public class QueryCommon {
                 }),
                 Future.<Void>future(f -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_01);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
+                    queryRequest.setServeName(SERVE_NAME_01);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_01);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_01);
                     bunnyEventBus.request(queryRequest, async -> test.verify(() -> {
                         val queryResponse = async.result();
-                        assertEquals(CHARGING_TYPE_01, queryResponse.getChargingType());
+                        assertEquals(SERVE_NAME_01, queryResponse.getServeName());
                         assertEquals(100, queryResponse.getBalance());
                         assertEquals("MB", queryResponse.getUnit());
                         f.complete();
@@ -53,12 +53,12 @@ public class QueryCommon {
                 }),
                 Future.<Void>future(f -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_02);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
+                    queryRequest.setServeName(SERVE_NAME_02);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_02);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_02);
                     bunnyEventBus.request(queryRequest, async -> test.verify(() -> {
                         val queryResponse = async.result();
-                        assertNull(queryResponse.getChargingType());
+                        assertNull(queryResponse.getServeName());
                         assertEquals(QUERY_FAILED.respCode(), queryResponse.getRespCode());
                         assertEquals(QUERY_FAILED.respDesc(), queryResponse.getRespDesc());
                         f.complete();
@@ -66,12 +66,12 @@ public class QueryCommon {
                 }),
                 Future.<Void>future(f -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_03);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
+                    queryRequest.setServeName(SERVE_NAME_03);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_03);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_03);
                     bunnyEventBus.request(queryRequest, async -> test.verify(() -> {
                         val queryResponse = async.result();
-                        assertNull(queryResponse.getChargingType());
+                        assertNull(queryResponse.getServeName());
                         assertEquals(UNEXPECTED_EXCEPTION.respCode(), queryResponse.getRespCode());
                         assertEquals(UNEXPECTED_EXCEPTION.respDesc() + ": Query Exception", queryResponse.getRespDesc());
                         f.complete();
@@ -84,44 +84,44 @@ public class QueryCommon {
         CompositeFuture.all(newArrayList(
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_00);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_00);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_00);
+                    queryRequest.setServeName(SERVE_NAME_00);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_00);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_00);
                     val queryResponse = bunnyOhClient.request(queryRequest);
-                    assertEquals(CHARGING_TYPE_00, queryResponse.getChargingType());
+                    assertEquals(SERVE_NAME_00, queryResponse.getServeName());
                     assertEquals(0, queryResponse.getBalance());
                     assertEquals("条", queryResponse.getUnit());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_01);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_01);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_01);
+                    queryRequest.setServeName(SERVE_NAME_01);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_01);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_01);
                     val queryResponse = bunnyOhClient.request(queryRequest);
-                    assertEquals(CHARGING_TYPE_01, queryResponse.getChargingType());
+                    assertEquals(SERVE_NAME_01, queryResponse.getServeName());
                     assertEquals(100, queryResponse.getBalance());
                     assertEquals("MB", queryResponse.getUnit());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_02);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_02);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_02);
+                    queryRequest.setServeName(SERVE_NAME_02);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_02);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_02);
                     val queryResponse = bunnyOhClient.request(queryRequest);
-                    assertNull(queryResponse.getChargingType());
+                    assertNull(queryResponse.getServeName());
                     assertEquals(QUERY_FAILED.respCode(), queryResponse.getRespCode());
                     assertEquals(QUERY_FAILED.respDesc(), queryResponse.getRespDesc());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {
                     val queryRequest = new QueryRequest();
-                    queryRequest.setChargingType(CHARGING_TYPE_03);
-                    queryRequest.getContext().put(MtcpContext.TENANT_ID, CHARGING_TYPE_03);
-                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, CHARGING_TYPE_03);
+                    queryRequest.setServeName(SERVE_NAME_03);
+                    queryRequest.getContext().put(MtcpContext.TENANT_ID, SERVE_NAME_03);
+                    queryRequest.getContext().put(MtcpContext.TENANT_CODE, SERVE_NAME_03);
                     val queryResponse = bunnyOhClient.request(queryRequest);
-                    assertNull(queryResponse.getChargingType());
+                    assertNull(queryResponse.getServeName());
                     assertEquals(UNEXPECTED_EXCEPTION.respCode(), queryResponse.getRespCode());
                     assertEquals(UNEXPECTED_EXCEPTION.respDesc() + ": Query Exception", queryResponse.getRespDesc());
                     p.complete();

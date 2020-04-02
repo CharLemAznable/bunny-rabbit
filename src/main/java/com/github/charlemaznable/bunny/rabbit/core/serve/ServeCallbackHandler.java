@@ -5,6 +5,7 @@ import com.github.charlemaznable.bunny.client.domain.ServeCallbackRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeCallbackResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
+import com.github.charlemaznable.bunny.rabbit.core.common.ServeCallbackPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.core.net.ohclient.OhReq;
 import com.google.inject.Inject;
@@ -94,9 +95,8 @@ public final class ServeCallbackHandler
 
     private ServeContext buildServeContext(ServeCallbackRequest request) {
         val serveContext = new ServeContext();
-        serveContext.chargingType = request.getChargingType();
+        serveContext.serveName = request.getServeName();
         serveContext.context = request.getContext();
-        serveContext.serveType = request.getServeType();
         serveContext.internalRequest = newHashMap(request.getInternalRequest());
         serveContext.seqId = request.getSeqId();
         return serveContext;
@@ -108,7 +108,7 @@ public final class ServeCallbackHandler
     private Future<ServeContext> check(ServeContext serveContext) {
         return Future.future(future -> {
             try {
-                val serveCallbackPlugin = pluginLoader.load(serveContext.serveType);
+                val serveCallbackPlugin = pluginLoader.load(serveContext.serveName);
                 // 插件判断服务下发结果
                 serveCallbackPlugin.checkRequest(serveContext.context,
                         serveContext.internalRequest, asyncResult -> {
@@ -157,7 +157,6 @@ public final class ServeCallbackHandler
         private BunnyConfig bunnyConfig;
         private Map<String, Object> context;
         private Map<String, Object> request;
-        private String chargingType;
         private String seqId;
         private int count = 0;
 
@@ -168,7 +167,6 @@ public final class ServeCallbackHandler
             this.bunnyConfig = bunnyConfig;
             this.context = serveContext.context;
             this.request = serveContext.internalRequest;
-            this.chargingType = serveContext.chargingType;
             this.seqId = serveContext.seqId;
         }
 
@@ -176,7 +174,7 @@ public final class ServeCallbackHandler
         public void handle(Long ignored) {
             executeBlocking(context, block -> {
                 // 查询回调地址
-                val callbackUrl = bunnyCallbackDao.queryCallbackUrl(chargingType, seqId);
+                val callbackUrl = bunnyCallbackDao.queryCallbackUrl(seqId);
                 if (isBlank(callbackUrl)) {
                     block.complete();
                     return;
@@ -202,7 +200,7 @@ public final class ServeCallbackHandler
                     finish = false;
                 }
                 // 更新回调状态
-                bunnyCallbackDao.updateCallbackState(chargingType, seqId, state);
+                bunnyCallbackDao.updateCallbackState(seqId, state);
                 if (finish) {
                     block.complete();
                 } else {

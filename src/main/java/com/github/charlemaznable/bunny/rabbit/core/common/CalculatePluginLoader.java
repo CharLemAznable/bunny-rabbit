@@ -1,4 +1,4 @@
-package com.github.charlemaznable.bunny.rabbit.core.calculate;
+package com.github.charlemaznable.bunny.rabbit.core.common;
 
 import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
 
@@ -7,8 +7,8 @@ import javax.annotation.Nonnull;
 public interface CalculatePluginLoader {
 
     /**
-     * 依据计费类型获取计费插件
+     * 依据服务名称获取计费插件
      */
     @Nonnull
-    CalculatePlugin load(String chargingType);
+    CalculatePlugin load(String serveName);
 }

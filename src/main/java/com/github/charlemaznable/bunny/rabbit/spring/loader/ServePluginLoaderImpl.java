@@ -1,7 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.spring.loader;
 
 import com.github.charlemaznable.bunny.plugin.ServePlugin;
-import com.github.charlemaznable.bunny.rabbit.core.serve.ServePluginLoader;
+import com.github.charlemaznable.bunny.rabbit.core.common.ServePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.github.charlemaznable.core.spring.SpringContext;
@@ -34,12 +34,12 @@ public final class ServePluginLoaderImpl implements ServePluginLoader {
 
     @Nonnull
     @Override
-    public ServePlugin load(String serveType) {
-        return LoadingCachee.get(cache, serveType);
+    public ServePlugin load(String serveName) {
+        return LoadingCachee.get(cache, serveName);
     }
 
-    private ServePlugin loadServePlugin(String serveType) {
-        val pluginName = pluginNameMapper.servePluginName(serveType);
+    private ServePlugin loadServePlugin(String serveName) {
+        val pluginName = pluginNameMapper.servePluginName(serveName);
         return checkNotNull(SpringContext.getBean(pluginName, ServePlugin.class),
                 SERVE_FAILED.exception(pluginName + " Plugin Not Found"));
     }

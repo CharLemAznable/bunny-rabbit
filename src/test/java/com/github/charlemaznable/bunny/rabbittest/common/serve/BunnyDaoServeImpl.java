@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class BunnyDaoServeImpl implements BunnyDao {
 
     @Override
-    public int updateBalanceByCharge(String chargingType, int chargeValue) {
+    public int updateBalanceByCharge(String chargeCode, int chargeValue) {
         return 0; // ignore
     }
 
     @Override
-    public QueryResult queryChargingBalance(String chargingType) {
+    public QueryResult queryChargingBalance(String chargeCode) {
         return null; // ignore
     }
 

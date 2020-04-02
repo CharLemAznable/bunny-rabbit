@@ -3,6 +3,7 @@ package com.github.charlemaznable.bunny.rabbittest.spring.serve;
 import com.github.charlemaznable.bunny.client.eventbus.BunnyEventBus;
 import com.github.charlemaznable.bunny.client.ohclient.BunnyOhClient;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCommon;
+import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeServiceCommon;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
@@ -28,16 +29,30 @@ public class ServeTest {
     private BunnyOhClient bunnyOhClient;
 
     @Test
-    public void testServeEventBus(VertxTestContext test) {
+    public void testPreserveEventBus(VertxTestContext test) {
         await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
                 .until(() -> ServeConfiguration.EVENT_BUS_DEPLOYED);
-        ServeCommon.testServeEventBus(test, bunnyEventBus);
+        ServeCommon.testPreserveEventBus(test, bunnyEventBus);
     }
 
     @Test
-    public void testServeHttpServer(VertxTestContext test) {
+    public void testPreserveHttpServer(VertxTestContext test) {
         await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
                 .until(() -> ServeConfiguration.HTTP_SERVER_DEPLOYED);
-        ServeCommon.testServeHttpServer(test, vertx, bunnyOhClient);
+        ServeCommon.testPreserveHttpServer(test, vertx, bunnyOhClient);
+    }
+
+    @Test
+    public void testServeServiceEventBus(VertxTestContext test) {
+        await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
+                .until(() -> ServeConfiguration.EVENT_BUS_DEPLOYED);
+        ServeServiceCommon.testServeServiceEventBus(test, bunnyEventBus);
+    }
+
+    @Test
+    public void testServeServiceHttpServer(VertxTestContext test) {
+        await().timeout(ofMillis(20000)).pollInterval(ofMillis(500))
+                .until(() -> ServeConfiguration.HTTP_SERVER_DEPLOYED);
+        ServeServiceCommon.testServeServiceHttpServer(test, vertx, bunnyOhClient);
     }
 }

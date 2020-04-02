@@ -17,9 +17,9 @@ public class BunnyCallbackDaoImpl implements BunnyCallbackDao {
     static final String SEQ_ID_04 = "SEQ_ID_04";
 
     @Override
-    public String queryCallbackUrl(String chargingType, String seqId) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
+    public String queryCallbackUrl(String seqId) {
+        assertEquals(MtcpContext.getTenantId(), MtcpContext.getTenantCode());
+
         if (SEQ_ID_01.equals(seqId)) {
             return "http://127.0.0.1:9030/callback01";
         } else if (SEQ_ID_02.equals(seqId)) {
@@ -40,8 +40,9 @@ public class BunnyCallbackDaoImpl implements BunnyCallbackDao {
     }
 
     @Override
-    public void updateCallbackState(String chargingType, String seqId, String callbackState) {
-        assertEquals(chargingType, MtcpContext.getTenantId());
-        assertEquals(chargingType, MtcpContext.getTenantCode());
+    public void updateCallbackState(String seqId, String callbackState) {
+        assertNotNull(MtcpContext.getTenantId());
+        assertNotNull(MtcpContext.getTenantCode());
+        assertEquals(MtcpContext.getTenantId(), MtcpContext.getTenantCode());
     }
 }

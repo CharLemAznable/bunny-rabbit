@@ -41,7 +41,7 @@ public class CalculateConfiguration {
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
                 "httpserver.port=32114\n" +
-                        "Calculate.notfound=NotFound\n");
+                        "notfound.Calculate=NotFound\n");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:32114/bunny\n");
     }

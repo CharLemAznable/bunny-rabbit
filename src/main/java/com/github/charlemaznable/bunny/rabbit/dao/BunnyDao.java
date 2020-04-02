@@ -9,13 +9,13 @@ public interface BunnyDao {
     /**
      * 充值, 更新服务余额
      */
-    int updateBalanceByCharge(@Param("chargingType") String chargingType,
+    int updateBalanceByCharge(@Param("chargeCode") String chargeCode,
                               @Param("chargeValue") int chargeValue);
 
     /**
-     * 以充值类型查询服务余额
+     * 查询服务余额
      */
-    QueryResult queryChargingBalance(@Param("chargingType") String chargingType);
+    QueryResult queryChargingBalance(@Param("chargeCode") String chargeCode);
 
     /**
      * 记录确认/回退预扣减异常日志

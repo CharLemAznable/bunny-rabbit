@@ -23,9 +23,7 @@ public abstract class BunnyAbstractVerticle extends AbstractVerticle {
                                  @Nullable BunnyConfig bunnyConfig,
                                  @Nullable BunnyLogDao bunnyLogDao) {
         this.handlers = newArrayList(handlers);
-        this.bunnyConfig = nullThen(bunnyConfig,
-                () -> getMiner(BunnyConfig.class));
-        this.bunnyLogDao = nullThen(bunnyLogDao,
-                () -> getEqler(BunnyLogDao.class));
+        this.bunnyConfig = nullThen(bunnyConfig, () -> getMiner(BunnyConfig.class));
+        this.bunnyLogDao = nullThen(bunnyLogDao, () -> getEqler(BunnyLogDao.class));
     }
 }

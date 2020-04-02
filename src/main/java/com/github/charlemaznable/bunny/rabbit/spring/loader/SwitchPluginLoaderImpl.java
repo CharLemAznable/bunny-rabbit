@@ -1,7 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.spring.loader;
 
-import com.github.charlemaznable.bunny.plugin.ServeSwitchPlugin;
-import com.github.charlemaznable.bunny.rabbit.core.serve.ServeSwitchPluginLoader;
+import com.github.charlemaznable.bunny.plugin.SwitchPlugin;
+import com.github.charlemaznable.bunny.rabbit.core.common.SwitchPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.github.charlemaznable.core.spring.SpringContext;
@@ -18,27 +18,27 @@ import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 import static com.google.common.cache.CacheLoader.from;
 
 @Component
-public final class ServeSwitchPluginLoaderImpl implements ServeSwitchPluginLoader {
+public final class SwitchPluginLoaderImpl implements SwitchPluginLoader {
 
     private final PluginNameMapper pluginNameMapper;
-    private LoadingCache<String, ServeSwitchPlugin> cache
+    private LoadingCache<String, SwitchPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeSwitchPlugin));
 
     @Autowired
-    public ServeSwitchPluginLoaderImpl(@Nullable PluginNameMapper pluginNameMapper) {
+    public SwitchPluginLoaderImpl(@Nullable PluginNameMapper pluginNameMapper) {
         this.pluginNameMapper = nullThen(pluginNameMapper,
                 () -> getMiner(PluginNameMapper.class));
     }
 
     @Nonnull
     @Override
-    public ServeSwitchPlugin load(String serveType) {
-        return LoadingCachee.get(cache, serveType);
+    public SwitchPlugin load(String serveName) {
+        return LoadingCachee.get(cache, serveName);
     }
 
-    private ServeSwitchPlugin loadServeSwitchPlugin(String serveType) {
-        val pluginName = pluginNameMapper.serveSwitchPluginName(serveType);
+    private SwitchPlugin loadServeSwitchPlugin(String serveName) {
+        val pluginName = pluginNameMapper.serveSwitchPluginName(serveName);
         return nullThen(SpringContext.getBean(pluginName,
-                ServeSwitchPlugin.class), () -> new ServeSwitchPlugin() {});
+                SwitchPlugin.class), () -> new SwitchPlugin() {});
     }
 }

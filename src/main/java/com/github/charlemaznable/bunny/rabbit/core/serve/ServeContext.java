@@ -5,9 +5,9 @@ import java.util.Map;
 class ServeContext {
 
     /**
-     * 计费类型
+     * 服务名称
      */
-    String chargingType;
+    String serveName;
     /**
      * 扩展参数
      */
@@ -17,17 +17,13 @@ class ServeContext {
      */
     Integer paymentValue;
     /**
-     * 计费流水号
-     */
-    String seqId;
-    /**
-     * 服务类型
-     */
-    String serveType;
-    /**
      * 服务请求
      */
     Map<String, Object> internalRequest;
+    /**
+     * 计费流水号
+     */
+    String seqId;
     /**
      * 服务结果回调地址
      */

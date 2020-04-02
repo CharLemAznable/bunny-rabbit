@@ -10,6 +10,7 @@ import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
+import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxModular;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
@@ -54,7 +55,7 @@ public class ServeCallbackTest {
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
                 "httpserver.port=42121\ncallback.delay=1000\n" +
-                        "ServeCallback.notfound=NotFound\n");
+                        "notfound.ServeCallback=NotFound\n");
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42121/bunny\n");
 
@@ -67,7 +68,9 @@ public class ServeCallbackTest {
                         .addCalculatePlugins()
                         .addServePlugins()
                         .addServeCallbackPlugins()
+                        .addSwitchPlugins()
                         .scanPackageClasses(ServeCallbackCommon.class)
+                        .chargeCodeMapper(getMiner(ChargeCodeMapper.class))
                         .pluginNameMapper(getMiner(PluginNameMapper.class))
                         .createModule(),
                 new BunnyVertxModular().createModule(),

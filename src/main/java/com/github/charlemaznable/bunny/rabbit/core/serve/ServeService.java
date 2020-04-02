@@ -1,8 +1,10 @@
 package com.github.charlemaznable.bunny.rabbit.core.serve;
 
 import com.github.charlemaznable.bunny.plugin.elf.MtcpElf;
+import com.github.charlemaznable.bunny.rabbit.core.common.SwitchPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
+import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -20,6 +22,7 @@ import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.PRE_
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Str.toStr;
+import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 import static java.util.Objects.nonNull;
@@ -29,36 +32,36 @@ import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 @Component
 public final class ServeService {
 
-    private final ServeSwitchPluginLoader switchPluginLoader;
-    private final BunnyServeDao bunnyServeDao;
+    private final SwitchPluginLoader pluginLoader;
+    private final ChargeCodeMapper codeMapper;
+    private final BunnyServeDao serveDao;
     private final BunnyDao bunnyDao;
 
     @Inject
     @Autowired
-    public ServeService(ServeSwitchPluginLoader switchPluginLoader,
-                        @Nullable BunnyServeDao bunnyServeDao,
+    public ServeService(SwitchPluginLoader pluginLoader,
+                        @Nullable ChargeCodeMapper codeMapper,
+                        @Nullable BunnyServeDao serveDao,
                         @Nullable BunnyDao bunnyDao) {
-        this.switchPluginLoader = checkNotNull(switchPluginLoader);
-        this.bunnyServeDao = nullThen(bunnyServeDao,
-                () -> getEqler(BunnyServeDao.class));
-        this.bunnyDao = nullThen(bunnyDao,
-                () -> getEqler(BunnyDao.class));
+        this.pluginLoader = checkNotNull(pluginLoader);
+        this.codeMapper = nullThen(codeMapper, () -> getMiner(ChargeCodeMapper.class));
+        this.serveDao = nullThen(serveDao, () -> getEqler(BunnyServeDao.class));
+        this.bunnyDao = nullThen(bunnyDao, () -> getEqler(BunnyDao.class));
     }
 
     public void preserve(ServeContext serveContext,
                          Handler<AsyncResult<ServeContext>> handler) {
         try {
-            val switchPlugin = switchPluginLoader.load(serveContext.serveType);
+            val switchPlugin = pluginLoader.load(serveContext.serveName);
             val context = serveContext.context;
             val internalRequest = serveContext.internalRequest;
-            switchPlugin.switchDeduct(context, internalRequest, asyncResult -> {
+            switchPlugin.serveDeduct(context, internalRequest, asyncResult -> {
                 if (asyncResult.failed()) {
                     handler.handle(failedFuture(asyncResult.cause()));
                     return;
                 }
 
-                val switchDeduct = toBoolean(asyncResult.result());
-                if (switchDeduct) {
+                if (toBoolean(asyncResult.result())) {
                     // 入库开关打开
                     executePreserve(serveContext, handler);
                 } else {
@@ -73,18 +76,17 @@ public final class ServeService {
     public void confirm(ServeContext serveContext,
                         Handler<AsyncResult<ServeContext>> handler) {
         try {
-            val switchPlugin = switchPluginLoader.load(serveContext.serveType);
+            val switchPlugin = pluginLoader.load(serveContext.serveName);
             val context = serveContext.context;
             val internalRequest = serveContext.internalRequest;
-            switchPlugin.switchDeduct(context, internalRequest, asyncResult -> {
+            switchPlugin.serveDeduct(context, internalRequest, asyncResult -> {
                 if (asyncResult.failed()) {
                     serveContext.unexpectedThrowable = asyncResult.cause();
                     handler.handle(succeededFuture(serveContext));
                     return;
                 }
 
-                val switchDeduct = toBoolean(asyncResult.result());
-                if (switchDeduct) {
+                if (toBoolean(asyncResult.result())) {
                     // 入库开关打开
                     executeConfirm(serveContext, handler);
                 } else {
@@ -100,40 +102,41 @@ public final class ServeService {
     private void executePreserve(ServeContext serveContext,
                                  Handler<AsyncResult<ServeContext>> handler) {
         // ServeContext入参:
-        // chargingType
-        // seqId
+        // serveName
         // paymentValue
         // callbackUrl
+        // seqId
         // ServeContext出参:
         // 无
+        val chargeCode = codeMapper.chargeCode(serveContext.serveName);
         executeBlocking(serveContext.context, block -> {
             try {
-                bunnyServeDao.start();
+                serveDao.start();
 
-                if (1 != bunnyServeDao.updateBalanceByPayment(
-                        serveContext.chargingType, serveContext.paymentValue)) {
+                if (1 != serveDao.updateBalanceByPayment(
+                        chargeCode, serveContext.paymentValue)) {
                     // 预扣减失败
-                    bunnyServeDao.rollback();
+                    serveDao.rollback();
                     block.fail(PRE_SERVE_FAILED.exception(
                             "Balance Deduct Failed"));
                     return;
                 }
 
-                if (1 != bunnyServeDao.createPreserveSequence(
-                        serveContext.chargingType, serveContext.paymentValue,
+                if (1 != serveDao.createPreserveSequence(
+                        chargeCode, serveContext.paymentValue,
                         serveContext.callbackUrl, serveContext.seqId)) {
                     // 生成流水失败
-                    bunnyServeDao.rollback();
+                    serveDao.rollback();
                     block.fail(PRE_SERVE_FAILED.exception(
                             "Sequence Create Failed"));
                     return;
                 }
 
-                bunnyServeDao.commit();
+                serveDao.commit();
                 block.complete(serveContext);
 
             } catch (Exception e) {
-                bunnyServeDao.rollback();
+                serveDao.rollback();
                 block.fail(e);
             }
         }, handler);
@@ -142,41 +145,42 @@ public final class ServeService {
     private void executeConfirm(ServeContext serveContext,
                                 Handler<AsyncResult<ServeContext>> handler) {
         // ServeContext入参:
-        // chargingType
+        // serveName
         // seqId
         // confirmValue
         // ServeContext出参:
         // unexpectedThrowable*
+        val chargeCode = codeMapper.chargeCode(serveContext.serveName);
         Vertx.currentContext().executeBlocking(block -> {
             try {
                 MtcpElf.preHandle(serveContext.context);
-                bunnyServeDao.start();
+                serveDao.start();
 
-                if (nonNull(bunnyServeDao.queryConfirmedSequence(
-                        serveContext.chargingType, serveContext.seqId))) {
+                if (nonNull(serveDao.queryConfirmedSequence(
+                        chargeCode, serveContext.seqId))) {
                     // 流水已确认
-                    bunnyServeDao.commit();
+                    serveDao.commit();
                     block.complete(serveContext);
                     return;
                 }
-                if (1 != bunnyServeDao.confirmPreserveSequence(
-                        serveContext.chargingType, serveContext.seqId,
+                if (1 != serveDao.confirmPreserveSequence(
+                        chargeCode, serveContext.seqId,
                         nullThen(serveContext.confirmValue, () -> 0))) {
                     // 更新流水失败
                     throw CONFIRM_FAILED.exception("Sequence Confirm Failed");
                 }
 
-                if (1 != bunnyServeDao.updateBalanceByConfirm(
-                        serveContext.chargingType, serveContext.seqId)) {
+                if (1 != serveDao.updateBalanceByConfirm(
+                        chargeCode, serveContext.seqId)) {
                     // 更新服务余额失败
                     throw CONFIRM_FAILED.exception("Balance Confirm Failed");
                 }
 
-                bunnyServeDao.commit();
+                serveDao.commit();
                 block.complete(serveContext);
 
             } catch (Exception e) {
-                bunnyServeDao.rollback();
+                serveDao.rollback();
                 serveContext.unexpectedThrowable = e;
                 bunnyDao.logError(toStr(next()), serveContext.seqId,
                         serveContext.unexpectedThrowable.getMessage());

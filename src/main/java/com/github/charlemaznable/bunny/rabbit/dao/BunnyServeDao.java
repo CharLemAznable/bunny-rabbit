@@ -10,13 +10,13 @@ public interface BunnyServeDao extends EqlTranable {
      * 预扣减, 更新服务余额
      * 先判断余额是否足够, 再进行扣减
      */
-    int updateBalanceByPayment(@Param("chargingType") String chargingType,
+    int updateBalanceByPayment(@Param("chargeCode") String chargeCode,
                                @Param("paymentValue") int paymentValue);
 
     /**
      * 预扣减, 新增流水记录
      */
-    int createPreserveSequence(@Param("chargingType") String chargingType,
+    int createPreserveSequence(@Param("chargeCode") String chargeCode,
                                @Param("paymentValue") int paymentValue,
                                @Param("callbackUrl") String callbackUrl,
                                @Param("seqId") String seqId);
@@ -24,19 +24,19 @@ public interface BunnyServeDao extends EqlTranable {
     /**
      * 确认扣减, 检查流水记录状态
      */
-    String queryConfirmedSequence(@Param("chargingType") String chargingType,
+    String queryConfirmedSequence(@Param("chargeCode") String chargeCode,
                                   @Param("seqId") String seqId);
 
     /**
      * 确认扣减, 更新流水记录状态
      */
-    int confirmPreserveSequence(@Param("chargingType") String chargingType,
+    int confirmPreserveSequence(@Param("chargeCode") String chargeCode,
                                 @Param("seqId") String seqId,
                                 @Param("confirmValue") int confirmValue);
 
     /**
      * 确认扣减, 更新服务余额
      */
-    int updateBalanceByConfirm(@Param("chargingType") String chargingType,
+    int updateBalanceByConfirm(@Param("chargeCode") String chargeCode,
                                @Param("seqId") String seqId);
 }

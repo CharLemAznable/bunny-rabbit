@@ -1,7 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.spring.loader;
 
 import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
-import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackPluginLoader;
+import com.github.charlemaznable.bunny.rabbit.core.common.ServeCallbackPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.github.charlemaznable.core.spring.SpringContext;
@@ -34,12 +34,12 @@ public final class ServeCallbackPluginLoaderImpl implements ServeCallbackPluginL
 
     @Nonnull
     @Override
-    public ServeCallbackPlugin load(String serveType) {
-        return LoadingCachee.get(cache, serveType);
+    public ServeCallbackPlugin load(String serveName) {
+        return LoadingCachee.get(cache, serveName);
     }
 
-    private ServeCallbackPlugin loadServeCallbackPlugin(String serveType) {
-        val pluginName = pluginNameMapper.serveCallbackPluginName(serveType);
+    private ServeCallbackPlugin loadServeCallbackPlugin(String serveName) {
+        val pluginName = pluginNameMapper.serveCallbackPluginName(serveName);
         return checkNotNull(SpringContext.getBean(pluginName, ServeCallbackPlugin.class),
                 SERVE_CALLBACK_FAILED.exception(pluginName + " Plugin Not Found"));
     }
