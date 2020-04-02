@@ -10,8 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Component
 public class BunnyServeDaoImpl implements BunnyServeDao {
 
-    private static final String CHARGE_CODE = "serve.ChargeCode";
-
     static final String UPDATE_BALANCE_ERROR = "UPDATE_BALANCE_ERROR";
     static final String UPDATE_BALANCE_FAILURE = "UPDATE_BALANCE_FAILURE";
     static final String CREATE_SEQ_FAILURE = "CREATE_SEQ_FAILURE";
@@ -19,16 +17,7 @@ public class BunnyServeDaoImpl implements BunnyServeDao {
     static final String CONFIRMED_SEQ_FAILURE = "CONFIRMED_SEQ_FAILURE";
     static final String CONFIRM_FAILURE = "CONFIRM_FAILURE";
     static final String UPDATE_CONFIRM_FAILURE = "UPDATE_CONFIRM_FAILURE";
-
-    static final String CHARGING_TYPE_00 = "00";
-    static final String CHARGING_TYPE_01 = "01";
-    static final String CHARGING_TYPE_02 = "02";
-    static final String CHARGING_TYPE_03 = "03";
-    static final String CHARGING_TYPE_04 = "04";
-    static final String CHARGING_TYPE_05 = "05";
-    static final String CHARGING_TYPE_06 = "06";
-    static final String CHARGING_TYPE_07 = "07";
-    static final String CHARGING_TYPE_08 = "08";
+    private static final String CHARGE_CODE = "serve.ChargeCode";
 
     @Override
     public int updateBalanceByPayment(String chargeCode, int paymentValue) {

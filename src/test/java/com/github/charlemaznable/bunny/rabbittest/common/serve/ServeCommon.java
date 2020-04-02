@@ -27,9 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ServeCommon {
 
-    private static final String PRESERVE_NAME = "preserve";
     static final String SUCCESS = "SUCCESS";
     static final String FAILURE = "FAILURE";
+    private static final String PRESERVE_NAME = "preserve";
 
     public static void testPreserveEventBus(VertxTestContext test, BunnyEventBus bunnyEventBus) {
         CompositeFuture.all(newArrayList(
