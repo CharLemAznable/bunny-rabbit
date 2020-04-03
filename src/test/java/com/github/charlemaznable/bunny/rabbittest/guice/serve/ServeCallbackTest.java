@@ -18,6 +18,8 @@ import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoI
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyDaoServeImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCallbackCommon;
+import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
+import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import com.google.inject.Guice;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -72,6 +74,8 @@ public class ServeCallbackTest {
                         .scanPackageClasses(ServeCallbackCommon.class)
                         .chargeCodeMapper(getMiner(ChargeCodeMapper.class))
                         .pluginNameMapper(getMiner(PluginNameMapper.class))
+                        .nonsenseOptions(new NonsenseOptions())
+                        .signatureOptions(new SignatureOptions())
                         .createModule(),
                 new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),

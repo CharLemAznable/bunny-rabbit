@@ -23,6 +23,8 @@ import com.github.charlemaznable.bunny.rabbit.guice.loader.ServePluginLoaderImpl
 import com.github.charlemaznable.bunny.rabbit.guice.loader.SwitchPluginLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
+import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
+import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import com.github.charlemaznable.core.guice.Modulee;
 import com.github.charlemaznable.core.miner.MinerModular;
 import com.google.inject.AbstractModule;
@@ -61,6 +63,8 @@ public final class BunnyModular {
     private final List<Pair<String, Class<? extends SwitchPlugin>>> switchPlugins;
     private Module chargeCodeMapperModule;
     private Module pluginNameMapperModule;
+    private Module nonsenseOptionsModule;
+    private Module signatureOptionsModule;
 
     public BunnyModular() {
         this((BunnyConfig) null);
@@ -100,6 +104,18 @@ public final class BunnyModular {
             @Override
             protected void configure() {
                 bind(PluginNameMapper.class).toProvider(Providers.of(null));
+            }
+        };
+        this.nonsenseOptionsModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(NonsenseOptions.class).toProvider(Providers.of(null));
+            }
+        };
+        this.signatureOptionsModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(SignatureOptions.class).toProvider(Providers.of(null));
             }
         };
     }
@@ -229,6 +245,26 @@ public final class BunnyModular {
         return this;
     }
 
+    public BunnyModular nonsenseOptions(NonsenseOptions nonsenseOptions) {
+        this.nonsenseOptionsModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(NonsenseOptions.class).toProvider(Providers.of(nonsenseOptions));
+            }
+        };
+        return this;
+    }
+
+    public BunnyModular signatureOptions(SignatureOptions signatureOptions) {
+        this.signatureOptionsModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(SignatureOptions.class).toProvider(Providers.of(signatureOptions));
+            }
+        };
+        return this;
+    }
+
     public Module createModule() {
         return Modulee.combine(configModule, eqlerModuleBuilder.build(),
                 new AbstractModule() {
@@ -260,7 +296,7 @@ public final class BunnyModular {
                         }
                         bind(SwitchPluginLoader.class).to(SwitchPluginLoaderImpl.class).in(SINGLETON);
                     }
-                }, chargeCodeMapperModule, pluginNameMapperModule);
+                }, chargeCodeMapperModule, pluginNameMapperModule, nonsenseOptionsModule, signatureOptionsModule);
     }
 
     @SuppressWarnings("unchecked")

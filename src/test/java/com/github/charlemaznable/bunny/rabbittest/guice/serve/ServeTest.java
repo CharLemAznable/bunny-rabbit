@@ -76,6 +76,8 @@ public class ServeTest {
                         .scanPackageClasses(ServeCommon.class)
                         .chargeCodeMapper(ChargeCodeMapper.class)
                         .pluginNameMapper(PluginNameMapper.class)
+                        .nonsenseOptions(null)
+                        .signatureOptions(null)
                         .createModule(),
                 new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),
