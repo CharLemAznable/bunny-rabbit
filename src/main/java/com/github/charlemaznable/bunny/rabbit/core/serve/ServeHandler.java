@@ -2,11 +2,10 @@ package com.github.charlemaznable.bunny.rabbit.core.serve;
 
 import com.github.charlemaznable.bunny.client.domain.BunnyAddress;
 import com.github.charlemaznable.bunny.client.domain.BunnyException;
-import com.github.charlemaznable.bunny.client.domain.CalculateRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeRequest;
 import com.github.charlemaznable.bunny.client.domain.ServeResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
-import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
+import com.github.charlemaznable.bunny.rabbit.core.common.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.common.ServePluginLoader;
 import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
@@ -30,18 +29,18 @@ import static java.util.Objects.nonNull;
 public final class ServeHandler
         implements BunnyHandler<ServeRequest, ServeResponse> {
 
-    private final CalculateHandler calculateHandler;
+    private final CalculatePluginLoader calculatePluginLoader;
     private final ServeService serveService;
-    private final ServePluginLoader pluginLoader;
+    private final ServePluginLoader servePluginLoader;
 
     @Inject
     @Autowired
-    public ServeHandler(CalculateHandler calculateHandler,
+    public ServeHandler(CalculatePluginLoader calculatePluginLoader,
                         ServeService serveService,
-                        ServePluginLoader pluginLoader) {
-        this.calculateHandler = checkNotNull(calculateHandler);
+                        ServePluginLoader servePluginLoader) {
+        this.calculatePluginLoader = checkNotNull(calculatePluginLoader);
         this.serveService = checkNotNull(serveService);
-        this.pluginLoader = checkNotNull(pluginLoader);
+        this.servePluginLoader = checkNotNull(servePluginLoader);
     }
 
     @Override
@@ -114,20 +113,22 @@ public final class ServeHandler
                 return;
             }
 
-            val calculateRequest = new CalculateRequest();
-            calculateRequest.setServeName(serveContext.serveName);
-            calculateRequest.getContext().putAll(serveContext.context);
-            calculateRequest.setChargingParameters(serveContext.internalRequest);
-            calculateHandler.execute(calculateRequest, asyncResult -> {
-                if (asyncResult.failed()) {
-                    future.fail(asyncResult.cause());
-                    return;
-                }
-                serveContext.context.putAll(calculateRequest.getContext());
-                val calculateResponse = asyncResult.result();
-                serveContext.paymentValue = calculateResponse.getCalculate();
-                future.complete(serveContext);
-            });
+            try {
+                val calculatePlugin = calculatePluginLoader.load(serveContext.serveName);
+                calculatePlugin.calculate(serveContext.context,
+                        serveContext.internalRequest, async -> {
+                            if (async.failed()) {
+                                future.fail(async.cause());
+                                return;
+                            }
+
+                            val result = async.result();
+                            serveContext.paymentValue = result.getCalculate();
+                            future.complete(serveContext);
+                        });
+            } catch (Exception e) {
+                future.fail(e);
+            }
         });
     }
 
@@ -145,7 +146,7 @@ public final class ServeHandler
     private Future<ServeContext> serve(ServeContext serveContext) {
         return Future.future(future -> {
             try {
-                val servePlugin = pluginLoader.load(serveContext.serveName);
+                val servePlugin = servePluginLoader.load(serveContext.serveName);
                 val context = serveContext.context;
                 val paymentValue = serveContext.paymentValue;
                 val seqId = serveContext.seqId;

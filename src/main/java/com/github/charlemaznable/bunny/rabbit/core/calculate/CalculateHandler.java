@@ -20,12 +20,12 @@ import static io.vertx.core.Future.succeededFuture;
 public final class CalculateHandler
         implements BunnyHandler<CalculateRequest, CalculateResponse> {
 
-    private final CalculatePluginLoader pluginLoader;
+    private final CalculatePluginLoader calculatePluginLoader;
 
     @Inject
     @Autowired
-    public CalculateHandler(CalculatePluginLoader pluginLoader) {
-        this.pluginLoader = checkNotNull(pluginLoader);
+    public CalculateHandler(CalculatePluginLoader calculatePluginLoader) {
+        this.calculatePluginLoader = checkNotNull(calculatePluginLoader);
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class CalculateHandler
         val parameters = request.getChargingParameters();
 
         try {
-            val calculatePlugin = pluginLoader.load(serveName);
+            val calculatePlugin = calculatePluginLoader.load(serveName);
             calculatePlugin.calculate(context, parameters, async -> {
                 if (async.failed()) {
                     handler.handle(failedFuture(async.cause()));

@@ -41,18 +41,18 @@ import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 public final class ServeCallbackHandler
         implements BunnyHandler<ServeCallbackRequest, ServeCallbackResponse> {
 
-    private final ServeCallbackPluginLoader pluginLoader;
+    private final ServeCallbackPluginLoader serveCallbackPluginLoader;
     private final ServeService serveService;
     private final BunnyCallbackDao bunnyCallbackDao;
     private final BunnyConfig bunnyConfig;
 
     @Inject
     @Autowired
-    public ServeCallbackHandler(ServeCallbackPluginLoader pluginLoader,
+    public ServeCallbackHandler(ServeCallbackPluginLoader serveCallbackPluginLoader,
                                 ServeService serveService,
                                 @Nullable BunnyCallbackDao bunnyCallbackDao,
                                 @Nullable BunnyConfig bunnyConfig) {
-        this.pluginLoader = checkNotNull(pluginLoader);
+        this.serveCallbackPluginLoader = checkNotNull(serveCallbackPluginLoader);
         this.serveService = checkNotNull(serveService);
         this.bunnyCallbackDao = nullThen(bunnyCallbackDao,
                 () -> getEqler(BunnyCallbackDao.class));
@@ -108,7 +108,7 @@ public final class ServeCallbackHandler
     private Future<ServeContext> check(ServeContext serveContext) {
         return Future.future(future -> {
             try {
-                val serveCallbackPlugin = pluginLoader.load(serveContext.serveName);
+                val serveCallbackPlugin = serveCallbackPluginLoader.load(serveContext.serveName);
                 // 插件判断服务下发结果
                 serveCallbackPlugin.checkRequest(serveContext.context,
                         serveContext.internalRequest, asyncResult -> {

@@ -32,18 +32,18 @@ import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 @Component
 public final class ServeService {
 
-    private final SwitchPluginLoader pluginLoader;
+    private final SwitchPluginLoader switchPluginLoader;
     private final ChargeCodeMapper codeMapper;
     private final BunnyServeDao serveDao;
     private final BunnyDao bunnyDao;
 
     @Inject
     @Autowired
-    public ServeService(SwitchPluginLoader pluginLoader,
+    public ServeService(SwitchPluginLoader switchPluginLoader,
                         @Nullable ChargeCodeMapper codeMapper,
                         @Nullable BunnyServeDao serveDao,
                         @Nullable BunnyDao bunnyDao) {
-        this.pluginLoader = checkNotNull(pluginLoader);
+        this.switchPluginLoader = checkNotNull(switchPluginLoader);
         this.codeMapper = nullThen(codeMapper, () -> getMiner(ChargeCodeMapper.class));
         this.serveDao = nullThen(serveDao, () -> getEqler(BunnyServeDao.class));
         this.bunnyDao = nullThen(bunnyDao, () -> getEqler(BunnyDao.class));
@@ -52,7 +52,7 @@ public final class ServeService {
     public void preserve(ServeContext serveContext,
                          Handler<AsyncResult<ServeContext>> handler) {
         try {
-            val switchPlugin = pluginLoader.load(serveContext.serveName);
+            val switchPlugin = switchPluginLoader.load(serveContext.serveName);
             val context = serveContext.context;
             val internalRequest = serveContext.internalRequest;
             switchPlugin.serveDeduct(context, internalRequest, asyncResult -> {
@@ -76,7 +76,7 @@ public final class ServeService {
     public void confirm(ServeContext serveContext,
                         Handler<AsyncResult<ServeContext>> handler) {
         try {
-            val switchPlugin = pluginLoader.load(serveContext.serveName);
+            val switchPlugin = switchPluginLoader.load(serveContext.serveName);
             val context = serveContext.context;
             val internalRequest = serveContext.internalRequest;
             switchPlugin.serveDeduct(context, internalRequest, asyncResult -> {
