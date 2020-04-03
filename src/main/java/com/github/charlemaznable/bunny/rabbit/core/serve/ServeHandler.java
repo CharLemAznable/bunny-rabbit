@@ -122,8 +122,7 @@ public final class ServeHandler
                                 return;
                             }
 
-                            val result = async.result();
-                            serveContext.paymentValue = result.getCalculate();
+                            serveContext.paymentValue = async.result();
                             future.complete(serveContext);
                         });
             } catch (Exception e) {

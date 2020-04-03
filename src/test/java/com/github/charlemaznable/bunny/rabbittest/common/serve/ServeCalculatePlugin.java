@@ -2,12 +2,10 @@ package com.github.charlemaznable.bunny.rabbittest.common.serve;
 
 import com.github.charlemaznable.bunny.client.domain.BunnyException;
 import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
-import com.github.charlemaznable.bunny.plugin.CalculateResult;
 import com.github.charlemaznable.bunny.rabbittest.common.common.MockException;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import lombok.val;
 import org.n3r.eql.mtcp.MtcpContext;
 import org.springframework.stereotype.Component;
 
@@ -27,17 +25,14 @@ public class ServeCalculatePlugin implements CalculatePlugin {
     @Override
     public void calculate(Map<String, Object> context,
                           Map<String, Object> chargingParameters,
-                          Handler<AsyncResult<CalculateResult>> handler) {
+                          Handler<AsyncResult<Integer>> handler) {
         assertNotNull(context.get(MtcpContext.TENANT_ID));
         assertNotNull(context.get(MtcpContext.TENANT_CODE));
         assertEquals(context.get(MtcpContext.TENANT_ID), context.get(MtcpContext.TENANT_CODE));
 
         if (SUCCESS.equals(chargingParameters.get(CALC_KEY))) {
-            val calculateResult = new CalculateResult();
-            calculateResult.setCalculate(1);
-            calculateResult.setUnit("条");
             context.put(CALCED_KEY, SUCCESS);
-            handler.handle(Future.succeededFuture(calculateResult));
+            handler.handle(Future.succeededFuture(1));
 
         } else if (FAILURE.equals(chargingParameters.get(CALC_KEY))) {
             handler.handle(Future.failedFuture(new BunnyException(

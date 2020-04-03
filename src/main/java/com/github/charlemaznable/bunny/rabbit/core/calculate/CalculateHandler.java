@@ -54,9 +54,7 @@ public final class CalculateHandler
                     return;
                 }
 
-                val result = async.result();
-                response.setCalculate(result.getCalculate());
-                response.setUnit(result.getUnit());
+                response.setCalculate(async.result());
                 response.succeed();
                 handler.handle(succeededFuture(response));
             });
