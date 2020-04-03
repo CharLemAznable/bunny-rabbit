@@ -66,6 +66,8 @@ public class ServeCallbackTest {
                 .bind(BunnyDao.class, BunnyDaoServeImpl.class)
                 .bind(BunnyServeDao.class, BunnyServeDaoImpl.class)
                 .bind(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class);
+        val nonsenseOptions = new NonsenseOptions();
+        val signatureOptions = new SignatureOptions();
         val injector = Guice.createInjector(bunnyModular
                         .addCalculatePlugins()
                         .addServePlugins()
@@ -74,12 +76,14 @@ public class ServeCallbackTest {
                         .scanPackageClasses(ServeCallbackCommon.class)
                         .chargeCodeMapper(getMiner(ChargeCodeMapper.class))
                         .pluginNameMapper(getMiner(PluginNameMapper.class))
-                        .nonsenseOptions(new NonsenseOptions())
-                        .signatureOptions(new SignatureOptions())
+                        .nonsenseOptions(nonsenseOptions)
+                        .signatureOptions(signatureOptions)
                         .createModule(),
                 new BunnyVertxModular().createModule(),
-                new BunnyEventBusModular().createModule(),
-                new BunnyOhClientModular().createModule());
+                new BunnyEventBusModular().nonsenseOptions(nonsenseOptions)
+                        .signatureOptions(signatureOptions).createModule(),
+                new BunnyOhClientModular().nonsenseOptions(nonsenseOptions)
+                        .signatureOptions(signatureOptions).createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;
