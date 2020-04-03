@@ -12,7 +12,8 @@ import org.n3r.eql.mtcp.MtcpContext;
 
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.CALCULATE_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.FAILURE;
-import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.RESULT;
+import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.RESULT_1;
+import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.RESULT_2;
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.RESULT_KEY;
 import static com.github.charlemaznable.bunny.rabbittest.common.calculate.TestCalculatePlugin.SUCCESS;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
@@ -32,12 +33,12 @@ public class CalculateCommon {
                     calculateRequest.setServeName(CALCULATE_SERVE_TYPE);
                     calculateRequest.getContext().put(MtcpContext.TENANT_ID, CALCULATE_SERVE_TYPE);
                     calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CALCULATE_SERVE_TYPE);
-                    calculateRequest.getContext().putAll(of(RESULT_KEY, RESULT));
-                    calculateRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
+                    calculateRequest.getContext().putAll(of(RESULT_KEY, RESULT_2));
+                    calculateRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS, RESULT_KEY, RESULT_1));
                     bunnyEventBus.request(calculateRequest, async -> test.verify(() -> {
                         val calculateResponse = async.result();
                         assertEquals(CALCULATE_SERVE_TYPE, calculateResponse.getServeName());
-                        assertEquals(RESULT, calculateResponse.getCalculate());
+                        assertEquals(RESULT_1, calculateResponse.getCalculate());
                         f.complete();
                     }));
                 }),
@@ -107,11 +108,11 @@ public class CalculateCommon {
                     calculateRequest.setServeName(CALCULATE_SERVE_TYPE);
                     calculateRequest.getContext().put(MtcpContext.TENANT_ID, CALCULATE_SERVE_TYPE);
                     calculateRequest.getContext().put(MtcpContext.TENANT_CODE, CALCULATE_SERVE_TYPE);
-                    calculateRequest.getContext().putAll(of(RESULT_KEY, RESULT));
-                    calculateRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS));
+                    calculateRequest.getContext().putAll(of(RESULT_KEY, RESULT_2));
+                    calculateRequest.setChargingParameters(of(CALCULATE_KEY, SUCCESS, RESULT_KEY, RESULT_1));
                     val calculateResponse = bunnyOhClient.request(calculateRequest);
                     assertEquals(CALCULATE_SERVE_TYPE, calculateResponse.getServeName());
-                    assertEquals(RESULT, calculateResponse.getCalculate());
+                    assertEquals(RESULT_1, calculateResponse.getCalculate());
                     p.complete();
                 }, false, f)),
                 Future.<Void>future(f -> vertx.executeBlocking(p -> {

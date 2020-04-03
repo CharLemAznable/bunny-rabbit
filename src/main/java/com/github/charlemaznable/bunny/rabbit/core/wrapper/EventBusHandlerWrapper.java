@@ -3,7 +3,10 @@ package com.github.charlemaznable.bunny.rabbit.core.wrapper;
 import com.github.charlemaznable.bunny.client.domain.BunnyBaseRequest;
 import com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
+import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
+import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
+import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import io.vertx.core.eventbus.Message;
 
 import javax.annotation.Nullable;
@@ -14,8 +17,11 @@ public final class EventBusHandlerWrapper<T extends BunnyBaseRequest<U>, U exten
         extends BunnyHandlerWrapper<T, U, Message<String>> {
 
     public EventBusHandlerWrapper(BunnyHandler<T, U> bunnyHandler,
-                                  @Nullable BunnyLogDao bunnyLogDao) {
-        super(bunnyHandler, bunnyLogDao);
+                                  @Nullable BunnyConfig bunnyConfig,
+                                  @Nullable BunnyLogDao bunnyLogDao,
+                                  @Nullable NonsenseOptions nonsenseOptions,
+                                  @Nullable SignatureOptions signatureOptions) {
+        super(bunnyHandler, bunnyConfig, bunnyLogDao, nonsenseOptions, signatureOptions);
     }
 
     @Override

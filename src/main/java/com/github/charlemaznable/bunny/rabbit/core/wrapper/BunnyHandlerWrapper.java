@@ -3,13 +3,18 @@ package com.github.charlemaznable.bunny.rabbit.core.wrapper;
 import com.github.charlemaznable.bunny.client.domain.BunnyBaseRequest;
 import com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
+import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.core.codec.NonsenseSignature;
+import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
+import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import lombok.val;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
@@ -18,22 +23,33 @@ import static com.github.charlemaznable.core.codec.Json.json;
 import static com.github.charlemaznable.core.codec.Json.spec;
 import static com.github.charlemaznable.core.codec.Json.unJson;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
+import static com.github.charlemaznable.core.lang.Condition.notNullThen;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
+import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Str.isBlank;
 import static com.github.charlemaznable.core.lang.Str.toStr;
+import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
 public abstract class BunnyHandlerWrapper<T extends BunnyBaseRequest<U>, U extends BunnyBaseResponse, R>
         implements Handler<R> {
 
     private final BunnyHandler<T, U> bunnyHandler;
+    private final BunnyConfig bunnyConfig;
     private final BunnyLogDao bunnyLogDao;
-    private final NonsenseSignature nonsenseSignature = new NonsenseSignature();
+    private final NonsenseSignature nonsenseSignature;
 
     public BunnyHandlerWrapper(BunnyHandler<T, U> bunnyHandler,
-                               @Nullable BunnyLogDao bunnyLogDao) {
+                               @Nullable BunnyConfig bunnyConfig,
+                               @Nullable BunnyLogDao bunnyLogDao,
+                               @Nullable NonsenseOptions nonsenseOptions,
+                               @Nullable SignatureOptions signatureOptions) {
         this.bunnyHandler = checkNotNull(bunnyHandler);
+        this.bunnyConfig = nullThen(bunnyConfig, () -> getMiner(BunnyConfig.class));
         this.bunnyLogDao = nullThen(bunnyLogDao, () -> getEqler(BunnyLogDao.class));
+        this.nonsenseSignature = new NonsenseSignature();
+        notNullThen(nonsenseOptions, this.nonsenseSignature::nonsenseOptions);
+        notNullThen(signatureOptions, this.nonsenseSignature::signatureOptions);
     }
 
     @Override
@@ -50,6 +66,13 @@ public abstract class BunnyHandlerWrapper<T extends BunnyBaseRequest<U>, U exten
             consumeError(event, throwable);
             return;
         }
+        @SuppressWarnings("unchecked")
+        val context = newHashMap((Map<String, Object>) requestMap.get("context"));
+        val acceptContextKeyList = bunnyConfig.acceptContextKeyList();
+        requestMap.put("context", context.entrySet().stream()
+                .filter(e -> acceptContextKeyList.contains(e.getKey()))
+                .collect(HashMap::new, (m, e) ->
+                        m.put(e.getKey(), e.getValue()), Map::putAll));
 
         val request = spec(requestMap, bunnyHandler.getRequestClass());
         asyncLog(request, "request", requestBody);

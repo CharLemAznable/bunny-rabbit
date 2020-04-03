@@ -4,6 +4,8 @@ import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.wrapper.HttpServerHandlerWrapper;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
+import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
+import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
@@ -24,8 +26,10 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
 
     public HttpServerVerticle(List<BunnyHandler> handlers,
                               @Nullable BunnyConfig bunnyConfig,
-                              @Nullable BunnyLogDao bunnyLogDao) {
-        super(handlers, bunnyConfig, bunnyLogDao);
+                              @Nullable BunnyLogDao bunnyLogDao,
+                              @Nullable NonsenseOptions nonsenseOptions,
+                              @Nullable SignatureOptions signatureOptions) {
+        super(handlers, bunnyConfig, bunnyLogDao, nonsenseOptions, signatureOptions);
     }
 
     @Override
@@ -50,7 +54,8 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
 
         for (val handler : handlers) {
             val address = prependIfMissing(handler.address(), "/");
-            val wrapper = new HttpServerHandlerWrapper<>(handler, bunnyLogDao);
+            val wrapper = new HttpServerHandlerWrapper(handler,
+                    bunnyConfig, bunnyLogDao, nonsenseOptions, signatureOptions);
             bunnyRouter.route(address).handler(wrapper);
         }
         return bunnyRouter;
