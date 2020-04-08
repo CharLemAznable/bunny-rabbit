@@ -77,7 +77,7 @@ public final class ServeCallbackHandler
         val serveContext = buildServeContext(request);
 
         check(serveContext).compose(this::sufcheck)
-                .compose(this::callback).setHandler(async -> {
+                .compose(this::callback).onComplete(async -> {
             if (async.failed()) {
                 handler.handle(failedFuture(async.cause()));
                 return;

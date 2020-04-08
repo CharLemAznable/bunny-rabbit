@@ -304,7 +304,7 @@ public class ServeServiceCommon {
                         f.complete();
                     }));
                 })
-        )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
     }
 
     public static void testServeServiceHttpServer(VertxTestContext test, Vertx vertx, BunnyOhClient bunnyOhClient) {
@@ -543,6 +543,6 @@ public class ServeServiceCommon {
                     assertEquals(CONFIRM_FAILED.exception("Balance Confirm Failed").getMessage(), serveResponse.getUnexpectedFailure());
                     p.complete();
                 }, false, f))
-        )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
     }
 }

@@ -60,7 +60,7 @@ public final class ServeHandler
         val serveContext = buildServeContext(request);
 
         calculatePaymentValue(serveContext).compose(this::preserve)
-                .compose(this::serve).compose(this::sufserve).setHandler(async -> {
+                .compose(this::serve).compose(this::sufserve).onComplete(async -> {
             if (async.failed()) {
                 handler.handle(failedFuture(async.cause()));
                 return;

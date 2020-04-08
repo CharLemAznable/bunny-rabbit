@@ -273,7 +273,7 @@ public class ServeCallbackCommon {
                     await().forever().until(() -> callback03 == 1);
                     f.complete();
                 })
-        )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
     }
 
     public static void testServeCallbackHttpServer(VertxTestContext test, Vertx vertx, BunnyOhClient bunnyOhClient) {
@@ -432,6 +432,6 @@ public class ServeCallbackCommon {
                     await().forever().until(() -> callback04 == 1);
                     f.complete();
                 })
-        )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
     }
 }

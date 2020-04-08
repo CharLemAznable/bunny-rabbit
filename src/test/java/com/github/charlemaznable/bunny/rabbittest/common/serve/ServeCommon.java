@@ -174,7 +174,7 @@ public class ServeCommon {
                         f.complete();
                     }));
                 })
-        )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
     }
 
     public static void testPreserveHttpServer(VertxTestContext test, Vertx vertx, BunnyOhClient bunnyOhClient) {
@@ -306,6 +306,6 @@ public class ServeCommon {
                     assertEquals("Test Serve Switch Failed", unexpectedFailure.get("respDesc"));
                     p.complete();
                 }, false, f))
-        )).setHandler(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
     }
 }
