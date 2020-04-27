@@ -138,6 +138,8 @@ public final class ServeService {
             } catch (Exception e) {
                 serveDao.rollback();
                 block.fail(e);
+            } finally {
+                serveDao.close();
             }
         }, handler);
     }
@@ -186,6 +188,7 @@ public final class ServeService {
                         serveContext.unexpectedThrowable.getMessage());
                 block.complete(serveContext);
             } finally {
+                serveDao.close();
                 MtcpElf.afterCompletion();
             }
         }, false, handler);
