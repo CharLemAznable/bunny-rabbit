@@ -8,6 +8,7 @@ import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalCommon;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalConfig;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalHandler;
+import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalVertxConfig;
 import com.google.inject.Guice;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -52,7 +53,7 @@ public class IllegalTest {
                         .addHandlers()
                         .scanPackages(ClassUtils.getPackageName(IllegalHandler.class))
                         .createModule(),
-                new BunnyVertxModular().createModule());
+                new BunnyVertxModular(IllegalVertxConfig.class).createModule());
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;

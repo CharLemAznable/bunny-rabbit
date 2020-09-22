@@ -6,7 +6,7 @@ import com.github.charlemaznable.bunny.rabbit.core.wrapper.HttpServerHandlerWrap
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
 import com.github.charlemaznable.core.codec.signature.SignatureOptions;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -33,14 +33,14 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
     }
 
     @Override
-    public void start(Future<Void> startFuture) {
+    public void start(Promise<Void> startPromise) {
         val bunnyRouter = buildBunnyRouter();
         val rootRouter = buildRootRouter(bunnyRouter);
         vertx.createHttpServer().requestHandler(rootRouter)
                 .listen(bunnyConfig.port(), result -> {
                     log.info("Bunny Http Server start:{} {}", bunnyConfig.port(),
                             (result.succeeded() ? "SUCCESS" : "FAILED"));
-                    startFuture.handle(result.mapEmpty());
+                    startPromise.handle(result.mapEmpty());
                 });
     }
 
