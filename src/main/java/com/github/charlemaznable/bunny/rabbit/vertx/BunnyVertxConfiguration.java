@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.vertx;
 
-import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
+import com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import io.vertx.core.VertxOptions;
@@ -17,19 +17,18 @@ import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
 @Configuration
 public class BunnyVertxConfiguration implements Provider<VertxOptions> {
 
-    private final BunnyConfig bunnyConfig;
+    private final BunnyVertxConfig bunnyVertxConfig;
 
     @Inject
     @Autowired
-    public BunnyVertxConfiguration(@Nullable BunnyConfig bunnyConfig) {
-        this.bunnyConfig = nullThen(bunnyConfig,
-                () -> getMiner(BunnyConfig.class));
+    public BunnyVertxConfiguration(@Nullable BunnyVertxConfig bunnyVertxConfig) {
+        this.bunnyVertxConfig = nullThen(bunnyVertxConfig,
+                () -> getMiner(BunnyVertxConfig.class));
     }
 
     @Bean
     @Override
     public VertxOptions get() {
-        return new VertxOptions().setWorkerPoolSize(bunnyConfig.workerPoolSize())
-                .setMaxWorkerExecuteTime(bunnyConfig.maxWorkerExecuteTime());
+        return bunnyVertxConfig.vertxOptions();
     }
 }
