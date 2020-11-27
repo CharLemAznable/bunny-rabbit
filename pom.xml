@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.github.charlemaznable</groupId>
         <artifactId>complex-dependencies</artifactId>
-        <version>0.4.11-SNAPSHOT</version>
+        <version>0.5.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>bunny-rabbit</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Bunny Rabbit</name>
@@ -25,8 +25,8 @@
     </scm>
 
     <properties>
-        <bunny-plugin.version>0.0.8-SNAPSHOT</bunny-plugin.version>
-        <bunny-client.version>0.0.8-SNAPSHOT</bunny-client.version>
+        <bunny-plugin.version>0.1.1-SNAPSHOT</bunny-plugin.version>
+        <bunny-client.version>0.1.1-SNAPSHOT</bunny-client.version>
     </properties>
 
     <dependencies>
