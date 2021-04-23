@@ -301,9 +301,8 @@ public final class BunnyModular {
 
     @SuppressWarnings("unchecked")
     private <T> List<Class<? extends T>> getSubClasses(String basePackage, Class<T> superClass) {
-        return getClasses(basePackage, clazz -> nonNull(getAnnotation(clazz, Component.class))
-                && superClass.isAssignableFrom(clazz)).stream().map(clazz -> (Class<? extends T>) clazz)
-                .collect(Collectors.toList());
+        return getClasses(basePackage, clazz -> nonNull(getAnnotation(clazz, Component.class)) && superClass.isAssignableFrom(clazz))
+                .stream().map((Function<Class<?>, Class<? extends T>>) Class.class::cast).collect(Collectors.toList());
     }
 
     private static class NamedClassPairFunction<T>
