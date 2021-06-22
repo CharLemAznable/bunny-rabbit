@@ -98,7 +98,7 @@ public class CalculateCommon {
                         f.complete();
                     }));
                 })
-        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>succeedingThenComplete().handle(event));
     }
 
     public static void testCalculateHttpServer(VertxTestContext test, Vertx vertx, BunnyOhClient bunnyOhClient) {
@@ -163,6 +163,6 @@ public class CalculateCommon {
                     assertEquals("Charge Calculate Failed: NotFoundPlugin.Calculate Plugin Not Found", calculateResponse.getRespDesc());
                     p.complete();
                 }, false, f))
-        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>succeedingThenComplete().handle(event));
     }
 }

@@ -34,7 +34,7 @@ public class IllegalCommon {
                         f.complete();
                     }));
                 })
-        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>succeedingThenComplete().handle(event));
     }
 
     public static void testIllegalHttpServer(VertxTestContext test, Vertx vertx, int port) {
@@ -56,6 +56,6 @@ public class IllegalCommon {
                     assertEquals("Request Body Error: Verify Failed", response.getRespDesc());
                     p.complete();
                 }, false, f))
-        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>succeedingThenComplete().handle(event));
     }
 }

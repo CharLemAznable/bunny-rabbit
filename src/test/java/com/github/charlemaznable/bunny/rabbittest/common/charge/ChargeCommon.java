@@ -78,7 +78,7 @@ public class ChargeCommon {
                         f.complete();
                     }));
                 })
-        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>succeedingThenComplete().handle(event));
     }
 
     public static void testChargeHttpServer(VertxTestContext test, Vertx vertx, BunnyOhClient bunnyOhClient) {
@@ -126,6 +126,6 @@ public class ChargeCommon {
                     assertEquals(UNEXPECTED_EXCEPTION.respDesc() + ": Charge Exception", chargeResponse.getRespDesc());
                     p.complete();
                 }, false, f))
-        )).onComplete(event -> test.<CompositeFuture>completing().handle(event));
+        )).onComplete(event -> test.<CompositeFuture>succeedingThenComplete().handle(event));
     }
 }
