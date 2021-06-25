@@ -3,7 +3,6 @@ package com.github.charlemaznable.bunny.rabbittest.common.serve;
 import com.github.charlemaznable.bunny.client.domain.ServeCallbackRequest;
 import com.github.charlemaznable.bunny.client.eventbus.BunnyEventBus;
 import com.github.charlemaznable.bunny.client.ohclient.BunnyOhClient;
-import com.github.charlemaznable.core.lang.EverythingIsNonNull;
 import com.github.charlemaznable.core.net.common.HttpStatus;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -31,7 +30,6 @@ import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServe
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CONFIRMED_SEQ_SUCCESS;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.CONFIRM_FAILURE;
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.UPDATE_CONFIRM_FAILURE;
-import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static org.awaitility.Awaitility.await;
@@ -52,7 +50,6 @@ public class ServeCallbackCommon {
     private static int callback03;
     private static int callback04;
 
-    @EverythingIsNonNull
     @SneakyThrows
     public static void beforeAll() {
         callback01 = 0;
@@ -63,7 +60,7 @@ public class ServeCallbackCommon {
         mockWebServer.setDispatcher(new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
-                val requestUrl = checkNotNull(request.getRequestUrl());
+                val requestUrl = request.getRequestUrl();
                 switch (requestUrl.encodedPath()) {
                     case "/callback01":
                         assertEquals(FAILURE, requestUrl
