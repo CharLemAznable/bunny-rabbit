@@ -52,7 +52,7 @@ with baby lambs across sunny green meadows.
 <dependency>
   <groupId>com.github.charlemaznable</groupId>
   <artifactId>bunny-rabbit</artifactId>
-  <version>0.1.2</version>
+  <version>0.1.3</version>
 </dependency>
 ```
 
@@ -62,6 +62,6 @@ with baby lambs across sunny green meadows.
 <dependency>
   <groupId>com.github.charlemaznable</groupId>
   <artifactId>bunny-rabbit</artifactId>
-  <version>0.1.3-SNAPSHOT</version>
+  <version>0.1.4-SNAPSHOT</version>
 </dependency>
 ```
