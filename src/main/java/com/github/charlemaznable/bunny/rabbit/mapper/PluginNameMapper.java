@@ -1,7 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.mapper;
 
 import com.github.charlemaznable.core.config.Config;
-import com.github.charlemaznable.core.miner.MinerConfig;
+import com.github.charlemaznable.miner.MinerConfig;
 import org.n3r.diamond.client.Minerable;
 
 import javax.annotation.Nonnull;

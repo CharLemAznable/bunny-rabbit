@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbittest.common.illegal;
 
-import com.github.charlemaznable.core.net.ohclient.OhReq;
+import com.github.charlemaznable.httpclient.ohclient.OhReq;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

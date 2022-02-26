@@ -22,7 +22,7 @@ import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.PRE_
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Str.toStr;
-import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
+import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 import static java.util.Objects.nonNull;

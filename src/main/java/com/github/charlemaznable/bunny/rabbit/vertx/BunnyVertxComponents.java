@@ -1,9 +1,9 @@
 package com.github.charlemaznable.bunny.rabbit.vertx;
 
-import com.github.charlemaznable.core.spring.ComplexComponentScan;
-import com.github.charlemaznable.core.vertx.spring.SpringVertxImport;
+import com.github.charlemaznable.core.spring.NeoComponentScan;
+import com.github.charlemaznable.core.vertx.spring.VertxImport;
 
-@ComplexComponentScan
-@SpringVertxImport
+@NeoComponentScan
+@VertxImport
 public final class BunnyVertxComponents {
 }

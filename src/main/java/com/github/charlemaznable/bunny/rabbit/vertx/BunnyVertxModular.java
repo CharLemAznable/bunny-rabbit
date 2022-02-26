@@ -2,7 +2,7 @@ package com.github.charlemaznable.bunny.rabbit.vertx;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig;
 import com.github.charlemaznable.core.guice.Modulee;
-import com.github.charlemaznable.core.miner.MinerModular;
+import com.github.charlemaznable.miner.MinerModular;
 import com.github.charlemaznable.core.vertx.guice.VertxModular;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;

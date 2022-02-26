@@ -3,7 +3,7 @@ package com.github.charlemaznable.bunny.rabbittest.common.serve;
 import com.github.charlemaznable.bunny.client.domain.ServeCallbackRequest;
 import com.github.charlemaznable.bunny.client.eventbus.BunnyEventBus;
 import com.github.charlemaznable.bunny.client.ohclient.BunnyOhClient;
-import com.github.charlemaznable.core.net.common.HttpStatus;
+import com.github.charlemaznable.httpclient.common.HttpStatus;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

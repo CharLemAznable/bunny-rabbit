@@ -24,12 +24,51 @@
         <url>https://github.com/CharLemAznable/bunny-rabbit</url>
     </scm>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <properties>
-        <bunny-plugin.version>0.1.6-SNAPSHOT</bunny-plugin.version>
+        <sonar.projectKey>CharLemAznable_bunny-rabbit</sonar.projectKey>
+
         <bunny-client.version>0.1.6-SNAPSHOT</bunny-client.version>
+        <bunny-plugin.version>0.1.6-SNAPSHOT</bunny-plugin.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.bingoohuang</groupId>
+            <artifactId>eql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.bingoohuang</groupId>
+            <artifactId>westid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.charlemaznable</groupId>
+            <artifactId>bunny-client</artifactId>
+            <version>${bunny-client.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.github.charlemaznable</groupId>
             <artifactId>bunny-plugin</artifactId>
@@ -37,25 +76,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.charlemaznable</groupId>
-            <artifactId>bunny-client</artifactId>
-            <version>${bunny-client.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.bingoohuang</groupId>
-            <artifactId>eql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.bingoohuang</groupId>
-            <artifactId>westid</artifactId>
+            <artifactId>vertx-diamond-config</artifactId>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

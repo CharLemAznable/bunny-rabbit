@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.Nullable;
 
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
-import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
+import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 
 @SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "SpringFacetCodeInspection"})
 @Configuration

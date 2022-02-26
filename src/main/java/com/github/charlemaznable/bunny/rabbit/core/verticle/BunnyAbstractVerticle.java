@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
-import static com.github.charlemaznable.core.miner.MinerFactory.getMiner;
+import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
 public abstract class BunnyAbstractVerticle extends AbstractVerticle {

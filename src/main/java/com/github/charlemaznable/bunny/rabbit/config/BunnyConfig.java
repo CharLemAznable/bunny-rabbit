@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.config;
 
-import com.github.charlemaznable.core.miner.MinerConfig;
+import com.github.charlemaznable.miner.MinerConfig;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 

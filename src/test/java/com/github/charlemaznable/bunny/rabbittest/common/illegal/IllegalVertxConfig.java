@@ -1,7 +1,7 @@
 package com.github.charlemaznable.bunny.rabbittest.common.illegal;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig;
-import com.github.charlemaznable.core.miner.MinerConfig;
+import com.github.charlemaznable.miner.MinerConfig;
 
 @MinerConfig
 public interface IllegalVertxConfig extends BunnyVertxConfig {

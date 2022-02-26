@@ -7,7 +7,7 @@ import com.github.charlemaznable.bunny.rabbit.spring.BunnyImport;
 import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxImport;
 import com.github.charlemaznable.bunny.rabbittest.common.calculate.CalculateCommon;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyEqlerDummy;
-import com.github.charlemaznable.core.spring.ComplexComponentScan;
+import com.github.charlemaznable.core.spring.NeoComponentScan;
 import org.n3r.diamond.client.impl.MockDiamondServer;
 import org.springframework.context.event.EventListener;
 
@@ -16,12 +16,12 @@ import javax.annotation.PreDestroy;
 
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;
-import static com.github.charlemaznable.core.miner.MinerFactory.springMinerLoader;
-import static com.github.charlemaznable.core.net.ohclient.OhFactory.springOhLoader;
+import static com.github.charlemaznable.httpclient.ohclient.OhFactory.springOhLoader;
+import static com.github.charlemaznable.miner.MinerFactory.springMinerLoader;
 import static java.util.Objects.nonNull;
-import static org.joor.Reflect.on;
+import static org.n3r.eql.joor.Reflect.on;
 
-@ComplexComponentScan(basePackageClasses = {
+@NeoComponentScan(basePackageClasses = {
         CalculateCommon.class,
         BunnyEqlerDummy.class
 })

@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.config;
 
-import com.github.charlemaznable.core.miner.MinerConfig;
+import com.github.charlemaznable.miner.MinerConfig;
 import io.vertx.core.VertxOptions;
 
 import static com.github.charlemaznable.vertx.diamond.VertxDiamondElf.parseStoneToVertxOptions;

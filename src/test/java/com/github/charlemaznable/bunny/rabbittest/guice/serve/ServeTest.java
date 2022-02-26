@@ -32,8 +32,8 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
 
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;
-import static com.github.charlemaznable.core.miner.MinerFactory.springMinerLoader;
-import static com.github.charlemaznable.core.net.ohclient.OhFactory.springOhLoader;
+import static com.github.charlemaznable.httpclient.ohclient.OhFactory.springOhLoader;
+import static com.github.charlemaznable.miner.MinerFactory.springMinerLoader;
 import static java.time.Duration.ofMillis;
 import static java.util.Objects.nonNull;
 import static org.awaitility.Awaitility.await;

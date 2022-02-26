@@ -1,9 +1,9 @@
 package com.github.charlemaznable.bunny.rabbit.spring;
 
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
-import com.github.charlemaznable.core.spring.ComplexComponentScan;
+import com.github.charlemaznable.core.spring.NeoComponentScan;
 
-@ComplexComponentScan(basePackageClasses = {
+@NeoComponentScan(basePackageClasses = {
         BunnyVertxApplication.class,
         BunnyComponents.class})
 public final class BunnyComponents {
