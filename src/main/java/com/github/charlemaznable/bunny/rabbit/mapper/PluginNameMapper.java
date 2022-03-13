@@ -1,15 +1,17 @@
 package com.github.charlemaznable.bunny.rabbit.mapper;
 
+import com.github.charlemaznable.configservice.ConfigGetter;
+import com.github.charlemaznable.configservice.apollo.ApolloConfig;
+import com.github.charlemaznable.configservice.diamond.DiamondConfig;
 import com.github.charlemaznable.core.config.Config;
-import com.github.charlemaznable.miner.MinerConfig;
-import org.n3r.diamond.client.Minerable;
 
 import javax.annotation.Nonnull;
 
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 
-@MinerConfig(group = "Bunny", dataId = "default")
-public interface PluginNameMapper extends Minerable {
+@ApolloConfig(namespace = "Bunny", propertyName = "${bunny-config:-default}")
+@DiamondConfig(group = "Bunny", dataId = "${bunny-config:-default}")
+public interface PluginNameMapper extends ConfigGetter {
 
     @Nonnull
     default String calculatePluginName(String serveName) {

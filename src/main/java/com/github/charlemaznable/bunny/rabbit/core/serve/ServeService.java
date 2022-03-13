@@ -19,10 +19,10 @@ import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CONFIRM_FAILED;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.PRE_SERVE_FAILED;
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Str.toStr;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 import static java.util.Objects.nonNull;
@@ -44,7 +44,7 @@ public final class ServeService {
                         @Nullable BunnyServeDao serveDao,
                         @Nullable BunnyDao bunnyDao) {
         this.switchPluginLoader = checkNotNull(switchPluginLoader);
-        this.codeMapper = nullThen(codeMapper, () -> getMiner(ChargeCodeMapper.class));
+        this.codeMapper = nullThen(codeMapper, () -> getConfig(ChargeCodeMapper.class));
         this.serveDao = nullThen(serveDao, () -> getEqler(BunnyServeDao.class));
         this.bunnyDao = nullThen(bunnyDao, () -> getEqler(BunnyDao.class));
     }

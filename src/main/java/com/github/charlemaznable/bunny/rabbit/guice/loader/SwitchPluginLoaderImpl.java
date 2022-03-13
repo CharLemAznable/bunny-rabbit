@@ -12,9 +12,9 @@ import lombok.val;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static com.google.common.cache.CacheLoader.from;
 import static com.google.inject.Key.get;
 import static com.google.inject.name.Names.named;
@@ -31,7 +31,7 @@ public final class SwitchPluginLoaderImpl implements SwitchPluginLoader {
                                   @Nullable PluginNameMapper pluginNameMapper) {
         this.injector = checkNotNull(injector);
         this.pluginNameMapper = nullThen(pluginNameMapper,
-                () -> getMiner(PluginNameMapper.class));
+                () -> getConfig(PluginNameMapper.class));
     }
 
     @Nonnull

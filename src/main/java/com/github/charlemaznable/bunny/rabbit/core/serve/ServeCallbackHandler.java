@@ -22,16 +22,13 @@ import java.util.Map;
 
 import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
-import static com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackConstant.CALLBACK_FAILURE;
-import static com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackConstant.CALLBACK_STANDBY;
-import static com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackConstant.CALLBACK_SUCCESS;
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.codec.Json.json;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Str.isBlank;
 import static com.github.charlemaznable.core.lang.Str.toStr;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 import static java.util.Objects.nonNull;
@@ -40,6 +37,10 @@ import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 @Component
 public final class ServeCallbackHandler
         implements BunnyHandler<ServeCallbackRequest, ServeCallbackResponse> {
+
+    public static final String CALLBACK_STANDBY = "0";
+    public static final String CALLBACK_SUCCESS = "1";
+    public static final String CALLBACK_FAILURE = "2";
 
     private final ServeCallbackPluginLoader serveCallbackPluginLoader;
     private final ServeService serveService;
@@ -57,7 +58,7 @@ public final class ServeCallbackHandler
         this.bunnyCallbackDao = nullThen(bunnyCallbackDao,
                 () -> getEqler(BunnyCallbackDao.class));
         this.bunnyConfig = nullThen(bunnyConfig,
-                () -> getMiner(BunnyConfig.class));
+                () -> getConfig(BunnyConfig.class));
     }
 
     @Override

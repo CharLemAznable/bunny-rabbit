@@ -16,10 +16,11 @@ import javax.annotation.PreDestroy;
 
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;
+import static com.github.charlemaznable.configservice.diamond.DiamondFactory.diamondLoader;
+import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.github.charlemaznable.httpclient.ohclient.OhFactory.springOhLoader;
-import static com.github.charlemaznable.miner.MinerFactory.springMinerLoader;
 import static java.util.Objects.nonNull;
-import static org.n3r.eql.joor.Reflect.on;
+import static org.joor.Reflect.on;
 
 @NeoComponentScan(basePackageClasses = {
         CalculateCommon.class,
@@ -36,7 +37,7 @@ public class CalculateConfiguration {
 
     @PostConstruct
     public void postConstruct() {
-        on(springMinerLoader()).field("minerCache").call("invalidateAll");
+        on(diamondLoader(springFactory())).field("configCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",

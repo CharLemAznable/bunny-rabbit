@@ -1,6 +1,7 @@
 package com.github.charlemaznable.bunny.rabbit.config;
 
-import com.github.charlemaznable.miner.MinerConfig;
+import com.github.charlemaznable.configservice.apollo.ApolloConfig;
+import com.github.charlemaznable.configservice.diamond.DiamondConfig;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
@@ -11,19 +12,24 @@ import static com.github.charlemaznable.core.lang.Str.toStr;
 import static org.n3r.eql.mtcp.MtcpContext.TENANT_CODE;
 import static org.n3r.eql.mtcp.MtcpContext.TENANT_ID;
 
-@MinerConfig(group = "Bunny", dataId = "default")
+@ApolloConfig(namespace = "Bunny", propertyName = "${bunny-config:-default}")
+@DiamondConfig(group = "Bunny", dataId = "${bunny-config:-default}")
 public interface BunnyConfig {
 
-    @MinerConfig(dataId = "eventbus.address-prefix", defaultValue = "/bunny")
+    @ApolloConfig(propertyName = "eventbus.address-prefix", defaultValue = "/bunny")
+    @DiamondConfig(dataId = "eventbus.address-prefix", defaultValue = "/bunny")
     String addressPrefix();
 
-    @MinerConfig(dataId = "httpserver.context-path", defaultValue = "/bunny")
+    @ApolloConfig(propertyName = "httpserver.context-path", defaultValue = "/bunny")
+    @DiamondConfig(dataId = "httpserver.context-path", defaultValue = "/bunny")
     String contextPath();
 
-    @MinerConfig(dataId = "httpserver.port", defaultValue = "22114")
+    @ApolloConfig(propertyName = "httpserver.port", defaultValue = "22114")
+    @DiamondConfig(dataId = "httpserver.port", defaultValue = "22114")
     int port();
 
-    @MinerConfig(dataId = "accept.context-keys")
+    @ApolloConfig(propertyName = "accept.context-keys")
+    @DiamondConfig(dataId = "accept.context-keys")
     String acceptContextKeys();
 
     default List<String> acceptContextKeyList() {
@@ -33,9 +39,11 @@ public interface BunnyConfig {
                         .splitToList(toStr(acceptContextKeys()))));
     }
 
-    @MinerConfig(dataId = "callback.limit", defaultValue = "3")
+    @ApolloConfig(propertyName = "callback.limit", defaultValue = "3")
+    @DiamondConfig(dataId = "callback.limit", defaultValue = "3")
     int callbackLimit(); // callback times limit
 
-    @MinerConfig(dataId = "callback.delay", defaultValue = "60000")
+    @ApolloConfig(propertyName = "callback.delay", defaultValue = "60000")
+    @DiamondConfig(dataId = "callback.delay", defaultValue = "60000")
     long callbackDelay(); // in MILLISECONDS
 }

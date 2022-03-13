@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Nullable;
 
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 
 @SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "SpringFacetCodeInspection"})
 @Configuration
@@ -23,7 +23,7 @@ public class BunnyVertxConfiguration implements Provider<VertxOptions> {
     @Autowired
     public BunnyVertxConfiguration(@Nullable BunnyVertxConfig bunnyVertxConfig) {
         this.bunnyVertxConfig = nullThen(bunnyVertxConfig,
-                () -> getMiner(BunnyVertxConfig.class));
+                () -> getConfig(BunnyVertxConfig.class));
     }
 
     @Bean

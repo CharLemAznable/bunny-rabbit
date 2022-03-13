@@ -1,8 +1,8 @@
 package com.github.charlemaznable.bunny.rabbittest.common.illegal;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
-import com.github.charlemaznable.miner.MinerConfig;
+import com.github.charlemaznable.configservice.diamond.DiamondConfig;
 
-@MinerConfig(group = "Bunny", dataId = "illegal")
+@DiamondConfig(group = "Bunny", dataId = "illegal")
 public interface IllegalConfig extends BunnyConfig {
 }

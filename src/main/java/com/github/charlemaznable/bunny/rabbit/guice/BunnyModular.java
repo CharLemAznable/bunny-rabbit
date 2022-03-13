@@ -23,10 +23,10 @@ import com.github.charlemaznable.bunny.rabbit.guice.loader.ServePluginLoaderImpl
 import com.github.charlemaznable.bunny.rabbit.guice.loader.SwitchPluginLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
+import com.github.charlemaznable.configservice.ConfigModular;
 import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
 import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import com.github.charlemaznable.core.guice.Modulee;
-import com.github.charlemaznable.miner.MinerModular;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.util.Providers;
@@ -71,7 +71,7 @@ public final class BunnyModular {
     }
 
     public BunnyModular(Class<? extends BunnyConfig> configClass) {
-        this(new MinerModular().bindClasses(configClass).createModule());
+        this(new ConfigModular().bindClasses(configClass).createModule());
     }
 
     public BunnyModular(BunnyConfig configImpl) {
@@ -216,7 +216,7 @@ public final class BunnyModular {
     }
 
     public BunnyModular chargeCodeMapper(Class<? extends ChargeCodeMapper> mapperClass) {
-        this.chargeCodeMapperModule = new MinerModular().bindClasses(mapperClass).createModule();
+        this.chargeCodeMapperModule = new ConfigModular().bindClasses(mapperClass).createModule();
         return this;
     }
 
@@ -231,7 +231,7 @@ public final class BunnyModular {
     }
 
     public BunnyModular pluginNameMapper(Class<? extends PluginNameMapper> mapperClass) {
-        this.pluginNameMapperModule = new MinerModular().bindClasses(mapperClass).createModule();
+        this.pluginNameMapperModule = new ConfigModular().bindClasses(mapperClass).createModule();
         return this;
     }
 

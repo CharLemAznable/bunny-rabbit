@@ -17,8 +17,8 @@ import javax.annotation.Nullable;
 
 import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.QUERY_FAILED;
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static java.util.Objects.isNull;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
@@ -33,7 +33,7 @@ public final class QueryHandler
     @Autowired
     public QueryHandler(@Nullable ChargeCodeMapper codeMapper,
                         @Nullable BunnyDao bunnyDao) {
-        this.codeMapper = nullThen(codeMapper, () -> getMiner(ChargeCodeMapper.class));
+        this.codeMapper = nullThen(codeMapper, () -> getConfig(ChargeCodeMapper.class));
         this.bunnyDao = nullThen(bunnyDao, () -> getEqler(BunnyDao.class));
     }
 

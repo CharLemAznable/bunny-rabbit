@@ -19,6 +19,7 @@ import java.util.Map;
 import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.plugin.elf.VertxElf.executeBlocking;
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.REQUEST_BODY_ERROR;
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.codec.Json.json;
 import static com.github.charlemaznable.core.codec.Json.spec;
 import static com.github.charlemaznable.core.codec.Json.unJson;
@@ -28,7 +29,6 @@ import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.github.charlemaznable.core.lang.Str.isBlank;
 import static com.github.charlemaznable.core.lang.Str.toStr;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
 public abstract class BunnyHandlerWrapper<T extends BunnyBaseRequest<U>, U extends BunnyBaseResponse, R>
@@ -45,7 +45,7 @@ public abstract class BunnyHandlerWrapper<T extends BunnyBaseRequest<U>, U exten
                                @Nullable NonsenseOptions nonsenseOptions,
                                @Nullable SignatureOptions signatureOptions) {
         this.bunnyHandler = checkNotNull(bunnyHandler);
-        this.bunnyConfig = nullThen(bunnyConfig, () -> getMiner(BunnyConfig.class));
+        this.bunnyConfig = nullThen(bunnyConfig, () -> getConfig(BunnyConfig.class));
         this.bunnyLogDao = nullThen(bunnyLogDao, () -> getEqler(BunnyLogDao.class));
         this.nonsenseSignature = new NonsenseSignature();
         notNullThen(nonsenseOptions, this.nonsenseSignature::nonsenseOptions);

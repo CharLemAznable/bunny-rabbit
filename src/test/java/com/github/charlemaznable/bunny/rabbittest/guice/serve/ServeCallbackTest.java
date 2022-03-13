@@ -33,9 +33,10 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
 
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;
+import static com.github.charlemaznable.configservice.diamond.DiamondFactory.diamondLoader;
+import static com.github.charlemaznable.configservice.diamond.DiamondFactory.getDiamond;
+import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.github.charlemaznable.httpclient.ohclient.OhFactory.springOhLoader;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
-import static com.github.charlemaznable.miner.MinerFactory.springMinerLoader;
 import static java.time.Duration.ofMillis;
 import static java.util.Objects.nonNull;
 import static org.awaitility.Awaitility.await;
@@ -52,7 +53,7 @@ public class ServeCallbackTest {
 
     @BeforeAll
     public static void beforeAll() {
-        on(springMinerLoader()).field("minerCache").call("invalidateAll");
+        on(diamondLoader(springFactory())).field("configCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
         MockDiamondServer.setConfigInfo("Bunny", "default",
@@ -74,8 +75,8 @@ public class ServeCallbackTest {
                         .addServeCallbackPlugins()
                         .addSwitchPlugins()
                         .scanPackageClasses(ServeCallbackCommon.class)
-                        .chargeCodeMapper(getMiner(ChargeCodeMapper.class))
-                        .pluginNameMapper(getMiner(PluginNameMapper.class))
+                        .chargeCodeMapper(getDiamond(ChargeCodeMapper.class))
+                        .pluginNameMapper(getDiamond(PluginNameMapper.class))
                         .nonsenseOptions(nonsenseOptions)
                         .signatureOptions(signatureOptions)
                         .createModule(),

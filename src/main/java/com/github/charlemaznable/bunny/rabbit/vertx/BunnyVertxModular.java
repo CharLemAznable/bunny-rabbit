@@ -1,9 +1,9 @@
 package com.github.charlemaznable.bunny.rabbit.vertx;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig;
+import com.github.charlemaznable.configservice.ConfigModular;
 import com.github.charlemaznable.core.guice.Modulee;
 import com.github.charlemaznable.core.vertx.guice.VertxModular;
-import com.github.charlemaznable.miner.MinerModular;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.util.Providers;
@@ -18,7 +18,7 @@ public final class BunnyVertxModular {
     }
 
     public BunnyVertxModular(Class<? extends BunnyVertxConfig> configClass) {
-        this(new MinerModular().bindClasses(configClass).createModule());
+        this(new ConfigModular().bindClasses(configClass).createModule());
     }
 
     public BunnyVertxModular(BunnyVertxConfig configImpl) {

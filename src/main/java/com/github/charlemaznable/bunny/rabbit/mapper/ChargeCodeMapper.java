@@ -1,14 +1,16 @@
 package com.github.charlemaznable.bunny.rabbit.mapper;
 
+import com.github.charlemaznable.configservice.ConfigGetter;
+import com.github.charlemaznable.configservice.apollo.ApolloConfig;
+import com.github.charlemaznable.configservice.diamond.DiamondConfig;
 import com.github.charlemaznable.core.config.Config;
-import com.github.charlemaznable.miner.MinerConfig;
 import lombok.val;
-import org.n3r.diamond.client.Minerable;
 
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 
-@MinerConfig(group = "Bunny", dataId = "default")
-public interface ChargeCodeMapper extends Minerable {
+@ApolloConfig(namespace = "Bunny", propertyName = "${bunny-config:-default}")
+@DiamondConfig(group = "Bunny", dataId = "${bunny-config:-default}")
+public interface ChargeCodeMapper extends ConfigGetter {
 
     /**
      * 服务名称-计量编码 映射关系

@@ -1,13 +1,17 @@
 package com.github.charlemaznable.bunny.rabbittest.common.illegal;
 
 import com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig;
-import com.github.charlemaznable.miner.MinerConfig;
+import com.github.charlemaznable.configservice.annotation.ConfigValueParse;
+import com.github.charlemaznable.configservice.diamond.DiamondConfig;
+import com.github.charlemaznable.configservice.impl.VertxOptionsParser;
+import io.vertx.core.VertxOptions;
 
-@MinerConfig
+@DiamondConfig
 public interface IllegalVertxConfig extends BunnyVertxConfig {
 
-    @MinerConfig(group = "VertxOptions", dataId = "bunnyIllegal",
+    @DiamondConfig(group = "VertxOptions", dataId = "bunnyIllegal",
             defaultValue = "workerPoolSize=64\nmaxWorkerExecuteTime=60000000000\n")
+    @ConfigValueParse(VertxOptionsParser.class)
     @Override
-    String rawVertxOptions();
+    VertxOptions vertxOptions();
 }

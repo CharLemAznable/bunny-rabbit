@@ -1,18 +1,19 @@
 package com.github.charlemaznable.bunny.rabbit.config;
 
-import com.github.charlemaznable.miner.MinerConfig;
+import com.github.charlemaznable.configservice.annotation.ConfigValueParse;
+import com.github.charlemaznable.configservice.apollo.ApolloConfig;
+import com.github.charlemaznable.configservice.diamond.DiamondConfig;
+import com.github.charlemaznable.configservice.impl.VertxOptionsParser;
 import io.vertx.core.VertxOptions;
 
-import static com.github.charlemaznable.vertx.diamond.VertxDiamondElf.parseStoneToVertxOptions;
-
-@MinerConfig
+@ApolloConfig
+@DiamondConfig
 public interface BunnyVertxConfig {
 
-    @MinerConfig(group = "VertxOptions", dataId = "bunny",
+    @ApolloConfig(namespace = "VertxOptions", propertyName = "${bunny-vertx-config:-bunny}",
             defaultValue = "workerPoolSize=64\nmaxWorkerExecuteTime=60000000000\n")
-    String rawVertxOptions();
-
-    default VertxOptions vertxOptions() {
-        return parseStoneToVertxOptions(rawVertxOptions());
-    }
+    @DiamondConfig(group = "VertxOptions", dataId = "${bunny-vertx-config:-bunny}",
+            defaultValue = "workerPoolSize=64\nmaxWorkerExecuteTime=60000000000\n")
+    @ConfigValueParse(VertxOptionsParser.class)
+    VertxOptions vertxOptions();
 }

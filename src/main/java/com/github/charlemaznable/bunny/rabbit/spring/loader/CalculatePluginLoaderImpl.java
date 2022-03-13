@@ -14,9 +14,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static com.github.charlemaznable.bunny.rabbit.core.common.BunnyError.CALCULATE_FAILED;
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static com.google.common.cache.CacheLoader.from;
 
 @Component
@@ -29,7 +29,7 @@ public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
     @Autowired
     public CalculatePluginLoaderImpl(@Nullable PluginNameMapper pluginNameMapper) {
         this.pluginNameMapper = nullThen(pluginNameMapper,
-                () -> getMiner(PluginNameMapper.class));
+                () -> getConfig(PluginNameMapper.class));
     }
 
     @Nonnull

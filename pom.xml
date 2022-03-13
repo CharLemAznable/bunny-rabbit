@@ -75,17 +75,13 @@
             <version>${bunny-plugin.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.charlemaznable</groupId>
-            <artifactId>vertx-diamond-config</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.github.charlemaznable</groupId>
-            <artifactId>logback-miner</artifactId>
+            <artifactId>logback-dendrobe</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

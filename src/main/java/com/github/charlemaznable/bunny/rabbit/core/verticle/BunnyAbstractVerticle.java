@@ -10,9 +10,9 @@ import io.vertx.core.AbstractVerticle;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
-import static com.github.charlemaznable.miner.MinerFactory.getMiner;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
 public abstract class BunnyAbstractVerticle extends AbstractVerticle {
@@ -29,7 +29,7 @@ public abstract class BunnyAbstractVerticle extends AbstractVerticle {
                                  @Nullable NonsenseOptions nonsenseOptions,
                                  @Nullable SignatureOptions signatureOptions) {
         this.handlers = newArrayList(handlers);
-        this.bunnyConfig = nullThen(bunnyConfig, () -> getMiner(BunnyConfig.class));
+        this.bunnyConfig = nullThen(bunnyConfig, () -> getConfig(BunnyConfig.class));
         this.bunnyLogDao = nullThen(bunnyLogDao, () -> getEqler(BunnyLogDao.class));
         this.nonsenseOptions = nonsenseOptions;
         this.signatureOptions = signatureOptions;
