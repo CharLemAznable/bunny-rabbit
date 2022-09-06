@@ -10,7 +10,6 @@ import io.vertx.core.Promise;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.ResponseContentTypeHandler;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -49,8 +48,7 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
         val bunnyRouter = Router.router(vertx);
         bunnyRouter.route(HttpMethod.POST, "/*")
                 .handler(BodyHandler.create(false))
-                .produces("application/json")
-                .handler(ResponseContentTypeHandler.create());
+                .produces("application/json");
 
         for (val handler : handlers) {
             val address = prependIfMissing(handler.address(), "/");
