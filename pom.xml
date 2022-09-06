@@ -80,6 +80,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.bingoohuang</groupId>
+            <artifactId>diamond-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.charlemaznable</groupId>
             <artifactId>logback-dendrobe</artifactId>
             <scope>test</scope>
