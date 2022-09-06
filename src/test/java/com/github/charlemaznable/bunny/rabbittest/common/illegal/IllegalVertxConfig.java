@@ -11,7 +11,7 @@ public interface IllegalVertxConfig extends BunnyVertxConfig {
 
     @DiamondConfig(group = "VertxOptions", dataId = "bunnyIllegal",
             defaultValue = "workerPoolSize=64\nmaxWorkerExecuteTime=60000000000\n" +
-                    "clusterManager=@com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig.DefaultBunnyVertxClusterManager\n")
+                    "clusterManager=@com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig$DefaultBunnyVertxClusterManager\n")
     @ConfigValueParse(VertxOptionsParser.class)
     @Override
     VertxOptions vertxOptions();

@@ -15,10 +15,10 @@ public interface BunnyVertxConfig {
 
     @ApolloConfig(namespace = "VertxOptions", propertyName = "${bunny-vertx-config:-bunny}",
             defaultValue = "workerPoolSize=64\nmaxWorkerExecuteTime=60000000000\n" +
-                    "clusterManager=@com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig.DefaultBunnyVertxClusterManager\n")
+                    "clusterManager=@com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig$DefaultBunnyVertxClusterManager\n")
     @DiamondConfig(group = "VertxOptions", dataId = "${bunny-vertx-config:-bunny}",
             defaultValue = "workerPoolSize=64\nmaxWorkerExecuteTime=60000000000\n" +
-                    "clusterManager=@com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig.DefaultBunnyVertxClusterManager\n")
+                    "clusterManager=@com.github.charlemaznable.bunny.rabbit.config.BunnyVertxConfig$DefaultBunnyVertxClusterManager\n")
     @ConfigValueParse(VertxOptionsParser.class)
     VertxOptions vertxOptions();
 
