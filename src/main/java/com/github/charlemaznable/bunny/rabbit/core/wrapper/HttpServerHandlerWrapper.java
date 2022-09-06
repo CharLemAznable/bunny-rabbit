@@ -26,7 +26,7 @@ public final class HttpServerHandlerWrapper<T extends BunnyBaseRequest<U>, U ext
 
     @Override
     public String produceRequest(RoutingContext routingContext) {
-        return routingContext.getBodyAsString();
+        return routingContext.body().asString();
     }
 
     @Override
