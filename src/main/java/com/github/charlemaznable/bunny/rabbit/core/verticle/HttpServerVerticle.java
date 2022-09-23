@@ -64,7 +64,8 @@ public final class HttpServerVerticle extends BunnyAbstractVerticle {
         if ("/".equals(contextPath)) return bunnyRouter;
 
         val router = Router.router(vertx);
-        router.route(contextPath + "*").subRouter(bunnyRouter);
+        //noinspection deprecation
+        router.mountSubRouter(contextPath, bunnyRouter);
         return router;
     }
 }
