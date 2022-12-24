@@ -9,6 +9,7 @@ import java.util.Set;
 
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 
+@SuppressWarnings("rawtypes")
 public final class BunnyHandlerLoaderImpl implements BunnyHandlerLoader {
 
     private final List<BunnyHandler> handlers;

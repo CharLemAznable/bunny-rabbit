@@ -46,9 +46,10 @@ public class CalculateTest {
         on(diamondLoader(springFactory())).field("configCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
-        MockDiamondServer.setConfigInfo("Bunny", "default",
-                "httpserver.port=42114\n" +
-                        "notfound.Calculate=NotFound\n");
+        MockDiamondServer.setConfigInfo("Bunny", "default", """
+                httpserver.port=42114
+                notfound.Calculate=NotFound
+                """);
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42114/bunny\n");
 

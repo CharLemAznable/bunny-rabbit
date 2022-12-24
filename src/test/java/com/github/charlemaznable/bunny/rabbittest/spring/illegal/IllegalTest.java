@@ -13,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static java.time.Duration.ofMillis;
 import static org.awaitility.Awaitility.await;
 
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @ExtendWith({SpringExtension.class, VertxExtension.class})
 @ContextConfiguration(classes = IllegalConfiguration.class)
 public class IllegalTest {

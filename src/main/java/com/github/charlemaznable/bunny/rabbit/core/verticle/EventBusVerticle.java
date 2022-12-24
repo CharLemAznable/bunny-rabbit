@@ -7,13 +7,13 @@ import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
 import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import lombok.val;
-import lombok.var;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
 
+@SuppressWarnings("rawtypes")
 public final class EventBusVerticle extends BunnyAbstractVerticle {
 
     public static final String EVENT_BUS_VERTICLE = "BUNNY_EVENT_BUS_VERTICLE";

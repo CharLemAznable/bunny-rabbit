@@ -56,9 +56,11 @@ public class ServeCallbackTest {
         on(diamondLoader(springFactory())).field("configCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
-        MockDiamondServer.setConfigInfo("Bunny", "default",
-                "httpserver.port=42121\ncallback.delay=1000\n" +
-                        "notfound.ServeCallback=NotFound\n");
+        MockDiamondServer.setConfigInfo("Bunny", "default", """
+                httpserver.port=42121
+                callback.delay=1000
+                notfound.ServeCallback=NotFound
+                """);
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42121/bunny\n");
 

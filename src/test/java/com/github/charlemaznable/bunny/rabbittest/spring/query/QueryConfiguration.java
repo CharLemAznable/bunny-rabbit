@@ -8,11 +8,10 @@ import com.github.charlemaznable.bunny.rabbit.vertx.BunnyVertxImport;
 import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyEqlerDummy;
 import com.github.charlemaznable.bunny.rabbittest.common.query.QueryCommon;
 import com.github.charlemaznable.core.spring.NeoComponentScan;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.n3r.diamond.client.impl.MockDiamondServer;
 import org.springframework.context.event.EventListener;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;

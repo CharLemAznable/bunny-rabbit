@@ -24,7 +24,7 @@ public final class ServePluginLoaderImpl implements ServePluginLoader {
 
     private final Injector injector;
     private final PluginNameMapper pluginNameMapper;
-    private LoadingCache<String, ServePlugin> cache
+    private final LoadingCache<String, ServePlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServePlugin));
 
     @Inject

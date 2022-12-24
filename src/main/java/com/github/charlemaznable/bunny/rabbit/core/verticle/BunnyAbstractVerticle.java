@@ -15,6 +15,7 @@ import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
+@SuppressWarnings("rawtypes")
 public abstract class BunnyAbstractVerticle extends AbstractVerticle {
 
     protected final List<BunnyHandler> handlers;

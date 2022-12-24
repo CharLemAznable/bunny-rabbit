@@ -43,10 +43,11 @@ public class IllegalTest {
         on(diamondLoader(springFactory())).field("configCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
-        MockDiamondServer.setConfigInfo("Bunny", "illegal",
-                "httpserver.port=42117\n" +
-                        "httpserver.context-path=\n" +
-                        "eventbus.address-prefix=\n");
+        MockDiamondServer.setConfigInfo("Bunny", "illegal", """
+                httpserver.port=42117
+                httpserver.context-path=
+                eventbus.address-prefix=
+                """);
 
         val bunnyModular = new BunnyModular(IllegalConfig.class);
         bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());

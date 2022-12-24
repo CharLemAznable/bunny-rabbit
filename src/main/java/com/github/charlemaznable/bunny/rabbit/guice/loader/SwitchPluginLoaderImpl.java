@@ -23,7 +23,7 @@ public final class SwitchPluginLoaderImpl implements SwitchPluginLoader {
 
     private final Injector injector;
     private final PluginNameMapper pluginNameMapper;
-    private LoadingCache<String, SwitchPlugin> cache
+    private final LoadingCache<String, SwitchPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeSwitchPlugin));
 
     @Inject

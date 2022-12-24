@@ -11,7 +11,7 @@ import com.google.inject.util.Providers;
 public final class BunnyVertxModular {
 
     private final Module configModule;
-    private VertxModular vertxModular;
+    private final VertxModular vertxModular;
 
     public BunnyVertxModular() {
         this((BunnyVertxConfig) null);

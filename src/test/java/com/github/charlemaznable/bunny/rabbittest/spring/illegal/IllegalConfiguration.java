@@ -7,11 +7,10 @@ import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyEqlerDummy;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalCommon;
 import com.github.charlemaznable.configservice.diamond.DiamondScan;
 import com.github.charlemaznable.core.spring.NeoComponentScan;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.n3r.diamond.client.impl.MockDiamondServer;
 import org.springframework.context.event.EventListener;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.EventBusVerticle.EVENT_BUS_VERTICLE;
 import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle.HTTP_SERVER_VERTICLE;
@@ -40,10 +39,11 @@ public final class IllegalConfiguration {
         on(diamondLoader(springFactory())).field("configCache").call("invalidateAll");
         on(springOhLoader()).field("ohCache").call("invalidateAll");
         MockDiamondServer.setUpMockServer();
-        MockDiamondServer.setConfigInfo("Bunny", "illegal",
-                "httpserver.port=32117\n" +
-                        "httpserver.context-path=\n" +
-                        "eventbus.address-prefix=\n");
+        MockDiamondServer.setConfigInfo("Bunny", "illegal", """
+                httpserver.port=32117
+                httpserver.context-path=
+                eventbus.address-prefix=
+                """);
     }
 
     @PreDestroy

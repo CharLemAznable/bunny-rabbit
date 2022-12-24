@@ -39,7 +39,6 @@ import org.springframework.util.ClassUtils;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.spring.ClzResolver.getClasses;
@@ -49,6 +48,7 @@ import static com.google.inject.name.Names.named;
 import static java.util.Objects.nonNull;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
+@SuppressWarnings("rawtypes")
 public final class BunnyModular {
 
     private final Module configModule;
@@ -141,7 +141,7 @@ public final class BunnyModular {
     public BunnyModular addCalculatePlugins(
             Iterable<Class<? extends CalculatePlugin>> calculatePlugins) {
         this.calculatePlugins.addAll(newArrayList(calculatePlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
+                .map(new NamedClassPairFunction<>()).toList());
         return this;
     }
 
@@ -154,7 +154,7 @@ public final class BunnyModular {
     public BunnyModular addServePlugins(
             Iterable<Class<? extends ServePlugin>> servePlugins) {
         this.servePlugins.addAll(newArrayList(servePlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
+                .map(new NamedClassPairFunction<>()).toList());
         return this;
     }
 
@@ -167,7 +167,7 @@ public final class BunnyModular {
     public BunnyModular addServeCallbackPlugins(
             Iterable<Class<? extends ServeCallbackPlugin>> serveCallbackPlugins) {
         this.serveCallbackPlugins.addAll(newArrayList(serveCallbackPlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
+                .map(new NamedClassPairFunction<>()).toList());
         return this;
     }
 
@@ -180,7 +180,7 @@ public final class BunnyModular {
     public BunnyModular addSwitchPlugins(
             Iterable<Class<? extends SwitchPlugin>> serveSwitchPlugins) {
         this.switchPlugins.addAll(newArrayList(serveSwitchPlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
+                .map(new NamedClassPairFunction<>()).toList());
         return this;
     }
 

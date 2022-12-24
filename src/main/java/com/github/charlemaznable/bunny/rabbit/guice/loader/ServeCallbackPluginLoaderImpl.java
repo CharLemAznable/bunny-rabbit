@@ -26,7 +26,7 @@ public final class ServeCallbackPluginLoaderImpl implements ServeCallbackPluginL
 
     private final Injector injector;
     private final PluginNameMapper pluginNameMapper;
-    private LoadingCache<String, ServeCallbackPlugin> cache
+    private final LoadingCache<String, ServeCallbackPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeCallbackPlugin));
 
     @Inject
