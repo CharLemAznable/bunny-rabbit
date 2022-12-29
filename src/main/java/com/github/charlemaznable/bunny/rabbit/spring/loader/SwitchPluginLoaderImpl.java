@@ -21,7 +21,7 @@ import static com.google.common.cache.CacheLoader.from;
 public final class SwitchPluginLoaderImpl implements SwitchPluginLoader {
 
     private final PluginNameMapper pluginNameMapper;
-    private LoadingCache<String, SwitchPlugin> cache
+    private final LoadingCache<String, SwitchPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeSwitchPlugin));
 
     @Autowired

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static java.util.Objects.isNull;
 
+@SuppressWarnings("rawtypes")
 @Component
 public final class BunnyHandlerLoaderImpl implements BunnyHandlerLoader {
 

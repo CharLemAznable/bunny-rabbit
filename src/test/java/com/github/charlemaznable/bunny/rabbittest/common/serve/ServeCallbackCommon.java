@@ -16,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.n3r.eql.mtcp.MtcpContext;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 import static com.github.charlemaznable.bunny.client.domain.BunnyBaseResponse.RESP_CODE_OK;
@@ -32,6 +33,7 @@ import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServe
 import static com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl.UPDATE_CONFIRM_FAILURE;
 import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
+import static java.util.Objects.requireNonNull;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -58,9 +60,10 @@ public class ServeCallbackCommon {
         callback04 = 0;
         mockWebServer = new MockWebServer();
         mockWebServer.setDispatcher(new Dispatcher() {
+            @Nonnull
             @Override
-            public MockResponse dispatch(RecordedRequest request) {
-                val requestUrl = request.getRequestUrl();
+            public MockResponse dispatch(@Nonnull RecordedRequest request) {
+                val requestUrl = requireNonNull(request.getRequestUrl());
                 switch (requestUrl.encodedPath()) {
                     case "/callback01":
                         assertEquals(FAILURE, requestUrl

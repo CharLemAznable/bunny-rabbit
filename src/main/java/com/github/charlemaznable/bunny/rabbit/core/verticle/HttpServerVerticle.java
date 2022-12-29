@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
 
+@SuppressWarnings("rawtypes")
 @Slf4j
 public final class HttpServerVerticle extends BunnyAbstractVerticle {
 

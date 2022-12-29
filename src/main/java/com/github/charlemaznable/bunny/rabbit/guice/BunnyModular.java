@@ -49,6 +49,7 @@ import static com.google.inject.name.Names.named;
 import static java.util.Objects.nonNull;
 import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
+@SuppressWarnings("rawtypes")
 public final class BunnyModular {
 
     private final Module configModule;

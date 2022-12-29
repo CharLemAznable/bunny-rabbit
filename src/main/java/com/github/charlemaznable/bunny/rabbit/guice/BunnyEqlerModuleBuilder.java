@@ -18,13 +18,13 @@ import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static com.github.charlemaznable.core.lang.Mapp.newHashMap;
 import static com.google.inject.Scopes.SINGLETON;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class BunnyEqlerModuleBuilder {
 
     private static final List<Class<?>> daoClasses = newArrayList(
             BunnyLogDao.class, BunnyDao.class, BunnyServeDao.class, BunnyCallbackDao.class);
-    private Map<Class, Provider> bindProviderMap = newHashMap();
-    private Map<Class, Class> bindImplementMap = newHashMap();
+    private final Map<Class, Provider> bindProviderMap = newHashMap();
+    private final Map<Class, Class> bindImplementMap = newHashMap();
 
     public BunnyEqlerModuleBuilder bind(Class clazz, Object impl) {
         if (clazz.isAssignableFrom(impl.getClass())) {
@@ -43,8 +43,8 @@ public final class BunnyEqlerModuleBuilder {
     public Module build() {
         Map<Class, Provider> defaultMap = newHashMap();
         for (val daoClass : daoClasses) {
-            if (bindProviderMap.keySet().contains(daoClass) ||
-                    bindImplementMap.keySet().contains(daoClass)) continue;
+            if (bindProviderMap.containsKey(daoClass) ||
+                    bindImplementMap.containsKey(daoClass)) continue;
             defaultMap.put(daoClass, Providers.of(null));
         }
         return new AbstractModule() {

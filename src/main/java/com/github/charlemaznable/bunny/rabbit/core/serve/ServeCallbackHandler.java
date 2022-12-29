@@ -154,11 +154,11 @@ public final class ServeCallbackHandler
 
     private static class CallbackPeriodic implements Handler<Long> {
 
-        private BunnyCallbackDao bunnyCallbackDao;
-        private BunnyConfig bunnyConfig;
-        private Map<String, Object> context;
-        private Map<String, Object> request;
-        private String seqId;
+        private final BunnyCallbackDao bunnyCallbackDao;
+        private final BunnyConfig bunnyConfig;
+        private final Map<String, Object> context;
+        private final Map<String, Object> request;
+        private final String seqId;
         private int count = 0;
 
         public CallbackPeriodic(BunnyCallbackDao bunnyCallbackDao,

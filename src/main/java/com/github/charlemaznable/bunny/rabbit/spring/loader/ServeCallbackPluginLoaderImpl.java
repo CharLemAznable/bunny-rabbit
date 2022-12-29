@@ -23,7 +23,7 @@ import static com.google.common.cache.CacheLoader.from;
 public final class ServeCallbackPluginLoaderImpl implements ServeCallbackPluginLoader {
 
     private final PluginNameMapper pluginNameMapper;
-    private LoadingCache<String, ServeCallbackPlugin> cache
+    private final LoadingCache<String, ServeCallbackPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeCallbackPlugin));
 
     @Autowired

@@ -23,7 +23,7 @@ import static com.google.common.cache.CacheLoader.from;
 public final class CalculatePluginLoaderImpl implements CalculatePluginLoader {
 
     private final PluginNameMapper pluginNameMapper;
-    private LoadingCache<String, CalculatePlugin> cache
+    private final LoadingCache<String, CalculatePlugin> cache
             = LoadingCachee.simpleCache(from(this::loadCalculatePlugin));
 
     @Autowired

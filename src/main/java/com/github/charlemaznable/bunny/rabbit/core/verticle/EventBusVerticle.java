@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
 
+@SuppressWarnings("rawtypes")
 public final class EventBusVerticle extends BunnyAbstractVerticle {
 
     public static final String EVENT_BUS_VERTICLE = "BUNNY_EVENT_BUS_VERTICLE";
