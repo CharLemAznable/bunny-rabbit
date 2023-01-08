@@ -1,6 +1,6 @@
 package com.github.charlemaznable.bunny.rabbit.dao;
 
-import org.n3r.eql.diamond.Dql;
+import com.github.charlemaznable.eql.combine.Cql;
 import org.n3r.eql.eqler.annotations.EqlerConfig;
 
 import java.lang.annotation.Documented;
@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Inherited
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@EqlerConfig(eql = Dql.class, value = "bunny")
+@EqlerConfig(eql = Cql.class, value = "bunny")
 public @interface BunnyEqler {
 }
