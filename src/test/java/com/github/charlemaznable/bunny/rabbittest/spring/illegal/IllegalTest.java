@@ -7,14 +7,13 @@ import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static java.time.Duration.ofMillis;
 import static org.awaitility.Awaitility.await;
 
-@ExtendWith({SpringExtension.class, VertxExtension.class})
-@ContextConfiguration(classes = IllegalConfiguration.class)
+@ExtendWith(VertxExtension.class)
+@SpringJUnitConfig(IllegalConfiguration.class)
 public class IllegalTest {
 
     @Autowired

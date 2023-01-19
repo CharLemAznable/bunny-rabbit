@@ -9,15 +9,13 @@ import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static java.time.Duration.ofMillis;
 import static org.awaitility.Awaitility.await;
 
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-@ExtendWith({SpringExtension.class, VertxExtension.class})
-@ContextConfiguration(classes = QueryConfiguration.class)
+@ExtendWith(VertxExtension.class)
+@SpringJUnitConfig(QueryConfiguration.class)
 public class QueryTest {
 
     @Autowired

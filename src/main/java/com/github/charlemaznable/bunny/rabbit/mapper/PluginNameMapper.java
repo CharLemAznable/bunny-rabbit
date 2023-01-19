@@ -1,16 +1,14 @@
 package com.github.charlemaznable.bunny.rabbit.mapper;
 
+import com.github.charlemaznable.configservice.Config;
 import com.github.charlemaznable.configservice.ConfigGetter;
-import com.github.charlemaznable.configservice.apollo.ApolloConfig;
-import com.github.charlemaznable.configservice.diamond.DiamondConfig;
-import com.github.charlemaznable.core.config.Config;
 
 import javax.annotation.Nonnull;
 
+import static com.github.charlemaznable.core.config.Config.getConfigImpl;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 
-@ApolloConfig(namespace = "Bunny", propertyName = "${bunny-config:-default}")
-@DiamondConfig(group = "Bunny", dataId = "${bunny-config:-default}")
+@Config(keyset = "Bunny", key = "${bunny-config:-default}")
 public interface PluginNameMapper extends ConfigGetter {
 
     @Nonnull
@@ -34,6 +32,6 @@ public interface PluginNameMapper extends ConfigGetter {
     }
 
     default String getPluginName(String configKey) {
-        return nullThen(getString(configKey), () -> Config.getStr(configKey, configKey));
+        return nullThen(getString(configKey), () -> getConfigImpl().getStr(configKey, configKey));
     }
 }
