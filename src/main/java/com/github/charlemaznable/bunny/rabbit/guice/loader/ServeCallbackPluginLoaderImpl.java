@@ -5,10 +5,8 @@ import com.github.charlemaznable.bunny.rabbit.core.common.ServeCallbackPluginLoa
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.google.common.cache.LoadingCache;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import lombok.val;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,7 +19,6 @@ import static com.google.common.cache.CacheLoader.from;
 import static com.google.inject.Key.get;
 import static com.google.inject.name.Names.named;
 
-@Component
 public final class ServeCallbackPluginLoaderImpl implements ServeCallbackPluginLoader {
 
     private final Injector injector;
@@ -29,7 +26,6 @@ public final class ServeCallbackPluginLoaderImpl implements ServeCallbackPluginL
     private final LoadingCache<String, ServeCallbackPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeCallbackPlugin));
 
-    @Inject
     public ServeCallbackPluginLoaderImpl(Injector injector,
                                          @Nullable PluginNameMapper pluginNameMapper) {
         this.injector = checkNotNull(injector);

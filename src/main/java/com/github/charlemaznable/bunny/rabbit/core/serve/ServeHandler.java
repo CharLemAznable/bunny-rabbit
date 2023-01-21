@@ -7,13 +7,10 @@ import com.github.charlemaznable.bunny.client.domain.ServeResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.CalculatePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.common.ServePluginLoader;
-import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import static com.github.bingoohuang.westid.WestId.next;
 import static com.github.charlemaznable.bunny.rabbit.core.wrapper.BunnyElf.failure;
@@ -24,7 +21,6 @@ import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 import static java.util.Objects.nonNull;
 
-@Component
 public final class ServeHandler
         implements BunnyHandler<ServeRequest, ServeResponse> {
 
@@ -32,8 +28,6 @@ public final class ServeHandler
     private final ServeService serveService;
     private final ServePluginLoader servePluginLoader;
 
-    @Inject
-    @Autowired
     public ServeHandler(CalculatePluginLoader calculatePluginLoader,
                         ServeService serveService,
                         ServePluginLoader servePluginLoader) {

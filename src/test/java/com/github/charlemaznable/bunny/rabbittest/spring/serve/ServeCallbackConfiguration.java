@@ -25,8 +25,8 @@ import static org.joor.Reflect.on;
         ServeCallbackCommon.class,
         BunnyEqlerDummy.class
 })
-@BunnyImport
 @BunnyVertxImport
+@BunnyImport
 @BunnyEventBusImport
 @BunnyOhClientImport
 public class ServeCallbackConfiguration {

@@ -4,6 +4,10 @@ import com.github.charlemaznable.bunny.client.eventbus.BunnyEventBus;
 import com.github.charlemaznable.bunny.client.guice.BunnyEventBusModular;
 import com.github.charlemaznable.bunny.client.guice.BunnyOhClientModular;
 import com.github.charlemaznable.bunny.client.ohclient.BunnyOhClient;
+import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
+import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
+import com.github.charlemaznable.bunny.plugin.ServePlugin;
+import com.github.charlemaznable.bunny.plugin.SwitchPlugin;
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
@@ -17,9 +21,14 @@ import com.github.charlemaznable.bunny.rabbittest.common.common.BunnyLogDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyCallbackDaoImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyDaoServeImpl;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.BunnyServeDaoImpl;
+import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCalculatePlugin;
 import com.github.charlemaznable.bunny.rabbittest.common.serve.ServeCallbackCommon;
+import com.github.charlemaznable.bunny.rabbittest.common.serve.TestServeCallbackPlugin;
+import com.github.charlemaznable.bunny.rabbittest.common.serve.TestServePlugin;
+import com.github.charlemaznable.bunny.rabbittest.common.serve.TestSwitchPlugin;
 import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
 import com.github.charlemaznable.core.codec.signature.SignatureOptions;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -37,6 +46,7 @@ import static com.github.charlemaznable.configservice.diamond.DiamondFactory.dia
 import static com.github.charlemaznable.configservice.diamond.DiamondFactory.getDiamond;
 import static com.github.charlemaznable.core.spring.SpringFactory.springFactory;
 import static com.github.charlemaznable.httpclient.ohclient.OhFactory.springOhLoader;
+import static com.google.inject.name.Names.named;
 import static java.time.Duration.ofMillis;
 import static java.util.Objects.nonNull;
 import static org.awaitility.Awaitility.await;
@@ -64,29 +74,33 @@ public class ServeCallbackTest {
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42121/bunny\n");
 
-        val bunnyModular = new BunnyModular();
-        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl())
-                .bind(BunnyDao.class, BunnyDaoServeImpl.class)
-                .bind(BunnyServeDao.class, BunnyServeDaoImpl.class)
-                .bind(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class);
         val nonsenseOptions = new NonsenseOptions();
         val signatureOptions = new SignatureOptions();
-        val injector = Guice.createInjector(bunnyModular
-                        .addCalculatePlugins()
-                        .addServePlugins()
-                        .addServeCallbackPlugins()
-                        .addSwitchPlugins()
-                        .scanPackageClasses(ServeCallbackCommon.class)
-                        .chargeCodeMapper(getDiamond(ChargeCodeMapper.class))
-                        .pluginNameMapper(getDiamond(PluginNameMapper.class))
+        val injector = Guice.createInjector(
+                new BunnyModular()
                         .nonsenseOptions(nonsenseOptions)
                         .signatureOptions(signatureOptions)
+                        .chargeCodeMapper(getDiamond(ChargeCodeMapper.class))
+                        .pluginNameMapper(getDiamond(PluginNameMapper.class))
+                        .bindDao(BunnyLogDao.class, new BunnyLogDaoImpl())
+                        .bindDao(BunnyDao.class, BunnyDaoServeImpl.class)
+                        .bindDao(BunnyServeDao.class, BunnyServeDaoImpl.class)
+                        .bindDao(BunnyCallbackDao.class, BunnyCallbackDaoImpl.class)
                         .createModule(),
                 new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().nonsenseOptions(nonsenseOptions)
                         .signatureOptions(signatureOptions).createModule(),
                 new BunnyOhClientModular().nonsenseOptions(nonsenseOptions)
-                        .signatureOptions(signatureOptions).createModule());
+                        .signatureOptions(signatureOptions).createModule(),
+                new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(CalculatePlugin.class).annotatedWith(named("ServeCalculate")).to(ServeCalculatePlugin.class);
+                        bind(ServeCallbackPlugin.class).annotatedWith(named("TestServeCallback")).to(TestServeCallbackPlugin.class);
+                        bind(ServePlugin.class).annotatedWith(named("TestServe")).to(TestServePlugin.class);
+                        bind(SwitchPlugin.class).annotatedWith(named("TestSwitch")).to(TestSwitchPlugin.class);
+                    }
+                });
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;

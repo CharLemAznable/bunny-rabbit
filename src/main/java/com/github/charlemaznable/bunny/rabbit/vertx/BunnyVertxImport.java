@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(BunnyVertxComponents.class)
+@Import(BunnyVertxConfiguration.class)
 public @interface BunnyVertxImport {
 }

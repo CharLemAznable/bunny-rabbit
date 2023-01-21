@@ -4,7 +4,6 @@ import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerLoader;
 import com.github.charlemaznable.core.spring.SpringContext;
 import lombok.val;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.function.Function;
@@ -14,7 +13,6 @@ import static com.github.charlemaznable.core.lang.Listt.newArrayList;
 import static java.util.Objects.isNull;
 
 @SuppressWarnings("rawtypes")
-@Component
 public final class BunnyHandlerLoaderImpl implements BunnyHandlerLoader {
 
     private List<BunnyHandler> handlers;

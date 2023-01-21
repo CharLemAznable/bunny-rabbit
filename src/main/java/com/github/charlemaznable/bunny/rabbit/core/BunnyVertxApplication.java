@@ -7,15 +7,12 @@ import com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVerticle;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
 import com.github.charlemaznable.core.codec.signature.SignatureOptions;
-import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +21,6 @@ import static com.github.charlemaznable.bunny.rabbit.core.verticle.HttpServerVer
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 
 @Slf4j
-@Component
 public final class BunnyVertxApplication {
 
     private final Vertx vertx;
@@ -34,8 +30,6 @@ public final class BunnyVertxApplication {
     private final NonsenseOptions nonsenseOptions;
     private final SignatureOptions signatureOptions;
 
-    @Inject
-    @Autowired
     public BunnyVertxApplication(Vertx vertx,
                                  BunnyHandlerLoader handlerLoader,
                                  @Nullable BunnyConfig bunnyConfig,

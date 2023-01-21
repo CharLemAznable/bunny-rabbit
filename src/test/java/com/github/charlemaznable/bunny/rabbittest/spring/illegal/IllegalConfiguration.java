@@ -24,8 +24,8 @@ import static org.joor.Reflect.on;
         IllegalCommon.class,
         BunnyEqlerDummy.class
 })
-@BunnyImport
 @BunnyVertxImport
+@BunnyImport
 @DiamondScan(basePackageClasses = {
         IllegalCommon.class
 })

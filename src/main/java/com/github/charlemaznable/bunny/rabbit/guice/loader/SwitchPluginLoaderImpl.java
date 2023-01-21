@@ -5,7 +5,6 @@ import com.github.charlemaznable.bunny.rabbit.core.common.SwitchPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.google.common.cache.LoadingCache;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import lombok.val;
 
@@ -26,7 +25,6 @@ public final class SwitchPluginLoaderImpl implements SwitchPluginLoader {
     private final LoadingCache<String, SwitchPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeSwitchPlugin));
 
-    @Inject
     public SwitchPluginLoaderImpl(Injector injector,
                                   @Nullable PluginNameMapper pluginNameMapper) {
         this.injector = checkNotNull(injector);
