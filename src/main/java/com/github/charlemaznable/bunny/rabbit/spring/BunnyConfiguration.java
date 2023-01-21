@@ -27,13 +27,11 @@ import com.github.charlemaznable.bunny.rabbit.spring.loader.SwitchPluginLoaderIm
 import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
 import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import io.vertx.core.Vertx;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
 @Configuration
-@ConditionalOnBean(Vertx.class)
 public class BunnyConfiguration {
 
     @Bean("com.github.charlemaznable.bunny.rabbit.spring.BunnyVertxStarter")

@@ -25,8 +25,8 @@ import static org.joor.Reflect.on;
         ChargeCommon.class,
         BunnyEqlerDummy.class
 })
-@BunnyVertxImport
 @BunnyImport
+@BunnyVertxImport
 @BunnyEventBusImport
 @BunnyOhClientImport
 public class ChargeConfiguration {

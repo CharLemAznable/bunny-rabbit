@@ -25,8 +25,8 @@ import static org.joor.Reflect.on;
         QueryCommon.class,
         BunnyEqlerDummy.class
 })
-@BunnyVertxImport
 @BunnyImport
+@BunnyVertxImport
 @BunnyEventBusImport
 @BunnyOhClientImport
 public class QueryConfiguration {
