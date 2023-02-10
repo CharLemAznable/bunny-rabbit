@@ -5,25 +5,19 @@ import com.github.charlemaznable.bunny.client.domain.CalculateRequest;
 import com.github.charlemaznable.bunny.client.domain.CalculateResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.CalculatePluginLoader;
-import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 
-@Component
 public final class CalculateHandler
         implements BunnyHandler<CalculateRequest, CalculateResponse> {
 
     private final CalculatePluginLoader calculatePluginLoader;
 
-    @Inject
-    @Autowired
     public CalculateHandler(CalculatePluginLoader calculatePluginLoader) {
         this.calculatePluginLoader = checkNotNull(calculatePluginLoader);
     }

@@ -1,5 +1,6 @@
 package com.github.charlemaznable.bunny.rabbittest.guice.illegal;
 
+import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
 import com.github.charlemaznable.bunny.rabbit.guice.BunnyModular;
@@ -9,12 +10,13 @@ import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalCommon;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalConfig;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalHandler;
 import com.github.charlemaznable.bunny.rabbittest.common.illegal.IllegalVertxConfig;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.multibindings.ProvidesIntoSet;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import lombok.val;
-import org.apache.commons.lang3.ClassUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -48,13 +50,16 @@ public class IllegalTest {
                         "httpserver.context-path=\n" +
                         "eventbus.address-prefix=\n");
 
-        val bunnyModular = new BunnyModular(IllegalConfig.class);
-        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl());
-        val injector = Guice.createInjector(bunnyModular
-                        .addHandlers()
-                        .scanPackages(ClassUtils.getPackageName(IllegalHandler.class))
-                        .createModule(),
-                new BunnyVertxModular(IllegalVertxConfig.class).createModule());
+        val injector = Guice.createInjector(
+                new BunnyModular(IllegalConfig.class).bindDao(BunnyLogDao.class, new BunnyLogDaoImpl()).createModule(),
+                new BunnyVertxModular(IllegalVertxConfig.class).createModule(),
+                new AbstractModule() {
+                    @SuppressWarnings("rawtypes")
+                    @ProvidesIntoSet
+                    public BunnyHandler illegalHandler() {
+                        return new IllegalHandler();
+                    }
+                });
         val application = injector.getInstance(BunnyVertxApplication.class);
         application.deploy(asyncResult -> {
             if (asyncResult.failed()) return;

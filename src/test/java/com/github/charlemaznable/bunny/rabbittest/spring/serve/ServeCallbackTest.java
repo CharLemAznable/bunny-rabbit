@@ -16,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static java.time.Duration.ofMillis;
 import static org.awaitility.Awaitility.await;
 
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @ExtendWith(VertxExtension.class)
 @SpringJUnitConfig(ServeCallbackConfiguration.class)
 public class ServeCallbackTest {

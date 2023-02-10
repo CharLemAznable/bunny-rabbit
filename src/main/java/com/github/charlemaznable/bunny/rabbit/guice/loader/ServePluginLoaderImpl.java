@@ -5,7 +5,6 @@ import com.github.charlemaznable.bunny.rabbit.core.common.ServePluginLoader;
 import com.github.charlemaznable.bunny.rabbit.mapper.PluginNameMapper;
 import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.google.common.cache.LoadingCache;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import lombok.val;
 
@@ -27,7 +26,6 @@ public final class ServePluginLoaderImpl implements ServePluginLoader {
     private final LoadingCache<String, ServePlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServePlugin));
 
-    @Inject
     public ServePluginLoaderImpl(Injector injector,
                                  @Nullable PluginNameMapper pluginNameMapper) {
         this.injector = checkNotNull(injector);

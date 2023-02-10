@@ -6,12 +6,9 @@ import com.github.charlemaznable.bunny.client.domain.ChargeResponse;
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
-import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
@@ -21,18 +18,15 @@ import static com.github.charlemaznable.configservice.ConfigFactory.getConfig;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
-@Component
 public final class ChargeHandler
         implements BunnyHandler<ChargeRequest, ChargeResponse> {
 
-    private final ChargeCodeMapper codeMapper;
+    private final ChargeCodeMapper chargeCodeMapper;
     private final BunnyDao bunnyDao;
 
-    @Inject
-    @Autowired
-    public ChargeHandler(@Nullable ChargeCodeMapper codeMapper,
+    public ChargeHandler(@Nullable ChargeCodeMapper chargeCodeMapper,
                          @Nullable BunnyDao bunnyDao) {
-        this.codeMapper = nullThen(codeMapper, () -> getConfig(ChargeCodeMapper.class));
+        this.chargeCodeMapper = nullThen(chargeCodeMapper, () -> getConfig(ChargeCodeMapper.class));
         this.bunnyDao = nullThen(bunnyDao, () -> getEqler(BunnyDao.class));
     }
 
@@ -51,7 +45,7 @@ public final class ChargeHandler
                         Handler<AsyncResult<ChargeResponse>> handler) {
         val response = request.createResponse();
         val serveName = request.getServeName();
-        val chargeCode = codeMapper.chargeCode(serveName);
+        val chargeCode = chargeCodeMapper.chargeCode(serveName);
         val chargeValue = request.getChargeValue();
 
         executeBlocking(request.getContext(), block -> {

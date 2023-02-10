@@ -8,14 +8,11 @@ import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
 import com.github.charlemaznable.bunny.rabbit.core.common.ServeCallbackPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
 import com.github.charlemaznable.httpclient.ohclient.OhReq;
-import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -34,7 +31,6 @@ import static io.vertx.core.Future.succeededFuture;
 import static java.util.Objects.nonNull;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
-@Component
 public final class ServeCallbackHandler
         implements BunnyHandler<ServeCallbackRequest, ServeCallbackResponse> {
 
@@ -47,8 +43,6 @@ public final class ServeCallbackHandler
     private final BunnyCallbackDao bunnyCallbackDao;
     private final BunnyConfig bunnyConfig;
 
-    @Inject
-    @Autowired
     public ServeCallbackHandler(ServeCallbackPluginLoader serveCallbackPluginLoader,
                                 ServeService serveService,
                                 @Nullable BunnyCallbackDao bunnyCallbackDao,

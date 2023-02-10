@@ -7,8 +7,6 @@ import com.github.charlemaznable.core.lang.LoadingCachee;
 import com.github.charlemaznable.core.spring.SpringContext;
 import com.google.common.cache.LoadingCache;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,14 +17,12 @@ import static com.github.charlemaznable.core.lang.Condition.checkNotNull;
 import static com.github.charlemaznable.core.lang.Condition.nullThen;
 import static com.google.common.cache.CacheLoader.from;
 
-@Component
 public final class ServeCallbackPluginLoaderImpl implements ServeCallbackPluginLoader {
 
     private final PluginNameMapper pluginNameMapper;
     private final LoadingCache<String, ServeCallbackPlugin> cache
             = LoadingCachee.simpleCache(from(this::loadServeCallbackPlugin));
 
-    @Autowired
     public ServeCallbackPluginLoaderImpl(@Nullable PluginNameMapper pluginNameMapper) {
         this.pluginNameMapper = nullThen(pluginNameMapper,
                 () -> getConfig(PluginNameMapper.class));

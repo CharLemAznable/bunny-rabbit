@@ -52,10 +52,9 @@ public class QueryTest {
         MockDiamondServer.setConfigInfo("BunnyClient", "default",
                 "httpServerBaseUrl=http://127.0.0.1:42119/bunny\n");
 
-        val bunnyModular = new BunnyModular();
-        bunnyModular.eqlerModuleBuilder().bind(BunnyLogDao.class, new BunnyLogDaoImpl())
-                .bind(BunnyDao.class, BunnyDaoQueryImpl.class);
-        val injector = Guice.createInjector(bunnyModular.createModule(),
+        val injector = Guice.createInjector(
+                new BunnyModular().bindDao(BunnyLogDao.class, new BunnyLogDaoImpl())
+                        .bindDao(BunnyDao.class, BunnyDaoQueryImpl.class).createModule(),
                 new BunnyVertxModular().createModule(),
                 new BunnyEventBusModular().createModule(),
                 new BunnyOhClientModular().createModule());

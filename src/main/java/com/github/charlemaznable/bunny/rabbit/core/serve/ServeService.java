@@ -5,13 +5,10 @@ import com.github.charlemaznable.bunny.rabbit.core.common.SwitchPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
 import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbit.mapper.ChargeCodeMapper;
-import com.google.inject.Inject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 
@@ -29,22 +26,19 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.n3r.eql.eqler.EqlerFactory.getEqler;
 
-@Component
 public final class ServeService {
 
     private final SwitchPluginLoader switchPluginLoader;
-    private final ChargeCodeMapper codeMapper;
+    private final ChargeCodeMapper chargeCodeMapper;
     private final BunnyServeDao serveDao;
     private final BunnyDao bunnyDao;
 
-    @Inject
-    @Autowired
     public ServeService(SwitchPluginLoader switchPluginLoader,
-                        @Nullable ChargeCodeMapper codeMapper,
+                        @Nullable ChargeCodeMapper chargeCodeMapper,
                         @Nullable BunnyServeDao serveDao,
                         @Nullable BunnyDao bunnyDao) {
         this.switchPluginLoader = checkNotNull(switchPluginLoader);
-        this.codeMapper = nullThen(codeMapper, () -> getConfig(ChargeCodeMapper.class));
+        this.chargeCodeMapper = nullThen(chargeCodeMapper, () -> getConfig(ChargeCodeMapper.class));
         this.serveDao = nullThen(serveDao, () -> getEqler(BunnyServeDao.class));
         this.bunnyDao = nullThen(bunnyDao, () -> getEqler(BunnyDao.class));
     }
@@ -108,7 +102,7 @@ public final class ServeService {
         // seqId
         // ServeContext出参:
         // 无
-        val chargeCode = codeMapper.chargeCode(serveContext.serveName);
+        val chargeCode = chargeCodeMapper.chargeCode(serveContext.serveName);
         executeBlocking(serveContext.context, block -> {
             try {
                 serveDao.start();
@@ -152,7 +146,7 @@ public final class ServeService {
         // confirmValue
         // ServeContext出参:
         // unexpectedThrowable*
-        val chargeCode = codeMapper.chargeCode(serveContext.serveName);
+        val chargeCode = chargeCodeMapper.chargeCode(serveContext.serveName);
         Vertx.currentContext().executeBlocking(block -> {
             try {
                 MtcpElf.preHandle(serveContext.context);

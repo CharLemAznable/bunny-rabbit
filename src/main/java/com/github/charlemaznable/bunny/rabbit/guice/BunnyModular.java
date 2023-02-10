@@ -1,11 +1,8 @@
 package com.github.charlemaznable.bunny.rabbit.guice;
 
 import com.github.charlemaznable.bunny.plugin.BunnyHandler;
-import com.github.charlemaznable.bunny.plugin.CalculatePlugin;
-import com.github.charlemaznable.bunny.plugin.ServeCallbackPlugin;
-import com.github.charlemaznable.bunny.plugin.ServePlugin;
-import com.github.charlemaznable.bunny.plugin.SwitchPlugin;
 import com.github.charlemaznable.bunny.rabbit.config.BunnyConfig;
+import com.github.charlemaznable.bunny.rabbit.core.BunnyVertxApplication;
 import com.github.charlemaznable.bunny.rabbit.core.calculate.CalculateHandler;
 import com.github.charlemaznable.bunny.rabbit.core.charge.ChargeHandler;
 import com.github.charlemaznable.bunny.rabbit.core.common.BunnyHandlerLoader;
@@ -16,6 +13,11 @@ import com.github.charlemaznable.bunny.rabbit.core.common.SwitchPluginLoader;
 import com.github.charlemaznable.bunny.rabbit.core.query.QueryHandler;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeCallbackHandler;
 import com.github.charlemaznable.bunny.rabbit.core.serve.ServeHandler;
+import com.github.charlemaznable.bunny.rabbit.core.serve.ServeService;
+import com.github.charlemaznable.bunny.rabbit.dao.BunnyCallbackDao;
+import com.github.charlemaznable.bunny.rabbit.dao.BunnyDao;
+import com.github.charlemaznable.bunny.rabbit.dao.BunnyLogDao;
+import com.github.charlemaznable.bunny.rabbit.dao.BunnyServeDao;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.BunnyHandlerLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.CalculatePluginLoaderImpl;
 import com.github.charlemaznable.bunny.rabbit.guice.loader.ServeCallbackPluginLoaderImpl;
@@ -28,44 +30,28 @@ import com.github.charlemaznable.core.codec.nonsense.NonsenseOptions;
 import com.github.charlemaznable.core.codec.signature.SignatureOptions;
 import com.github.charlemaznable.core.guice.Modulee;
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Provides;
+import com.google.inject.multibindings.ProvidesIntoSet;
 import com.google.inject.util.Providers;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.val;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.stereotype.Component;
-import org.springframework.util.ClassUtils;
+import io.vertx.core.Vertx;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import java.util.Set;
 
-import static com.github.charlemaznable.core.lang.Listt.newArrayList;
-import static com.github.charlemaznable.core.spring.ClzResolver.getClasses;
 import static com.google.inject.Scopes.SINGLETON;
-import static com.google.inject.multibindings.Multibinder.newSetBinder;
-import static com.google.inject.name.Names.named;
 import static java.util.Objects.nonNull;
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 @SuppressWarnings("rawtypes")
 public final class BunnyModular {
 
     private final Module configModule;
-    @Getter
-    @Accessors(fluent = true)
-    private final BunnyEqlerModuleBuilder eqlerModuleBuilder;
-
-    private final List<Class<? extends BunnyHandler>> handlerClasses;
-    private final List<Pair<String, Class<? extends CalculatePlugin>>> calculatePlugins;
-    private final List<Pair<String, Class<? extends ServePlugin>>> servePlugins;
-    private final List<Pair<String, Class<? extends ServeCallbackPlugin>>> serveCallbackPlugins;
-    private final List<Pair<String, Class<? extends SwitchPlugin>>> switchPlugins;
-    private Module chargeCodeMapperModule;
-    private Module pluginNameMapperModule;
-    private Module nonsenseOptionsModule;
-    private Module signatureOptionsModule;
+    private NonsenseOptions nonsenseOptions;
+    private SignatureOptions signatureOptions;
+    private ChargeCodeMapper chargeCodeMapper;
+    private PluginNameMapper pluginNameMapper;
+    private Module daoModule;
 
     public BunnyModular() {
         this((BunnyConfig) null);
@@ -85,233 +71,158 @@ public final class BunnyModular {
     }
 
     public BunnyModular(Module configModule) {
-        this.configModule = configModule;
-        this.eqlerModuleBuilder = new BunnyEqlerModuleBuilder();
-
-        this.handlerClasses = newArrayList(CalculateHandler.class,
-                QueryHandler.class, ChargeHandler.class,
-                ServeHandler.class, ServeCallbackHandler.class);
-        this.calculatePlugins = newArrayList();
-        this.servePlugins = newArrayList();
-        this.serveCallbackPlugins = newArrayList();
-        this.switchPlugins = newArrayList();
-        this.chargeCodeMapperModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ChargeCodeMapper.class).toProvider(Providers.of(null));
-            }
-        };
-        this.pluginNameMapperModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(PluginNameMapper.class).toProvider(Providers.of(null));
-            }
-        };
-        this.nonsenseOptionsModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(NonsenseOptions.class).toProvider(Providers.of(null));
-            }
-        };
-        this.signatureOptionsModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(SignatureOptions.class).toProvider(Providers.of(null));
-            }
-        };
-    }
-
-    @SafeVarargs
-    public final BunnyModular addHandlers(
-            Class<? extends BunnyHandler>... handlerClasses) {
-        return addHandlers(newArrayList(handlerClasses));
-    }
-
-    public BunnyModular addHandlers(
-            Iterable<Class<? extends BunnyHandler>> handlerClasses) {
-        this.handlerClasses.addAll(newArrayList(handlerClasses));
-        return this;
-    }
-
-    @SafeVarargs
-    public final BunnyModular addCalculatePlugins(
-            Class<? extends CalculatePlugin>... calculatePlugins) {
-        return addCalculatePlugins(newArrayList(calculatePlugins));
-    }
-
-    public BunnyModular addCalculatePlugins(
-            Iterable<Class<? extends CalculatePlugin>> calculatePlugins) {
-        this.calculatePlugins.addAll(newArrayList(calculatePlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
-        return this;
-    }
-
-    @SafeVarargs
-    public final BunnyModular addServePlugins(
-            Class<? extends ServePlugin>... servePlugins) {
-        return addServePlugins(newArrayList(servePlugins));
-    }
-
-    public BunnyModular addServePlugins(
-            Iterable<Class<? extends ServePlugin>> servePlugins) {
-        this.servePlugins.addAll(newArrayList(servePlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
-        return this;
-    }
-
-    @SafeVarargs
-    public final BunnyModular addServeCallbackPlugins(
-            Class<? extends ServeCallbackPlugin>... serveCallbackPlugins) {
-        return addServeCallbackPlugins(newArrayList(serveCallbackPlugins));
-    }
-
-    public BunnyModular addServeCallbackPlugins(
-            Iterable<Class<? extends ServeCallbackPlugin>> serveCallbackPlugins) {
-        this.serveCallbackPlugins.addAll(newArrayList(serveCallbackPlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
-        return this;
-    }
-
-    @SafeVarargs
-    public final BunnyModular addSwitchPlugins(
-            Class<? extends SwitchPlugin>... serveSwitchPlugins) {
-        return addSwitchPlugins(newArrayList(serveSwitchPlugins));
-    }
-
-    public BunnyModular addSwitchPlugins(
-            Iterable<Class<? extends SwitchPlugin>> serveSwitchPlugins) {
-        this.switchPlugins.addAll(newArrayList(serveSwitchPlugins).stream()
-                .map(new NamedClassPairFunction<>()).collect(Collectors.toList()));
-        return this;
-    }
-
-    public BunnyModular scanPackages(String... basePackages) {
-        return scanPackages(newArrayList(basePackages));
-    }
-
-    public BunnyModular scanPackages(Iterable<String> basePackages) {
-        for (val basePackage : basePackages) {
-            addHandlers(getSubClasses(basePackage, BunnyHandler.class));
-            addCalculatePlugins(getSubClasses(basePackage, CalculatePlugin.class));
-            addServePlugins(getSubClasses(basePackage, ServePlugin.class));
-            addServeCallbackPlugins(getSubClasses(basePackage, ServeCallbackPlugin.class));
-            addSwitchPlugins(getSubClasses(basePackage, SwitchPlugin.class));
-        }
-        return this;
-    }
-
-    public BunnyModular scanPackageClasses(Class<?>... basePackageClasses) {
-        return scanPackageClasses(newArrayList(basePackageClasses));
-    }
-
-    public BunnyModular scanPackageClasses(Iterable<Class<?>> basePackageClasses) {
-        for (val basePackageClass : basePackageClasses) {
-            val basePackage = ClassUtils.getPackageName(basePackageClass);
-            addHandlers(getSubClasses(basePackage, BunnyHandler.class));
-            addCalculatePlugins(getSubClasses(basePackage, CalculatePlugin.class));
-            addServePlugins(getSubClasses(basePackage, ServePlugin.class));
-            addServeCallbackPlugins(getSubClasses(basePackage, ServeCallbackPlugin.class));
-            addSwitchPlugins(getSubClasses(basePackage, SwitchPlugin.class));
-        }
-        return this;
-    }
-
-    public BunnyModular chargeCodeMapper(Class<? extends ChargeCodeMapper> mapperClass) {
-        this.chargeCodeMapperModule = new ConfigModular().bindClasses(mapperClass).createModule();
-        return this;
-    }
-
-    public BunnyModular chargeCodeMapper(ChargeCodeMapper mapperImpl) {
-        this.chargeCodeMapperModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ChargeCodeMapper.class).toProvider(Providers.of(mapperImpl));
-            }
-        };
-        return this;
-    }
-
-    public BunnyModular pluginNameMapper(Class<? extends PluginNameMapper> mapperClass) {
-        this.pluginNameMapperModule = new ConfigModular().bindClasses(mapperClass).createModule();
-        return this;
-    }
-
-    public BunnyModular pluginNameMapper(PluginNameMapper mapperImpl) {
-        this.pluginNameMapperModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(PluginNameMapper.class).toProvider(Providers.of(mapperImpl));
-            }
-        };
-        return this;
-    }
-
-    public BunnyModular nonsenseOptions(NonsenseOptions nonsenseOptions) {
-        this.nonsenseOptionsModule = new AbstractModule() {
+        this.configModule = Modulee.combine(configModule, new AbstractModule() {
             @Override
             protected void configure() {
                 bind(NonsenseOptions.class).toProvider(Providers.of(nonsenseOptions));
+                bind(SignatureOptions.class).toProvider(Providers.of(signatureOptions));
+                bind(ChargeCodeMapper.class).toProvider(Providers.of(chargeCodeMapper));
+                bind(PluginNameMapper.class).toProvider(Providers.of(pluginNameMapper));
+            }
+        });
+        this.daoModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(BunnyLogDao.class).toProvider(Providers.of(null));
+                bind(BunnyDao.class).toProvider(Providers.of(null));
+                bind(BunnyCallbackDao.class).toProvider(Providers.of(null));
+                bind(BunnyServeDao.class).toProvider(Providers.of(null));
             }
         };
+    }
+
+    public BunnyModular nonsenseOptions(NonsenseOptions nonsenseOptions) {
+        this.nonsenseOptions = nonsenseOptions;
         return this;
     }
 
     public BunnyModular signatureOptions(SignatureOptions signatureOptions) {
-        this.signatureOptionsModule = new AbstractModule() {
+        this.signatureOptions = signatureOptions;
+        return this;
+    }
+
+    public BunnyModular chargeCodeMapper(ChargeCodeMapper chargeCodeMapper) {
+        this.chargeCodeMapper = chargeCodeMapper;
+        return this;
+    }
+
+    public BunnyModular pluginNameMapper(PluginNameMapper pluginNameMapper) {
+        this.pluginNameMapper = pluginNameMapper;
+        return this;
+    }
+
+    public <T> BunnyModular bindDao(Class<T> clazz, T impl) {
+        return bindDao(new AbstractModule() {
             @Override
             protected void configure() {
-                bind(SignatureOptions.class).toProvider(Providers.of(signatureOptions));
+                bind(clazz).toProvider(Providers.of(impl));
             }
-        };
+        });
+    }
+
+    public <T> BunnyModular bindDao(Class<T> clazz, Class<? extends T> ext) {
+        return bindDao(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(clazz).to(ext).in(SINGLETON);
+            }
+        });
+    }
+
+    public BunnyModular bindDao(Module module) {
+        if (nonNull(module)) {
+            this.daoModule = Modulee.override(this.daoModule, module);
+        }
         return this;
     }
 
     public Module createModule() {
-        return Modulee.combine(configModule, eqlerModuleBuilder.build(),
-                new AbstractModule() {
-                    @Override
-                    protected void configure() {
-                        val handlersBinder = newSetBinder(binder(), BunnyHandler.class);
-                        for (val handlerClass : handlerClasses) {
-                            handlersBinder.addBinding().to(handlerClass).in(SINGLETON);
-                        }
-                        bind(BunnyHandlerLoader.class).to(BunnyHandlerLoaderImpl.class).in(SINGLETON);
-                        for (val calculatePlugin : calculatePlugins) {
-                            bind(CalculatePlugin.class).annotatedWith(named(
-                                    calculatePlugin.getKey())).to(calculatePlugin.getValue()).in(SINGLETON);
-                        }
-                        bind(CalculatePluginLoader.class).to(CalculatePluginLoaderImpl.class).in(SINGLETON);
-                        for (val servePlugin : servePlugins) {
-                            bind(ServePlugin.class).annotatedWith(named(
-                                    servePlugin.getKey())).to(servePlugin.getValue()).in(SINGLETON);
-                        }
-                        bind(ServePluginLoader.class).to(ServePluginLoaderImpl.class).in(SINGLETON);
-                        for (val serveCallbackPlugin : serveCallbackPlugins) {
-                            bind(ServeCallbackPlugin.class).annotatedWith(named(
-                                    serveCallbackPlugin.getKey())).to(serveCallbackPlugin.getValue()).in(SINGLETON);
-                        }
-                        bind(ServeCallbackPluginLoader.class).to(ServeCallbackPluginLoaderImpl.class).in(SINGLETON);
-                        for (val serveSwitchPlugin : switchPlugins) {
-                            bind(SwitchPlugin.class).annotatedWith(named(
-                                    serveSwitchPlugin.getKey())).to(serveSwitchPlugin.getValue()).in(SINGLETON);
-                        }
-                        bind(SwitchPluginLoader.class).to(SwitchPluginLoaderImpl.class).in(SINGLETON);
-                    }
-                }, chargeCodeMapperModule, pluginNameMapperModule, nonsenseOptionsModule, signatureOptionsModule);
-    }
+        return Modulee.combine(configModule, daoModule, new AbstractModule() {
 
-    @SuppressWarnings("unchecked")
-    private <T> List<Class<? extends T>> getSubClasses(String basePackage, Class<T> superClass) {
-        return newArrayList(getClasses(basePackage, clazz -> nonNull(getAnnotation(clazz,
-                Component.class)) && superClass.isAssignableFrom(clazz)).toArray(new Class[0]));
-    }
+            @Override
+            protected void configure() {
+                binder().requireExplicitBindings();
+            }
 
-    private static class NamedClassPairFunction<T>
-            implements Function<Class<? extends T>, Pair<String, Class<? extends T>>> {
+            @Provides
+            public BunnyVertxApplication bunnyVertxApplication(Vertx vertx,
+                                                               BunnyHandlerLoader handlerLoader,
+                                                               @Nullable BunnyConfig bunnyConfig,
+                                                               @Nullable BunnyLogDao bunnyLogDao,
+                                                               @Nullable NonsenseOptions nonsenseOptions,
+                                                               @Nullable SignatureOptions signatureOptions) {
+                return new BunnyVertxApplication(vertx, handlerLoader,
+                        bunnyConfig, bunnyLogDao, nonsenseOptions, signatureOptions);
+            }
 
-        @Override
-        public Pair<String, Class<? extends T>> apply(Class<? extends T> clazz) {
-            return Pair.of(clazz.getAnnotation(Component.class).value(), clazz);
-        }
+            @Provides
+            public BunnyHandlerLoader bunnyHandlerLoader(Set<BunnyHandler> handlers) {
+                return new BunnyHandlerLoaderImpl(handlers);
+            }
+
+            @ProvidesIntoSet
+            public BunnyHandler calculateHandler(CalculatePluginLoader calculatePluginLoader) {
+                return new CalculateHandler(calculatePluginLoader);
+            }
+
+            @ProvidesIntoSet
+            public BunnyHandler queryHandler(@Nullable ChargeCodeMapper codeMapper,
+                                             @Nullable BunnyDao bunnyDao) {
+                return new QueryHandler(codeMapper, bunnyDao);
+            }
+
+            @ProvidesIntoSet
+            public BunnyHandler chargeHandler(@Nullable ChargeCodeMapper codeMapper,
+                                              @Nullable BunnyDao bunnyDao) {
+                return new ChargeHandler(codeMapper, bunnyDao);
+            }
+
+            @ProvidesIntoSet
+            public BunnyHandler serveHandler(CalculatePluginLoader calculatePluginLoader,
+                                             ServeService serveService,
+                                             ServePluginLoader servePluginLoader) {
+                return new ServeHandler(calculatePluginLoader, serveService, servePluginLoader);
+            }
+
+            @ProvidesIntoSet
+            public BunnyHandler serveCallbackHandler(ServeCallbackPluginLoader serveCallbackPluginLoader,
+                                                     ServeService serveService,
+                                                     @Nullable BunnyCallbackDao bunnyCallbackDao,
+                                                     @Nullable BunnyConfig bunnyConfig) {
+                return new ServeCallbackHandler(serveCallbackPluginLoader, serveService, bunnyCallbackDao, bunnyConfig);
+            }
+
+            @Provides
+            public ServeService serveService(SwitchPluginLoader switchPluginLoader,
+                                             @Nullable ChargeCodeMapper codeMapper,
+                                             @Nullable BunnyServeDao serveDao,
+                                             @Nullable BunnyDao bunnyDao) {
+                return new ServeService(switchPluginLoader, codeMapper, serveDao, bunnyDao);
+            }
+
+            @Provides
+            public CalculatePluginLoader calculatePluginLoader(Injector injector,
+                                                               @Nullable PluginNameMapper pluginNameMapper) {
+                return new CalculatePluginLoaderImpl(injector, pluginNameMapper);
+            }
+
+            @Provides
+            public ServePluginLoader servePluginLoader(Injector injector,
+                                                       @Nullable PluginNameMapper pluginNameMapper) {
+                return new ServePluginLoaderImpl(injector, pluginNameMapper);
+            }
+
+            @Provides
+            public ServeCallbackPluginLoader serveCallbackPluginLoader(Injector injector,
+                                                                       @Nullable PluginNameMapper pluginNameMapper) {
+                return new ServeCallbackPluginLoaderImpl(injector, pluginNameMapper);
+            }
+
+            @Provides
+            public SwitchPluginLoader switchPluginLoader(Injector injector,
+                                                         @Nullable PluginNameMapper pluginNameMapper) {
+                return new SwitchPluginLoaderImpl(injector, pluginNameMapper);
+            }
+        });
     }
 }
